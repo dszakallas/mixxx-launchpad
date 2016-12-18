@@ -19,12 +19,12 @@ const Channel = (type, i) => ({
   'back': { group: `[${type}${i}]`, name: 'back', type: 'binary' },
   'beat_active': { group: `[${type}${i}]`, name: 'beat_active', type: 'binary' },
   'beatjump': { group: `[${type}${i}]`, name: 'beatjump', type: 'real number' },
-  'beatjump_X': (x) => ({
+  'beatjumps': (x) => ({
     'forward': { group: `[${type}${i}]`, name: `beatjump_${x}_forward`, type: 'binary' },
     'backward': { group: `[${type}${i}]`, name: `beatjump_${x}_backward`, type: 'binary' }
   }),
   'beatloop': { group: `[${type}${i}]`, name: 'beatloop', type: 'positive real number' },
-  'beatloop_X': (x) => ({
+  'beatloops': (x) => ({
     'activate': { group: `[${type}${i}]`, name: `beatloop_${x}_activate`, type: 'binary' },
     'toggle': { group: `[${type}${i}]`, name: `beatloop_${x}_toggle`, type: 'binary' },
     'enabled': { group: `[${type}${i}]`, name: `beatloop_${x}_enabled`, type: 'binary' }
@@ -56,7 +56,7 @@ const Channel = (type, i) => ({
   'file_bpm': { group: `[${type}${i}]`, name: 'file_bpm', type: 'positive value' },
   'file_key': { group: `[${type}${i}]`, name: 'file_key', type: '?' },
   'fwd': { group: `[${type}${i}]`, name: 'fwd', type: 'binary' },
-  'hotcue_X': (x) => ({
+  'hotcues': (x) => ({
     'activate': { group: `[${type}${i}]`, name: `hotcue_${x}_activate`, type: 'binary' },
     'clear': { group: `[${type}${i}]`, name: `hotcue_${x}_clear`, type: 'binary' },
     'enabled': { group: `[${type}${i}]`, name: `hotcue_${x}_enabled`, type: 'read-only, binary' },
@@ -145,9 +145,9 @@ const playlist = Playlist
 const channels = range(8).map((i) => {
   const channel = Channel(i < 4 ? 'Channel' : 'Sampler', (i % 4) + 1)
   return assign(channel, {
-    'beatjump_X': jumps.reduce((acc, x) => assign(acc, { [x]: channel.beatjump_X(x) })),
-    'beatloop_X': loops.reduce((acc, x) => assign(acc, { [x]: channel.beatloop_X(x) })),
-    'hotcue_X': range(8).map((x) => channel.hotcue_X(x + 1))
+    'beatjumps': jumps.reduce((acc, x) => assign(acc, { [x]: channel.beatjumps(x) })),
+    'beatloops': loops.reduce((acc, x) => assign(acc, { [x]: channel.beatloops(x) })),
+    'hotcues': range(8).map((x) => channel.hotcues(x + 1))
   })
 })
 

@@ -3,7 +3,7 @@ import { ModifierSidebar } from './ModifierSidebar'
 import { Layout } from './Layout'
 import { Component } from '../Component'
 
-const assign = require('lodash.assign')
+import assign from 'lodash.assign'
 
 export const ModifierPlugin = (modifier) => {
   let ctrl = false

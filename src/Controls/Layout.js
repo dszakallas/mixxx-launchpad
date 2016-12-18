@@ -2,14 +2,16 @@ import { Component } from '../Component'
 import { Deck } from './Deck'
 
 export const Layout = (id) => {
-  const deck = Deck(`${id}.deck1`, 0)
+  const deck0 = Deck(`${id}.deck.0`, 0)
+  const deck1 = Deck(`${id}.deck.1`, 1)
   return new Component({
     onMount () {
-      deck.mount(this.target)
+      deck0.mount(this.target)
+      deck1.mount(this.target)
     },
     onUnmount () {
-      deck.unmount()
+      deck0.unmount()
+      deck1.unmount()
     }
-
   })
 }
