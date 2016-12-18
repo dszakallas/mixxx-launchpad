@@ -1,4 +1,6 @@
-# Launchpad
+# Mixxx mapping for Novation Launchpad
+
+Author: midiparse
 
 ## User guide
 
@@ -102,6 +104,18 @@ The controller mapping is generated from a [template][mapping-template] with
 [ejs]. The mapping reuses config from the package description and [buttons.js].
 
 ### Build
+
+To compile the sources and install the artifacts into Mixxx simply run
+
+```
+make install
+```
+
+If you only want to compile the sources, run
+
+```
+make compile
+```
 
 ### Known Issues
 
