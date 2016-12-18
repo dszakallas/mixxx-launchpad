@@ -5,21 +5,21 @@ import { ControlBinding as cbind } from './ControlBinding'
 import { Control, console } from '../Mixxx'
 import { Button } from '../Launchpad'
 
-const range = require('lodash.range')
-const assign = require('lodash.assign')
-const mapKeys = require('lodash.mapkeys')
+import range from 'lodash.range'
+import assign from 'lodash.assign'
+import mapKeys from 'lodash.mapkeys'
 
 const ControlBindings = (id, i) => {
+  const deck = Control.controls.decks[i]
   const controls = {
-    'play': cbind.create(`${id}.play`, Control.controls.decks[i].play),
-    'playable': cbind.create(`${id}.playable`, Control.controls.decks[i].play_indicator),
-    'startPlay': cbind.create(`${id}.startPlay`, Control.controls.decks[i].start_play),
-    'startStop': cbind.create(`${id}.startStop`, Control.controls.decks[i].start_stop)
+    'play': cbind.create(`${id}.play`, deck.play),
+    'playIndicator': cbind.create(`${id}.playIndicator`, deck.play_indicator),
+    'cueIndicator': cbind.create(`${id}.cueIndicator`, deck.cue_indicator)
   }
 
   const cueEnabled = mapKeys(
-    range(8).map((j) => cbind.create(`${id}.hotcue${j}Enabled`, Control.controls.decks[i].hotcue_X[j].enabled)),
-    (_, j) => `hotcue${j}Enabled`
+    range(8).map((j) => cbind.create(`${id}.hotcues.${j}.enabled`, deck.hotcues[j].enabled)),
+    (_, j) => `hotcues.${j}.enabled`
   )
 
   assign(controls, cueEnabled)
@@ -29,7 +29,7 @@ const ControlBindings = (id, i) => {
 
 const ButtonBindings = (offset, i) => {
   const nameOf = (x, y) => `${7 - y},${x}`
-  const bind = (tgt, bindings) => {
+  const addListeners = (tgt, bindings) => {
     Object.keys(bindings).forEach((binding) => {
       if (tgt[binding]) {
         if (typeof bindings[binding] === 'function') {
@@ -43,7 +43,7 @@ const ButtonBindings = (offset, i) => {
       }
     })
   }
-  const unbind = (tgt, bindings) => {
+  const removeListeners = (tgt, bindings) => {
     Object.keys(bindings).forEach((binding) => {
       if (tgt[binding]) {
         if (typeof bindings[binding] === 'function') {
@@ -58,10 +58,12 @@ const ButtonBindings = (offset, i) => {
   }
   return new Component({
     onMount () {
-      const { deck, launchpadBus } = this.target
-      const deckBindings = { }
-      const buttonBindings = { }
+      const { boundControls, launchpadBus } = this.target
+      const controlListeners = { }
+      const buttonListeners = { }
       const buttons = { }
+
+      const deck = Control.controls.decks[i]
 
       // Play button
 
@@ -69,39 +71,77 @@ const ButtonBindings = (offset, i) => {
 
       const onPlayAttack = ({ context }) => {
         if (context.shift) {
-          deck.startPlay.setValue(1)
+          Control.setValue(deck.start_play, 1)
         } else if (context.ctrl) {
-          deck.startStop.setValue(1)
+          Control.setValue(deck.start_stop, 1)
         } else {
-          deck.play.toggleValue()
+          boundControls.play.toggleValue()
         }
       }
 
       const onPlay = ({ value }) => {
         if (value) {
           Button.send(play.button, Button.colors.hi_red)
-        } else if (deck.playable.getValue()) {
-          Button.send(play.button, Button.colors.lo_red)
+        } else if (boundControls.playIndicator.getValue()) {
+          Button.send(play.button, Button.colors.hi_red)
         } else {
           Button.send(play.button, Button.colors.black)
         }
       }
 
-      const onPlayable = ({ value }) => {
-        if (value && !deck.play.getValue()) {
-          Button.send(play.button, Button.colors.lo_red)
-        } else if (!value && !deck.play.getValue()) {
+      const onPlayIndicator = ({ value }) => {
+        if (value && !boundControls.play.getValue()) {
+          Button.send(play.button, Button.colors.hi_red)
+        } else if (!value && !boundControls.play.getValue()) {
           Button.send(play.button, Button.colors.black)
         }
       }
 
-      deckBindings.play = onPlay
-      deckBindings.playable = onPlayable
-      buttonBindings.play = { attack: onPlayAttack }
+      controlListeners.play = onPlay
+      controlListeners.playIndicator = onPlayIndicator
+      buttonListeners.play = { attack: onPlayAttack }
 
       buttons.play = play
 
-      // Cues
+      // Cue
+
+      const cue = bbind.create(Button.buttons[nameOf(offset.x, offset.y + 1)])
+
+      const onCueMidi = ({ value, context }) => {
+        console.log(context)
+        if (context.shift) {
+          if (value) {
+            Control.setValue(deck.cue_set, 1)
+          }
+        } else if (context.ctrl) {
+          if (value) {
+            Control.setValue(deck.cue_play, 1)
+          } else {
+            Control.setValue(deck.cue_play, 0)
+          }
+        } else {
+          if (value) {
+            Control.setValue(deck.cue_default, 1)
+          } else {
+            Control.setValue(deck.cue_default, 0)
+          }
+        }
+      }
+
+      const onCueIndicator = ({ value }) => {
+        if (value && !boundControls.play.getValue()) {
+          Button.send(cue.button, Button.colors.hi_red)
+        } else if (!value && !boundControls.play.getValue()) {
+          Button.send(cue.button, Button.colors.black)
+        }
+      }
+
+      controlListeners.cueIndicator = onCueIndicator
+      buttonListeners.cue = { midi: onCueMidi }
+
+      buttons.cue = cue
+
+      // Hotcues
 
       const cues = range(8).map((i) => {
         const dx = i % 4
@@ -109,8 +149,12 @@ const ButtonBindings = (offset, i) => {
         return bbind.create(Button.buttons[nameOf(offset.x + dx, offset.y + dy + 2)])
       })
 
-      const onCueAttack = (j) => ({ context }) => {
-        Control.setValue(Control.controls.decks[i].hotcue_X[j].activate, 1)
+      const onHotcueMidi = (i) => ({ value, context }) => {
+        if (value) {
+          Control.setValue(deck.hotcues[i].activate, 1)
+        } else {
+          Control.setValue(deck.hotcues[i].activate, 0)
+        }
       }
 
       const onCueEnabled = (i) => ({ value }) => {
@@ -122,26 +166,28 @@ const ButtonBindings = (offset, i) => {
       }
 
       cues.forEach((cue, i) => {
-        deckBindings[`hotcue${i}Enabled`] = onCueEnabled(i)
-        buttonBindings[`hotcue${i}`] = { attack: onCueAttack(i) }
-        buttons[`hotcue${i}`] = cue
+        controlListeners[`hotcues.${i}.enabled`] = onCueEnabled(i)
+        buttonListeners[`hotcues.${i}`] = { midi: onHotcueMidi(i) }
+        buttons[`hotcues.${i}`] = cue
       })
 
-      bind(deck, deckBindings)
-      bind(buttons, buttonBindings)
+      // end
+
+      addListeners(boundControls, controlListeners)
+      addListeners(buttons, buttonListeners)
 
       Object.keys(buttons).forEach((btn) => buttons[btn].mount(launchpadBus))
 
-      this.state = { buttonBindings, deckBindings, buttons, deck }
+      this.state = { buttonListeners, controlListeners, buttons, boundControls }
       return this.state
     },
     onUnmount () {
-      const { deckBindings, buttonBindings, buttons, deck } = this.state
+      const { buttonListeners, controlListeners, buttons, boundControls } = this.state
 
       Object.keys(buttons).forEach((btn) => buttons[btn].unmount())
 
-      unbind(buttons, buttonBindings)
-      unbind(deck, deckBindings)
+      removeListeners(buttons, buttonListeners)
+      removeListeners(boundControls, controlListeners)
 
       this.state = undefined
     }
@@ -149,17 +195,17 @@ const ButtonBindings = (offset, i) => {
 }
 
 export const Deck = (id, i) => {
-  const deck = ControlBindings(id, i)
-  const btns = ButtonBindings({ x: 0, y: 0 }, i)
+  const boundControls = ControlBindings(id, i)
+  const boundButtons = ButtonBindings({ x: 0, y: 0 }, i)
   return new Component({
     onMount () {
       const { controlBus, launchpadBus } = this.target
-      Object.keys(deck).forEach((k) => deck[k].mount(controlBus))
-      btns.mount({ launchpadBus, deck })
+      Object.keys(boundControls).forEach((k) => boundControls[k].mount(controlBus))
+      boundButtons.mount({ launchpadBus, boundControls })
     },
     onUnmount () {
-      btns.unmount()
-      Object.keys(deck).forEach((k) => deck[k].unmount())
+      boundButtons.unmount()
+      Object.keys(boundControls).forEach((k) => boundControls[k].unmount())
     }
   })
 }
