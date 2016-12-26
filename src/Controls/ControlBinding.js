@@ -1,5 +1,5 @@
 import { Component } from '../Component'
-import { Control, console } from '../Mixxx'
+import { Control } from '../Mixxx'
 
 export class ControlBinding extends Component {
   static create (id, control) {
@@ -21,6 +21,7 @@ export class ControlBinding extends Component {
         this.emit('update', data)
       })
       this.value = Control.getValue(this.control)
+      this.emit('update', this)
       return this
     }
   }

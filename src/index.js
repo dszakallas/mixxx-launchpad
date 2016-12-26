@@ -1,6 +1,6 @@
 import { MidiBus as LaunchpadBus } from './Launchpad'
 import { Timer, ControlBus } from './Mixxx'
-import { Screen } from './Controls/Screen'
+import { Screen } from './App/Screen'
 import { Component } from './Component'
 
 require('string.prototype.startswith')

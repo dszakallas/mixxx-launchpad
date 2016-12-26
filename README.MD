@@ -47,6 +47,7 @@ Controls
  - **ctrl**: permanently changes pitch in direction by primary value. See *Preferences > Interface > Permanent Speed Adjustment Buttons > Left click*
  - **shift**: nudges (temporarily alters pitch) in direction by secondary value. See *Preferences > Interface > Temporary Speed Adjustment Buttons > Right click*
  - **ctrl+shift**: permanently changes pitch in direction by secondary value. See *Preferences > Interface > Permanent Speed Adjustment Buttons > Right click*
+ - **normal (both buttons simultaneously)**: reset pitch to original value
 
 Feedback
 
@@ -67,18 +68,86 @@ Feedback
 
 - **bright red**: display dictated by your Cue mode
 
+#### TAP
+
+tap tempo for playback or beatgrid.
+
+- **normal**: tapping adjusts song playback tempo. You should have correctly detected BPM and beatgrid.
+
+- **ctrl**: ~~instead of altering the playback tempo, tapping adjusts the beatgrid.~~ Not implemented. *Why?*
+- **shift**: sets the gridlines so the nearest beat aligns to current play position
+- **ctrl+shift**: second button: sets the gridlines so the nearest beat lines up with the other track's nearest beat
+
+Feedback
+
+- **bright red**: flashes up on gridline
+
+#### GRID MANIPULATORS
+
+2 controls for
+
+- **normal**: translating the grid backwards / forwards
+- **ctrl**: scaling the grid up (slower) / down (faster).
+
+#### PFL
+
+- **normal**: toggle pre-fade listening (headphone)
+
+Feedback:
+
+- **bright green**: PFL on
+- **blank**: PFL off
+
+#### QUANTIZE
+
+- **normal**: toggle quantization (magnet)
+
+Feedback:
+
+- **bright orange**: quantization on
+- **blank**: quantization off
+
+#### KEY SHIFTS
+
+Buttons for temporarily raising/lowering pitch, bound left to right, bottom to top. They are
+glowing in low amber. While pressed, they modify the key of
+the track. When pressing multiple, the one later pressed *steals* the modification.
+
+#### LOAD/EJECT
+
+- **normal**: load the selected library track on deck. To prevent accidentally hitting, only works when the deck is empty.
+- **ctrl**: load the selected library track on deck. Works when the deck is not playing.
+- **shift**: eject deck. Works when the deck is not playing.
+
+Feedback:
+
+- **low red**: deck loaded, playing
+- **low amber**: deck loaded, not playing
+- **low green**: deck empty
+
+#### KEY
+
+- **normal**: toggles keylock
+- **ctrl**: lowers key by semitone
+- **shift**: raises key by semitone
+
+Feedback:
+
+- **hi red**: keylock on
+- **blank**: keylock off
+
 #### HOTCUES
 
-8 hotcues are bound to the buttons from left to right, bottom to top.
+Hotcues are bound from left to right, bottom to top.
 
 Controls
 
-- **normal**: activates hotcue:
-  - if hotcue is set, seeks the player to hotcue's position.
-  - if hotcue is not set, sets hotcue to the current play position
+- **normal**: activates the hotcue:
+  - if the hotcue is set, seeks the player to hotcue's position.
+  - if the hotcue is not set, sets the hotcue to the current play position
 - **ctrl**:
-  - if hotcue is set, deletes hotcue
-  - if hotcue is not set, sets hotcue to the current play position
+  - if the hotcue is set, deletes the hotcue
+  - if the hotcue is not set, sets the hotcue to the current play position
 
 Feedback
 
@@ -88,17 +157,17 @@ Feedback
 
 ## Technical details
 
-### Scripts
+### JavaScript
 
 The code is written according to the [ES2015] specification. This is
 incompatible with the runtime running in Mixxx so it has to be transpiled back
 to ES5, which is done with [Babel] using the es2015 preset. Sadly due to the interpreter's only partial compatibility with the standard [even some ES3 transforms have to be enabled](bad-interpreter). The transpiled code
 is then bundled with [browserify] into a so called [standalone] module with the
-name `NovationLaunchpad`. Due to the lack of module loading system in the run
-environment, the bundled code will be placed on the global object with the above
-name.
+name `NovationLaunchpad`. Due to the lack of module loading system in the
+environment, the bundled code is placed on the global object with the above
+name. This works, because the same name is specified in the MIDI mapping XML file, so Mixxx will look for this name, and will call its `init` method upon loading.
 
-### Controller mapping
+### MIDI mapping
 
 The controller mapping is generated from a [template][mapping-template] with
 [ejs]. The mapping reuses config from the package description and [buttons.js].

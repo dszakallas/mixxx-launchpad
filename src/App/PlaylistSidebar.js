@@ -1,6 +1,6 @@
 import { Button } from '../Launchpad'
 import { Control } from '../Mixxx'
-import { ButtonBinding as bbind } from './ButtonBinding'
+import { ButtonBinding as bbind } from '../Controls/ButtonBinding'
 import { Component } from '../Component'
 
 const prevPlaylistBtn = Button.buttons.vol

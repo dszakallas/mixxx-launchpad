@@ -1,4 +1,4 @@
-import { ButtonBinding as bbind } from './ButtonBinding'
+import { ButtonBinding as bbind } from '../Controls/ButtonBinding'
 import { Button } from '../Launchpad'
 import { Component } from '../Component'
 
