@@ -52,10 +52,10 @@ Controls
 Feedback
 
   - **bright yellow**: while nudging with primary speed
-  - **low yellow**: while nudging with secondary speed
+  - **dim yellow**: while nudging with secondary speed
   - **bright red**: while permanently changing pitch with primary speed
-  - **low red**: while permanently changing pitch with primary speed
-  - **low amber**: while not pressing, and pitch has been altered in that direction
+  - **dim red**: while permanently changing pitch with primary speed
+  - **dim amber**: while not pressing, and pitch has been altered in that direction
 
 #### CUE
 
@@ -121,9 +121,9 @@ the track. When pressing multiple, the one later pressed *steals* the modificati
 
 Feedback:
 
-- **low red**: deck loaded, playing
-- **low amber**: deck loaded, not playing
-- **low green**: deck empty
+- **dim red**: deck loaded, playing
+- **dim amber**: deck loaded, not playing
+- **dim green**: deck empty
 
 #### KEY
 
@@ -153,6 +153,31 @@ Feedback
 
 - **bright yellow**: hotcue enabled
 - **blank**: hotcue disabled
+
+#### BEATJUMPS
+
+Controls for jumping backward (lower lane) and forward (upper lane).
+Supports two modes:
+ - the normal mode is represented with bright color. Jumping works as you would expect.
+ - the rebouncing mode is shown with dim color. It jumps on attack, then jumps back on release. Jumping legato works and uses the same stealing algorithm as key shifting.
+
+You can change modes by pressing **ctrl+shift+[any beatjump key]**.
+
+There are two sets of jumps, shown in `green` and `yellow` correspondingly.
+You can change to the first set by pressing **ctrl+[any beatjump key]**, to the second set by pressing **shift+[any beatjump key]**.
+
+### BEATLOOPS
+
+Controls for setting beatloops.
+
+Controls
+
+- **normal**: toggles beatloop
+
+Feedback
+
+- **bright red**: beatloop enabled
+- **dim red**: beatloop disabled
 
 
 ## Technical details
