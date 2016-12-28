@@ -2,18 +2,25 @@ import { Control } from '../Mixxx'
 import { ControlTemplate } from '../Controls/ControlTemplate'
 import { Component } from '../Component'
 
-import { play } from './play'
-import { sync } from './sync'
-import { nudge } from './nudge'
-import { cue } from './cue'
-import { tap } from './tap'
-import { grid } from './grid'
-import { pfl } from './pfl'
-import { quantize } from './quantize'
-import { keyshift } from './keyshift'
-import { hotcue } from './hotcue'
-import { load } from './load'
-import { key } from './key'
+import { play } from './templates/play'
+import { sync } from './templates/sync'
+import { nudge } from './templates/nudge'
+import { cue } from './templates/cue'
+import { tap } from './templates/tap'
+import { grid } from './templates/grid'
+import { pfl } from './templates/pfl'
+import { quantize } from './templates/quantize'
+import { keyshift } from './templates/keyshift'
+import { hotcue } from './templates/hotcue'
+import { load } from './templates/load'
+import { key } from './templates/key'
+import { beatjump } from './templates/beatjump'
+import { beatloop } from './templates/beatloop'
+import { loopjump } from './templates/loopjump'
+import { loopMultiply } from './templates/loopMultiply'
+import { reloop } from './templates/reloop'
+import { loopIo } from './templates/loopIo'
+import { slip } from './templates/slip'
 
 export const Deck = (id, i) => {
   const deck = Control.controls.decks[i]
@@ -28,9 +35,16 @@ export const Deck = (id, i) => {
     pfl: pfl([0, 2])(deck),
     quantize: quantize([1, 2])(deck),
     keyshift: keyshift([1, 2, 3, 5, 7, 8, 10, 12], 2)([2, 2])(deck),
-    hotcue: hotcue(8, 2)([0, 4])(deck),
     load: load([0, 3])(deck),
-    key: key([1, 3])(deck)
+    key: key([1, 3])(deck),
+    hotcue: hotcue(8, 2)([0, 4])(deck),
+    beatjump: beatjump([[0.25, 1], [0.33, 2], [0.5, 4], [0.75, 8], [1, 16], [2, 32]])([2, 6])(deck),
+    beatloop: beatloop([0.5, 1, 2, 4, 8, 16, 32, 64], 2)([4, 2])(deck),
+    loopjump: loopjump([[0.5, 8], [1, 16], [2, 32], [4, 64]])([6, 2])(deck),
+    loopMultiply: loopMultiply([4, 1])(deck),
+    reloop: reloop([4, 0])(deck),
+    loopIo: loopIo([5, 0])(deck),
+    slip: slip([7, 0])(deck)
   }
   return new Component({
     onMount () {

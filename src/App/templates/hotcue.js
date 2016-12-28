@@ -1,7 +1,7 @@
 import range from 'lodash.range'
-import { Control } from '../Mixxx'
-import { Button } from '../Launchpad'
-import { modes } from '../Utility/modes'
+import { Control } from '../../Mixxx'
+import { Button } from '../../Launchpad'
+import { modes } from '../../Utility/modes'
 
 export const hotcue = (n, d, s = 0) => (button) => (deck) => {
   const onHotcueMidi = (i) => ({ context, value }, { bindings }) => {

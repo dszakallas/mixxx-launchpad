@@ -1,7 +1,7 @@
-import { Button } from '../Launchpad'
-import { Control } from '../Mixxx'
-import { modes } from '../Utility/modes'
-import { Bpm } from '../App/Bpm'
+import { Button } from '../../Launchpad'
+import { Control } from '../../Mixxx'
+import { modes } from '../../Utility/modes'
+import { Bpm } from '../../App/Bpm'
 
 export const tap = (button) => (deck) => {
   const tempoBpm = new Bpm()

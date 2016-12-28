@@ -1,6 +1,6 @@
-import { Button } from '../Launchpad'
-import { Control } from '../Mixxx'
-import { modes } from '../Utility/modes'
+import { Button } from '../../Launchpad'
+import { Control } from '../../Mixxx'
+import { modes } from '../../Utility/modes'
 
 export const grid = (button) => (deck) => {
   const onGrid = (dir) => ({ value, context }, { bindings, state }) => {

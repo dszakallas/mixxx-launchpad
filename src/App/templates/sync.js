@@ -1,6 +1,6 @@
-import { Control } from '../Mixxx'
-import { Button } from '../Launchpad'
-import { modes } from '../Utility/modes'
+import { Control } from '../../Mixxx'
+import { Button } from '../../Launchpad'
+import { modes } from '../../Utility/modes'
 
 export const sync = (button) => (deck) => {
   return {

@@ -1,5 +1,5 @@
-import { modes } from '../Utility/modes'
-import { Button } from '../Launchpad'
+import { modes } from '../../Utility/modes'
+import { Button } from '../../Launchpad'
 
 export const pfl = (button) => (deck) => {
   return {

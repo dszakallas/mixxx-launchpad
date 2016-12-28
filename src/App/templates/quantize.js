@@ -1,5 +1,5 @@
-import { Button } from '../Launchpad'
-import { modes } from '../Utility/modes'
+import { Button } from '../../Launchpad'
+import { modes } from '../../Utility/modes'
 
 export const quantize = (button) => (deck) => {
   return {

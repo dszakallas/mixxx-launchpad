@@ -1,7 +1,7 @@
-import { Control } from '../Mixxx'
-import { Button } from '../Launchpad'
-import { retainAttackMode } from '../Utility/retainAttackMode'
-import { modes } from '../Utility/modes'
+import { Control } from '../../Mixxx'
+import { Button } from '../../Launchpad'
+import { retainAttackMode } from '../../Utility/retainAttackMode'
+import { modes } from '../../Utility/modes'
 
 export const nudge = (button) => (deck) => {
   const rateEpsilon = 1e-3

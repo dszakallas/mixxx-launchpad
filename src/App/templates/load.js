@@ -1,6 +1,6 @@
-import { Control, console } from '../Mixxx'
-import { Button } from '../Launchpad'
-import { modes } from '../Utility/modes'
+import { Control, console } from '../../Mixxx'
+import { Button } from '../../Launchpad'
+import { modes } from '../../Utility/modes'
 
 export const load = (button) => (deck) => {
   const onStateChanged = (loaded, playing, bindings) => {

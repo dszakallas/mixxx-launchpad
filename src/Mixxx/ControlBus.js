@@ -3,6 +3,10 @@ import { engine } from './globals'
 const moduleName = require('../../package.json').mixxx.moduleName
 const callbackPrefix = '__mixxx_ctrl'
 
+const sanitize = (name) => {
+  return name.replace('.', '$DOT$').replace('[', '$SBS$').replace(']', '$SBE')
+}
+
 export class ControlBus {
   static create (registry) {
     return new ControlBus(moduleName, registry)
@@ -16,7 +20,7 @@ export class ControlBus {
 
   connect (id, control, cb) {
     const { group, name } = control
-    const key = `${group.slice(1, -1)}_${name}`
+    const key = `${sanitize(group)}_${sanitize(name)}`
     const engineCb = `${callbackPrefix}_${key}`
 
     if (!this._callbackList[key]) {
@@ -32,12 +36,11 @@ export class ControlBus {
       }
       engine.connectControl(group, name, `${this._registryName}.${engineCb}`)
     }
-    return { id, group, name }
+    return { id, group, name, key }
   }
 
   disconnect (handle) {
-    const { id, group, name } = handle
-    const key = `${group.slice(1, -1)}_${name}`
+    const { id, group, name, key } = handle
     const engineCb = `${callbackPrefix}_${key}`
 
     if (this._callbackList[key] && this._callbackList[key][id]) {

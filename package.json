@@ -14,6 +14,7 @@
     "events": "^1.1.1",
     "json-stringify-safe": "^5.0.1",
     "lodash.assign": "^4.2.0",
+    "lodash.flatmap": "^4.5.0",
     "lodash.mapkeys": "^4.6.0",
     "lodash.range": "^3.2.0",
     "string.prototype.startswith": "^0.2.0"
