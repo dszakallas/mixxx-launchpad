@@ -23,7 +23,7 @@ import { loopIo } from './templates/loopIo'
 import { slip } from './templates/slip'
 
 export const Deck = (id, i) => {
-  const deck = Control.controls.decks[i]
+  const deck = Control.controls.channels[i]
 
   const template = {
     play: play([0, 0])(deck),
