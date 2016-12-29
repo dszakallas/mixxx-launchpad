@@ -13,7 +13,7 @@ export const keyshift = (shifts, d) => (button) => (deck) => {
         Button.send(bindings[state.on].button, Button.colors.lo_amber)
       }
       Button.send(bindings[i].button, dir === 1 ? Button.colors.hi_green : Button.colors.hi_red)
-      Control.setValue(deck.key, base + shifts[i] * dir)
+      Control.setValue(deck.key, ((base + shifts[i] * dir) % 12) + 12)
       state.on = i
       state.base = base
     } else {
