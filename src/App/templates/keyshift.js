@@ -6,19 +6,19 @@ import { Button } from '../../Launchpad'
 export const keyshift = (shifts, d) => (button) => (deck) => {
   const bindings = { }
 
-  const temporaryChange = (i, dir, value, bindings, state) => {
+  const temporaryChange = (i, value, bindings, state) => {
     if (value) {
       const base = state.on === -1 ? Control.getValue(deck.key) : state.base
       if (state.on !== -1) {
-        Button.send(bindings[state.on].button, Button.colors.lo_amber)
+        Button.send(bindings[state.on].button, Button.colors[`lo_${state.color[state.set]}`])
       }
-      Button.send(bindings[i].button, dir === 1 ? Button.colors.hi_green : Button.colors.hi_red)
-      Control.setValue(deck.key, ((base + shifts[i] * dir) % 12) + 12)
+      Button.send(bindings[i].button, Button.colors[`hi_${state.color[state.set]}`])
+      Control.setValue(deck.key, ((base + shifts[i][state.set]) % 12) + 12)
       state.on = i
       state.base = base
     } else {
       if (state.on === i) {
-        Button.send(bindings[i].button, Button.colors.lo_amber)
+        Button.send(bindings[i].button, Button.colors[`lo_${state.color[state.set]}`])
         Control.setValue(deck.key, state.base)
         state.on = -1
       }
@@ -27,8 +27,27 @@ export const keyshift = (shifts, d) => (button) => (deck) => {
 
   const onMidi = (i) => retainAttackMode(({ context, value }, { bindings, state }) => {
     modes(context,
-      () => temporaryChange(i, 1, value, bindings, state),
-      () => temporaryChange(i, -1, value, bindings, state)
+      () => temporaryChange(i, value, bindings, state),
+      () => {
+        if (value) {
+          if (state.set === 1) {
+            state.set = 0
+            for (let i = 0; i < shifts.length; ++i) {
+              Button.send(bindings[i].button, Button.colors[`lo_${state.color[state.set]}`])
+            }
+          }
+        }
+      },
+      () => {
+        if (value) {
+          if (state.set === 0) {
+            state.set = 1
+            for (let i = 0; i < shifts.length; ++i) {
+              Button.send(bindings[i].button, Button.colors[`lo_${state.color[state.set]}`])
+            }
+          }
+        }
+      }
     )
   })
 
@@ -40,8 +59,8 @@ export const keyshift = (shifts, d) => (button) => (deck) => {
       type: 'button',
       target: position,
       midi: onMidi(i),
-      mount: function (dontKnow, { bindings }) {
-        Button.send(bindings[i].button, Button.colors.lo_amber)
+      mount: function (dontKnow, { bindings, state }) {
+        Button.send(bindings[i].button, Button.colors[`lo_${state.color[state.set]}`])
       }
     }
   })
@@ -49,7 +68,12 @@ export const keyshift = (shifts, d) => (button) => (deck) => {
     bindings,
     state: {
       on: -1,
-      base: null
+      base: null,
+      set: 0,
+      color: [
+        'green',
+        'amber'
+      ]
     }
   }
 }

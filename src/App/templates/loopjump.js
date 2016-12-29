@@ -95,3 +95,31 @@ export const loopjump = (jumps) => (button) => (deck) => {
     }
   }
 }
+
+export const loopjumpSmall = (amount) => (button) => (deck) => {
+  const onAttack = (dir) => ({ context }) => {
+    modes(context,
+      () => Control.setValue(deck.loop_move, dir * amount)
+    )
+  }
+  return {
+    bindings: {
+      back: {
+        type: 'button',
+        target: button,
+        attack: onAttack(-1),
+        mount: (dk, { bindings }) => {
+          Button.send(bindings.back.button, Button.colors.hi_yellow)
+        }
+      },
+      forth: {
+        type: 'button',
+        target: [button[0] + 1, button[1]],
+        attack: onAttack(1),
+        mount: (dk, { bindings }) => {
+          Button.send(bindings.forth.button, Button.colors.hi_yellow)
+        }
+      }
+    }
+  }
+}

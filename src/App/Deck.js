@@ -16,7 +16,7 @@ import { load } from './templates/load'
 import { key } from './templates/key'
 import { beatjump } from './templates/beatjump'
 import { beatloop } from './templates/beatloop'
-import { loopjump } from './templates/loopjump'
+import { loopjump, loopjumpSmall } from './templates/loopjump'
 import { loopMultiply } from './templates/loopMultiply'
 import { reloop } from './templates/reloop'
 import { loopIo } from './templates/loopIo'
@@ -34,13 +34,14 @@ export const Deck = (id, i) => {
     grid: grid([2, 1])(deck),
     pfl: pfl([0, 2])(deck),
     quantize: quantize([1, 2])(deck),
-    keyshift: keyshift([1, 2, 3, 5, 7, 8, 10, 12], 2)([2, 2])(deck),
+    keyshift: keyshift([[1, 1], [2, 2], [3, 3], [5, 4], [7, 5], [8, 6], [10, 7], [12, 8]], 2)([2, 2])(deck),
     load: load([0, 3])(deck),
     key: key([1, 3])(deck),
     hotcue: hotcue(8, 2)([0, 4])(deck),
     beatjump: beatjump([[0.25, 1], [0.33, 2], [0.5, 4], [0.75, 8], [1, 16], [2, 32]])([2, 6])(deck),
     beatloop: beatloop([0.5, 1, 2, 4, 8, 16, 32, 64], 2)([4, 2])(deck),
     loopjump: loopjump([[0.5, 8], [1, 16], [2, 32], [4, 64]])([6, 2])(deck),
+    loopjumpSmall: loopjumpSmall(0.03125)([6, 1])(deck),
     loopMultiply: loopMultiply([4, 1])(deck),
     reloop: reloop([4, 0])(deck),
     loopIo: loopIo([5, 0])(deck),
