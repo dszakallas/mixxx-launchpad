@@ -11,7 +11,7 @@
   "author": "Midiparse",
   "license": "MIT",
   "dependencies": {
-    "events": "^1.1.1",
+    "eventemitter3": "^2.0.2",
     "json-stringify-safe": "^5.0.1",
     "lodash.assign": "^4.2.0",
     "lodash.flatmap": "^4.5.0",

@@ -1,9 +1,10 @@
+import './Mixxx/console-polyfill'
+import 'string.prototype.startswith'
+
 import { MidiBus as LaunchpadBus } from './Launchpad'
 import { Timer, ControlBus } from './Mixxx'
 import { Screen } from './App/Screen'
 import { Component } from './Component'
-
-require('string.prototype.startswith')
 
 const Mapping = (component) => {
   const modul = { }

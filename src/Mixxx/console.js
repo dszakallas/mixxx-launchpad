@@ -19,12 +19,11 @@ function assemble () {
   })
   return str
 }
-
 export const console = {
   log () {
     engine.log(assemble.apply(this, arguments))
   },
-  warn () {
-    engine.warn(assemble.apply(this, arguments))
+  error () {
+    engine.log(assemble.apply(this, arguments))
   }
 }

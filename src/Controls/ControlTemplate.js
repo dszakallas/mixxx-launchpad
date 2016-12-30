@@ -2,7 +2,7 @@ import { Component } from '../Component'
 import { ButtonBinding as bbind } from './ButtonBinding'
 import { ControlBinding as cbind } from './ControlBinding'
 import { Button } from '../Launchpad'
-import { console } from '../Mixxx'
+
 export const ControlTemplate = (id, template) => {
   const { controlBindings, buttonBindings, controlListeners, buttonListeners } = initTemplate(id, template)
   return new Component({
@@ -13,7 +13,7 @@ export const ControlTemplate = (id, template) => {
       Object.keys(controlBindings).forEach((k) => controlBindings[k].mount(controlBus))
       Object.keys(buttonBindings).forEach((k) => buttonBindings[k].mount(launchpadBus))
     },
-    unMount () {
+    onUnmount () {
       Object.keys(controlBindings).forEach((k) => controlBindings[k].unmount())
       Object.keys(buttonBindings).forEach((k) => buttonBindings[k].unmount())
       removeListeners(controlBindings, controlListeners)

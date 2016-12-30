@@ -15,8 +15,8 @@ export class ControlBinding extends Component {
 
   onMount () {
     if (!this._handle) {
-      const controlBus = this.target
-      this._handle = controlBus.connect(this.id, this.control, (data) => {
+      this.controlBus = this.target
+      this._handle = this.controlBus.connect(this.id, this.control, (data) => {
         this.value = data.value
         this.emit('update', data)
       })

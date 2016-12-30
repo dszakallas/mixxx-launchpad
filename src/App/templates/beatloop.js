@@ -1,5 +1,5 @@
 import { Button } from '../../Launchpad'
-import { Control, console } from '../../Mixxx'
+import { Control } from '../../Mixxx'
 import { modes } from '../../Utility/modes'
 
 export const beatloop = (loops, d) => (button) => (deck) => {

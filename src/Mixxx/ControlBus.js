@@ -4,7 +4,7 @@ const moduleName = require('../../package.json').mixxx.moduleName
 const callbackPrefix = '__mixxx_ctrl'
 
 const sanitize = (name) => {
-  return name.replace('.', '$DOT$').replace('[', '$SBS$').replace(']', '$SBE')
+  return name.replace('.', '$DOT$').replace('[', '$SBS$').replace(']', '$SBE$')
 }
 
 export class ControlBus {
@@ -48,6 +48,7 @@ export class ControlBus {
     }
 
     if (!Object.keys(this._callbackList[key]).length && this._registry[engineCb]) {
+      console.log('disconnecting', `${this._registryName}.${engineCb}`)
       engine.connectControl(group, name, `${this._registryName}.${engineCb}`, true)
       delete this._callbackList[key]
       delete this._registry[engineCb]

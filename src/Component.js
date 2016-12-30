@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'eventemitter3'
 
 export class Component extends EventEmitter {
   constructor ({ onMount, onUnmount } = { }) {

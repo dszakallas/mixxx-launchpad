@@ -1,6 +1,6 @@
 import { modes } from '../../Utility/modes'
 import { retainAttackMode } from '../../Utility/retainAttackMode'
-import { Control, console } from '../../Mixxx'
+import { Control } from '../../Mixxx'
 import { Button } from '../../Launchpad'
 
 export const keyshift = (shifts, d) => (button) => (deck) => {

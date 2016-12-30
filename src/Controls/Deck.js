@@ -3,7 +3,7 @@ import { ButtonBinding as bbind } from './ButtonBinding'
 import { ControlBinding as cbind } from './ControlBinding'
 import { Bpm } from '../App/Bpm'
 
-import { Control, console } from '../Mixxx'
+import { Control } from '../Mixxx'
 import { Button } from '../Launchpad'
 
 import range from 'lodash.range'
