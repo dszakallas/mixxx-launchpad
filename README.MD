@@ -1,8 +1,20 @@
 # Mixxx mapping for Novation Launchpad
 
-Author: midiparse
+## Quick start
+
+- Download the [latest release](https://github.com/szdavid92/mixxx-launchpad/releases/latest).
+
+- Follow the [instructions in the Mixxx User Manual](https://www.mixxx.org/manual/latest/chapters/controlling_mixxx.html#installing-a-preset-from-the-forum) to install the preset.
+
+
 
 ## User guide
+
+### Deck layouts
+
+#### GRAND
+
+![grand](docs/lp-mki-grand.png)
 
 ### Deck controls
 
