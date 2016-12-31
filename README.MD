@@ -103,35 +103,40 @@ Feedback
 
 #### PFL
 
+Controls
+
 - **normal**: toggle pre-fade listening (headphone)
 
-Feedback:
+Feedback
 
 - **bright green**: PFL on
 - **blank**: PFL off
 
 #### QUANTIZE
 
+Controls
+
 - **normal**: toggle quantization (magnet)
 
-Feedback:
+Feedback
 
 - **bright orange**: quantization on
 - **blank**: quantization off
 
 #### KEY SHIFTS
 
-Buttons for temporarily raising/lowering pitch, bound left to right, bottom to top. They are
-glowing in low amber. While pressed, they modify the key of
+Buttons for temporarily chaning pitch, bound left to right, bottom to top. While pressed, they modify the key of
 the track. When pressing multiple, the one later pressed *steals* the modification.
 
 #### LOAD/EJECT
+
+Controls
 
 - **normal**: load the selected library track on deck. To prevent accidentally hitting, only works when the deck is empty.
 - **ctrl**: load the selected library track on deck. Works when the deck is not playing.
 - **shift**: eject deck. Works when the deck is not playing.
 
-Feedback:
+Feedback
 
 - **dim red**: deck loaded, playing
 - **dim amber**: deck loaded, not playing
@@ -139,11 +144,13 @@ Feedback:
 
 #### KEY
 
+Controls
+
 - **normal**: toggles keylock
 - **ctrl**: lowers key by semitone
 - **shift**: raises key by semitone
 
-Feedback:
+Feedback
 
 - **hi red**: keylock on
 - **blank**: keylock off
@@ -170,15 +177,15 @@ Feedback
 
 Controls for jumping backward (lower lane) and forward (upper lane).
 Supports two modes:
- - the normal mode is represented with bright color. Jumping works as you would expect.
- - the rebouncing mode is shown with dim color. It jumps on attack, then jumps back on release. Jumping legato works and uses the same stealing algorithm as key shifting.
+ - the **normal mode** is represented with bright color. Jumping works as you would expect.
+ - the **rebouncing mode** is shown with dim color. It jumps on attack, then jumps back on release. Jumping legato works and uses the same stealing algorithm as key shifting.
+ Modes are switched with the CH MODE control (pressing `ctrl` and `shift` at the same time)
 
 You can change modes by pressing **ctrl+shift+[any beatjump key]**.
 
-There are two sets of jumps, shown in `green` and `yellow` correspondingly.
-You can change to the first set by pressing **ctrl+[any beatjump key]**, to the second set by pressing **shift+[any beatjump key]**.
+There are two sets of jumps, switchable with the `ctrl` and `shift` keys, and shown in their corresponding colors. This means that pressing **ctrl+[any beatjump key]** will switch to the first set, while pressing **shift+[any beatjump key]** will switch to the second set.
 
-### BEATLOOPS
+#### BEATLOOPS
 
 Controls for setting beatloops.
 
@@ -191,6 +198,34 @@ Feedback
 - **bright red**: beatloop enabled
 - **dim red**: beatloop disabled
 
+#### LOOPJUMPS
+
+Almost the same as beatjumps, only instead of changing the current play position, they translate the position of the loop markers. As beatjumps, they support two modes and two sets. On how to use these, see [Beatjumps](#beatjumps)
+
+#### HALVE / DOUBLE
+
+They halve / double the current loop length, modifying the  position of the end marker.
+
+#### LOOPJUMP SMALL
+
+They translate the loop markers by a small amount backward/forward.
+
+Controls
+
+- **normal**: translates loop backward/forward
+
+#### LOOP
+
+Works the same way as the LOOP button on the GUI, ie. it toggles the current loop on or off.
+
+Controls
+
+- **normal**: toggles loop on/off
+
+Feedback
+
+- **bright green**: loop on
+- **dim green**: loop off
 
 ## Technical details
 
