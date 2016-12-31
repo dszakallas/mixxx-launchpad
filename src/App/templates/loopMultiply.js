@@ -1,8 +1,8 @@
 import { Button } from '../../Launchpad'
 import { Control } from '../../Mixxx'
-import { modes } from '../../Utility/modes'
+import modes from '../../Utility/modes'
 
-export const loopMultiply = (button) => (deck) => {
+export default (button) => (deck) => {
   const onMount = (k) => (dk, { bindings }) => {
     Button.send(bindings[k].button, Button.colors.lo_yellow)
   }

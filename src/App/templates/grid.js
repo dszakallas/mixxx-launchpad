@@ -1,8 +1,8 @@
 import { Button } from '../../Launchpad'
 import { Control } from '../../Mixxx'
-import { modes } from '../../Utility/modes'
+import modes from '../../Utility/modes'
 
-export const grid = (button) => (deck) => {
+export default (button) => (deck) => {
   const onGrid = (dir) => ({ value, context }, { bindings, state }) => {
     if (!value) {
       Button.send(bindings[dir].button, Button.colors.black)

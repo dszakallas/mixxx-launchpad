@@ -1,9 +1,9 @@
 import { Control } from '../../Mixxx'
 import { Button } from '../../Launchpad'
-import { retainAttackMode } from '../../Utility/retainAttackMode'
-import { modes } from '../../Utility/modes'
+import retainAttackMode from '../../Utility/retainAttackMode'
+import modes from '../../Utility/modes'
 
-export const nudge = (button) => (deck) => {
+export default (button) => (deck) => {
   const rateEpsilon = 1e-3
 
   const getDirection = (rate) => {

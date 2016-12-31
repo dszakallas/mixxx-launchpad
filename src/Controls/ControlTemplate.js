@@ -1,9 +1,9 @@
-import { Component } from '../Component'
-import { ButtonBinding as bbind } from './ButtonBinding'
-import { ControlBinding as cbind } from './ControlBinding'
+import Component from '../Component'
+import bbind from './ButtonBinding'
+import cbind from './ControlBinding'
 import { Button } from '../Launchpad'
 
-export const ControlTemplate = (id, template) => {
+export default (id, template) => {
   const { controlBindings, buttonBindings, controlListeners, buttonListeners } = initTemplate(id, template)
   return new Component({
     onMount () {

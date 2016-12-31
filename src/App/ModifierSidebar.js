@@ -1,8 +1,8 @@
-import { ButtonBinding as bbind } from '../Controls/ButtonBinding'
+import bbind from '../Controls/ButtonBinding'
 import { Button } from '../Launchpad'
-import { Component } from '../Component'
+import Component from '../Component'
 
-export function ModifierSidebar () {
+export default () => {
   const shift = bbind.create(Button.buttons.solo)
   const ctrl = bbind.create(Button.buttons.arm)
 

@@ -3,8 +3,8 @@ import 'string.prototype.startswith'
 
 import { MidiBus as LaunchpadBus } from './Launchpad'
 import { Timer, ControlBus } from './Mixxx'
-import { Screen } from './App/Screen'
-import { Component } from './Component'
+import Screen from './App/Screen'
+import Component from './Component'
 
 const Mapping = (component) => {
   const modul = { }

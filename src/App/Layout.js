@@ -1,9 +1,9 @@
-import { Component } from '../Component'
+import Component from '../Component'
 import { Button } from '../Launchpad'
-import { Deck } from './Deck'
-import { ButtonBinding as bbind } from '../Controls/ButtonBinding'
+import Deck from './Deck'
+import bbind from '../Controls/ButtonBinding'
 
-export const Layout = (id) => {
+export default (id) => {
   let selected = 0
   const listeners = []
   const buttons = [

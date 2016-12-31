@@ -1,6 +1,6 @@
 import { EventEmitter } from 'eventemitter3'
 
-export class Component extends EventEmitter {
+export default class Component extends EventEmitter {
   constructor ({ onMount, onUnmount } = { }) {
     super()
     this._mountHandler = onMount || this.onMount

@@ -1,9 +1,9 @@
-import { modes } from '../../Utility/modes'
-import { retainAttackMode } from '../../Utility/retainAttackMode'
+import modes from '../../Utility/modes'
+import retainAttackMode from '../../Utility/retainAttackMode'
 import { Control } from '../../Mixxx'
 import { Button } from '../../Launchpad'
 
-export const keyshift = (shifts, d) => (button) => (deck) => {
+export default (shifts, d) => (button) => (deck) => {
   const bindings = { }
 
   const temporaryChange = (i, value, bindings, state) => {
@@ -72,7 +72,7 @@ export const keyshift = (shifts, d) => (button) => (deck) => {
       set: 0,
       color: [
         'green',
-        'amber'
+        'red'
       ]
     }
   }

@@ -1,9 +1,9 @@
 import { Control } from '../../Mixxx'
 import { Button } from '../../Launchpad'
-import { retainAttackMode } from '../../Utility/retainAttackMode'
-import { modes } from '../../Utility/modes'
+import retainAttackMode from '../../Utility/retainAttackMode'
+import modes from '../../Utility/modes'
 
-export const cue = (button) => (deck) => {
+export default (button) => (deck) => {
   return {
     bindings: {
       cue: {

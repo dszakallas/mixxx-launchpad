@@ -1,7 +1,7 @@
-import { Component } from '../Component'
+import Component from '../Component'
 import { Control } from '../Mixxx'
 
-export class ControlBinding extends Component {
+export default class ControlBinding extends Component {
   static create (id, control) {
     return new ControlBinding(id, control)
   }

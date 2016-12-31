@@ -1,11 +1,11 @@
 import { Button } from '../../Launchpad'
 import { Control } from '../../Mixxx'
-import { modes } from '../../Utility/modes'
-import { retainAttackMode } from '../../Utility/retainAttackMode'
+import modes from '../../Utility/modes'
+import retainAttackMode from '../../Utility/retainAttackMode'
 
 import flatMap from 'lodash.flatmap'
 
-export const beatjump = (jumps, dir) => (button) => (deck) => {
+export default (jumps, dir) => (button) => (deck) => {
   const bindings = { }
   const onMidi = (k, j, d) => retainAttackMode(({ value, context }, { bindings, state }) => {
     modes(context,
@@ -90,7 +90,7 @@ export const beatjump = (jumps, dir) => (button) => (deck) => {
       set: 0,
       color: [
         'green',
-        'amber'
+        'red'
       ]
     }
   }

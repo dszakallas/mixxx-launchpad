@@ -1,7 +1,7 @@
 import { Button } from '../Launchpad'
 import { Control } from '../Mixxx'
-import { ButtonBinding as bbind } from '../Controls/ButtonBinding'
-import { Component } from '../Component'
+import bbind from '../Controls/ButtonBinding'
+import Component from '../Component'
 
 const prevPlaylistBtn = Button.buttons.vol
 const nextPlaylistBtn = Button.buttons.pan
@@ -69,7 +69,7 @@ const onUnmount = ({ button }) => {
   Button.send(button, Button.colors.black)
 }
 
-export function PlaylistSidebar (timer) {
+export default (timer) => {
   const btns = [
     bbind.create(prevPlaylistBtn),
     bbind.create(nextPlaylistBtn),

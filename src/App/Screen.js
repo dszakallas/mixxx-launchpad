@@ -1,11 +1,11 @@
-import { PlaylistSidebar } from './PlaylistSidebar'
-import { ModifierSidebar } from './ModifierSidebar'
-import { Layout } from './Layout'
-import { Component } from '../Component'
+import PlaylistSidebar from './PlaylistSidebar'
+import ModifierSidebar from './ModifierSidebar'
+import Layout from './Layout'
+import Component from '../Component'
 
 import assign from 'lodash.assign'
 
-export const ModifierPlugin = (modifier) => {
+const ModifierPlugin = (modifier) => {
   let ctrl = false
   let shift = false
   modifier.on('ctrl', (value) => { ctrl = !!value })
@@ -17,7 +17,7 @@ export const ModifierPlugin = (modifier) => {
   }
 }
 
-export const Screen = (id) => (timer) => {
+export default (id) => (timer) => {
   const modifierSidebar = ModifierSidebar()
   const modifierPlugin = ModifierPlugin(modifierSidebar)
   const playListSidebar = PlaylistSidebar(timer)

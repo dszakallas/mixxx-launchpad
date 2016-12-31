@@ -1,8 +1,8 @@
 import { Button } from '../../Launchpad'
 import { Control } from '../../Mixxx'
-import { modes } from '../../Utility/modes'
+import modes from '../../Utility/modes'
 
-export const play = (button) => (deck) => {
+export default (button) => (deck) => {
   return {
     bindings: {
       playIndicator: {

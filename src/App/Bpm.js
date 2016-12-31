@@ -1,6 +1,6 @@
 import { EventEmitter } from 'eventemitter3'
 
-export class Bpm extends EventEmitter {
+export default class Bpm extends EventEmitter {
   constructor (max) {
     super()
     this.tapTime = 0

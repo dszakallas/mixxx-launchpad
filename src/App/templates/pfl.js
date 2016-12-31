@@ -1,7 +1,7 @@
-import { modes } from '../../Utility/modes'
+import modes from '../../Utility/modes'
 import { Button } from '../../Launchpad'
 
-export const pfl = (button) => (deck) => {
+export default (button) => (deck) => {
   return {
     bindings: {
       pfl: {

@@ -1,6 +1,6 @@
-import { Component } from '../Component'
+import Component from '../Component'
 
-export class ButtonBinding extends Component {
+export default class ButtonBinding extends Component {
   static create (button) {
     return new ButtonBinding(button)
   }

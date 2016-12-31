@@ -1,8 +1,8 @@
 import { Control } from '../../Mixxx'
 import { Button } from '../../Launchpad'
-import { modes } from '../../Utility/modes'
+import modes from '../../Utility/modes'
 
-export const load = (button) => (deck) => {
+export default (button) => (deck) => {
   const onStateChanged = (loaded, playing, bindings) => {
     if (loaded && playing) {
       Button.send(bindings.button.button, Button.colors.lo_red)

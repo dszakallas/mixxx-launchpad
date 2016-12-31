@@ -1,7 +1,7 @@
 import { Button } from '../../Launchpad'
-import { modes } from '../../Utility/modes'
+import modes from '../../Utility/modes'
 
-export const quantize = (button) => (deck) => {
+export default (button) => (deck) => {
   return {
     bindings: {
       quantize: {

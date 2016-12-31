@@ -1,8 +1,8 @@
 import { Button } from '../../Launchpad'
 import { Control } from '../../Mixxx'
-import { modes } from '../../Utility/modes'
+import modes from '../../Utility/modes'
 
-export const loopIo = (button) => (deck) => {
+export default (button) => (deck) => {
   const onMidi = (dir) => ({ value, context }, { bindings }) => {
     modes(context, () => {
       if (value) {

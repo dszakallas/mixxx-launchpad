@@ -1,8 +1,8 @@
 import { Button } from '../../Launchpad'
 import { Control } from '../../Mixxx'
-import { modes } from '../../Utility/modes'
+import modes from '../../Utility/modes'
 
-export const beatloop = (loops, d) => (button) => (deck) => {
+export default (loops, d) => (button) => (deck) => {
   const bindings = { }
   const onAttack = (l) => ({ value, context }, { bindings, state }) => {
     modes(context,

@@ -1,8 +1,8 @@
 import { Button } from '../../Launchpad'
-import { modes } from '../../Utility/modes'
-import { retainAttackMode } from '../../Utility/retainAttackMode'
+import modes from '../../Utility/modes'
+import retainAttackMode from '../../Utility/retainAttackMode'
 
-export const slip = (button) => (deck) => {
+export default (button) => (deck) => {
   const onMidi = retainAttackMode(({ context, value }, { bindings, state }) => {
     modes(context,
       () => {

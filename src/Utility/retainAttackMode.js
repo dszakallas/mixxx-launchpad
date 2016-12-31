@@ -1,4 +1,4 @@
-export const retainAttackMode = (cb) => {
+export default (cb) => {
   let shift = false
   let ctrl = false
 

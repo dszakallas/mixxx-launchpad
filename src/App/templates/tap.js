@@ -1,9 +1,9 @@
 import { Button } from '../../Launchpad'
 import { Control } from '../../Mixxx'
-import { modes } from '../../Utility/modes'
-import { Bpm } from '../../App/Bpm'
+import modes from '../../Utility/modes'
+import Bpm from '../../App/Bpm'
 
-export const tap = (button) => (deck) => {
+export default (button) => (deck) => {
   const tempoBpm = new Bpm()
   tempoBpm.on('tap', (avg) => {
     Control.setValue(deck.bpm, avg)

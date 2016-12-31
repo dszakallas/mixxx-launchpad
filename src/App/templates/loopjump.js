@@ -1,7 +1,7 @@
 import { Button } from '../../Launchpad'
 import { Control } from '../../Mixxx'
-import { modes } from '../../Utility/modes'
-import { retainAttackMode } from '../../Utility/retainAttackMode'
+import modes from '../../Utility/modes'
+import retainAttackMode from '../../Utility/retainAttackMode'
 
 import flatMap from 'lodash.flatmap'
 
@@ -89,8 +89,8 @@ export const loopjump = (jumps) => (button) => (deck) => {
       diff: 0,
       set: 0,
       color: [
-        'yellow',
-        'orange'
+        'green',
+        'red'
       ]
     }
   }
