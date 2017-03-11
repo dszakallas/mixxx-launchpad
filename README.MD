@@ -352,6 +352,27 @@ name `NovationLaunchpad`. Due to the lack of module loading system in the
 environment, the bundled code is placed on the global object with the above
 name. This works, because the same name is specified in the MIDI mapping XML file, so Mixxx will look for this name, and will call its `init` method upon loading.
 
+### Source files
+The source files consist of ES2015 modules and are organized according to
+functionality.
+```
+.
+├── App
+│   ├── controls
+│   └── presets
+├── Controls
+├── Launchpad
+├── Mixxx
+└── Utility
+```
+
+`Mixxx` contains engine related glue code, and control definitions.
+`Launchpad` contains Launchpad related glue code and MIDI
+definitions.
+`Controls` hosts some abstractions for controls specialized enough not to go into `Mixxx` or `Launchpad`.
+`App` contains application specific code like presets,
+concrete controls, the layout manager, etc.
+
 ### MIDI mapping
 
 The controller mapping is generated from a [template][mapping-template] with
