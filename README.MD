@@ -58,10 +58,10 @@ in ***bold italic***.
 
 ### Using the deck selectors
 
-The deck selector is a unique feature. It is very versatile, as it
+The deck selector is an essential feature of this Launchpad mapping. With it you
 can map multiple presets in multiple layouts on the main grid. The main grid is
 the inner 8x8 grid on the Launchpad. You have to memorize the layout patterns,
-but don't worry, there is only 4 of them.
+but don't worry, there are only 4 of them.
 
 To select a single channel, simply press the button corresponding to the
 channel. This will remove all existing selections, and find the largest default
