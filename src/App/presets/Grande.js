@@ -1,28 +1,28 @@
-import { Control } from '../Mixxx'
-import ControlTemplate from '../Controls/ControlTemplate'
-import Component from '../Component'
+import { Control } from '../../Mixxx'
+import Preset from '../../Controls/Preset'
+import Component from '../../Component'
 
-import play from './templates/play'
-import sync from './templates/sync'
-import nudge from './templates/nudge'
-import cue from './templates/cue'
-import tap from './templates/tap'
-import grid from './templates/grid'
-import pfl from './templates/pfl'
-import quantize from './templates/quantize'
-import keyshift from './templates/keyshift'
-import hotcue from './templates/hotcue'
-import load from './templates/load'
-import key from './templates/key'
-import beatjump from './templates/beatjump'
-import beatloop from './templates/beatloop'
-import { loopjump, loopjumpSmall } from './templates/loopjump'
-import loopMultiply from './templates/loopMultiply'
-import reloop from './templates/reloop'
-import loopIo from './templates/loopIo'
-import slip from './templates/slip'
+import play from '../controls/play'
+import sync from '../controls/sync'
+import nudge from '../controls/nudge'
+import cue from '../controls/cue'
+import tap from '../controls/tap'
+import grid from '../controls/grid'
+import pfl from '../controls/pfl'
+import quantize from '../controls/quantize'
+import keyshift from '../controls/keyshift'
+import hotcue from '../controls/hotcue'
+import load from '../controls/load'
+import key from '../controls/key'
+import beatjump from '../controls/beatjump'
+import beatloop from '../controls/beatloop'
+import { loopjump, loopjumpSmall } from '../controls/loopjump'
+import loopMultiply from '../controls/loopMultiply'
+import reloop from '../controls/reloop'
+import loopIo from '../controls/loopIo'
+import slip from '../controls/slip'
 
-export default (id, i) => {
+export default (id, i, offset) => {
   const deck = Control.controls.channels[i]
 
   const template = {
@@ -49,15 +49,17 @@ export default (id, i) => {
   }
   return new Component({
     onMount () {
-      const controls = ControlTemplate(id, template)
+      const controls = Preset(id, template, offset)
       const { controlBus, launchpadBus } = this.target
       controls.mount({ controlBus, launchpadBus })
       this.state = { controls }
+      console.log('mounted grande')
       return this.state
     },
     onUnmount () {
       const { controls } = this.state
       controls.unmount()
+      console.log('unmounted grande')
       this.state = null
     }
   })

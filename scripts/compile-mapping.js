@@ -22,7 +22,7 @@ readFile(process.argv[4], function (err, template) {
     id: pkg.mixxx.id,
     moduleName: pkg.mixxx.moduleName,
     callbackPrefix: pkg.mixxx.callbackPrefix,
-    buttons: Object.keys(buttons).map((key) => buttons[key])
+    buttons: Object.keys(buttons).map(function (key) { return buttons[key] })
   })
   writeFile(path.resolve(process.argv[5], pkg.mixxx.id + '.midi.xml'), rendered, function (err) {
     if (err) {

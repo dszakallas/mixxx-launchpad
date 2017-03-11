@@ -1,22 +1,135 @@
 # Mixxx mapping for Novation Launchpad
 
-## Quick start
+Flexible and (soon) customizable controller mapping for Launchpad.
 
-- Download the [latest release](https://github.com/szdavid92/mixxx-launchpad/releases/latest).
+## Features
 
-- Follow the [instructions in the Mixxx User Manual](https://www.mixxx.org/manual/latest/chapters/controlling_mixxx.html#installing-a-preset-from-the-forum) to install the preset.
+ - map up to 4 channels (decks or samplers) on a single Launchpad
+ - change between layouts with ease
+ - 5 different deck presets in 3 sizes created for you and ready to use
+ - rich arsenal of controls
+   - play, cue, hotcues
+   - loop controls, beatloop, beatjump
+   - sync/master, tap, pitch shift
+   - custom controls like bouncy jumps
+   - and much more...
+ - "launch" type controls are favored - no clumsy mixers and faders
+ - library navigation
+ - LED lights mimic Mixxx UI
 
+## Download
 
+ - Download the [latest release from here](https://github.com/szdavid92/mixxx-launchpad/releases/latest).
+
+ - Follow the [instructions in the Mixxx User Manual](https://www.mixxx.org/manual/latest/chapters/controlling_mixxx.html#installing-a-preset-from-the-forum) to install the preset.
 
 ## User guide
 
-### Deck layouts
+### Global controls
 
-#### GRAND
+Global controls consist of **Deck selectors**, **Library controls** and
+**Modifier keys**.
 
-![grand](docs/lp-mki-grand.png)
+**Deck selectors** are located on the top bar. They are used to select decks and
+samplers to be laid out on the main grid. *D1-D4* are mapped to corresponding
+*decks*, *S1-S4* to *samplers*.
+
+**Library controls** are located on the sidebar to the right. They occupy the
+upper 5 buttons. Their bindings (from top to bottom):
+
+ - up in the library sidebar
+ - down in the library sidebar
+ - expand/close selected library sidebar entry
+ - up a track
+ - down a track
+
+> Note: The up/down controls are autoscrolled. If you hold them down for longer,
+the scrolling activates. This comes in handy when navigating lengthy playlists.
+
+![layout](docs/lp-mki-layout.png)
+
+**Modifier keys** are located on the lower 2 buttons of the sidebar, and used
+for the same purpose as you would expect on a computer keyboard.
+
+The figures show  Shift in **bold**,  Ctrl in *italic*, Ctrl+Shift
+in ***bold italic***.
+
+> Note: For some controls the modifier keys will act like toggles, but the modifier keys themselves are never toggled globally.
+
+### Using the deck selectors
+
+The deck selector is a unique feature. It is very versatile, as it
+can map multiple presets in multiple layouts on the main grid. The main grid is
+the inner 8x8 grid on the Launchpad. You have to memorize the layout patterns,
+but don't worry, there is only 4 of them.
+
+To select a single channel, simply press the button corresponding to the
+channel. This will remove all existing selections, and find the largest default
+preset that can be fit on the main grid.
+
+Presets come in 3 different sizes: *short* (4x4), *tall* (4x8) and *grande*
+(8x8)<sup>1</sup>. Multiple presets can have the same size, but only one preset
+can be default per size.
+
+To select multiple channels to be laid out, press the corresponding buttons
+in a *chord*. This way you can select to 4 channels.
+
+So what is a chord? In a chord you press buttons so you only release the first
+after you pressed the last one. The order of presses matter, however the order
+of releases does not. Now, instead of writing down how the exact layout
+algorithm works, I just show you the four different layouts that is generated
+for 1 (single channel), 2, 3 and 4 note chords. Once more the algorithm will
+fill out the spaces with the largest default preset.
+
+| ![1] | ![2] |
+|------|------|
+| ![3] | ![4] |
+
+[1]: docs/lp-1.png
+[2]: docs/lp-2.png
+[3]: docs/lp-3.png
+[4]: docs/lp-4.png
+
+This means that e.g. if you press down D3-D2-S1 in this chord sequence,
+- D3 will be mapped to block 1 with the default tall preset,
+- D2 will be mapped to block 2 with the default short preset and
+- S1 will be mapped to block 3 with the default short preset.
+
+Now you might ask: "But what if I don't want to use the largest default preset?"
+
+After a channel has been laid out you can cycle between all the presets that can
+fit into its space. This won't reflow the layout, even if you end up using a
+smaller preset. To cycle between presets
+  - press Ctrl + Channel Selector to cycle forward,
+  - press Shift + Channel Selector to cycle backward or
+  - press Ctrl + Shift + Channel Selector to revert to default.
+
+The cycling order is the following:
+  - primary: large to small
+  - secondary: default then all others in fixed but not specified order.
+
+See, not that complicated after all. Let's see the actual presets that are
+featured out of the box:
+
+|        | default                                                   |                                                                    |
+|--------|-----------------------------------------------------------|--------------------------------------------------------------------|
+| grande | ![grande]  **GRANDE** is currently the only grande layout.|                                                                    |
+| tall   | ![tall]    **TALL** is the default tall layout.           |![juggler] **JUGGLER** is a tall layout optimized for beat jumping. |
+| short  | ![short]  **SHORT** is the default short layout.          |![sampler]  **SAMPLER** is an all-cue short layout for samplers.    |
+
+
+[grande]: docs/lp-mki-grande.png
+[tall]: docs/lp-mki-tall.png
+[juggler]: docs/lp-mki-juggler.png
+[short]: docs/lp-mki-short.png
+[sampler]: docs/lp-mki-sampler.png
+
+<sup>1</sup> No identification with actual persons (living or deceased), places, buildings, and products is intended or should be inferred.
 
 ### Deck controls
+
+Now that you are familiar with the presets, let's check the controls the make
+up these!
 
 #### PLAY
 

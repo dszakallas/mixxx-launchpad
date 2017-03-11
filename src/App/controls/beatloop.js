@@ -4,7 +4,7 @@ import modes from '../../Utility/modes'
 
 export default (loops, d) => (button) => (deck) => {
   const bindings = { }
-  const onAttack = (l) => ({ value, context }, { bindings, state }) => {
+  const onAttack = (l) => ({ context }) => {
     modes(context,
       () => Control.setValue(deck.beatloops[l].toggle, 1)
     )

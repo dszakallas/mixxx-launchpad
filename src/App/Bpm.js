@@ -9,7 +9,6 @@ export default class Bpm extends EventEmitter {
   }
   reset () {
     this.taps = []
-    this.tapDelta = 0
   }
   tap () {
     const now = Date.now()

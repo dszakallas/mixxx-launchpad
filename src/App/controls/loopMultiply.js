@@ -1,12 +1,11 @@
 import { Button } from '../../Launchpad'
 import { Control } from '../../Mixxx'
-import modes from '../../Utility/modes'
 
 export default (button) => (deck) => {
   const onMount = (k) => (dk, { bindings }) => {
     Button.send(bindings[k].button, Button.colors.lo_yellow)
   }
-  const onAttack = (k) => (dk, { bindings }) => {
+  const onAttack = (k) => () => {
     Control.setValue(deck[`loop_${k}`], 1)
   }
   return {

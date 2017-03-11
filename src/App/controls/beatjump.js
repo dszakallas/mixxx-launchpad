@@ -5,7 +5,7 @@ import retainAttackMode from '../../Utility/retainAttackMode'
 
 import flatMap from 'lodash.flatmap'
 
-export default (jumps, dir) => (button) => (deck) => {
+export default (jumps, vertical) => (button) => (deck) => {
   const bindings = { }
   const onMidi = (k, j, d) => retainAttackMode(({ value, context }, { bindings, state }) => {
     modes(context,
@@ -76,7 +76,7 @@ export default (jumps, dir) => (button) => (deck) => {
   spec.forEach(([jump, dir], i) => {
     bindings[i] = {
       type: 'button',
-      target: [button[0] + ~~(i / 2), button[1] + i % 2],
+      target: vertical ? [button[0] + i % 2, button[1] + ~~(i / 2)] : [button[0] + ~~(i / 2), button[1] + i % 2],
       midi: onMidi(i, jump, dir),
       mount: onMount(i)
     }

@@ -147,7 +147,7 @@ const channels = range(8).map((i) => {
   return assign(channel, {
     'beatjumps': jumps.reduce((acc, x) => assign(acc, { [x]: channel.beatjumps(x) })),
     'beatloops': loops.reduce((acc, x) => assign(acc, { [x]: channel.beatloops(x) })),
-    'hotcues': range(8).map((x) => channel.hotcues(x + 1))
+    'hotcues': range(16).map((x) => channel.hotcues(x + 1))
   })
 })
 

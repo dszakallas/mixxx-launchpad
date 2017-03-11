@@ -11,6 +11,9 @@ install: install_$(ARCH)
 install_Darwin: $(BUILD_DIR)/Launchpad.midi.xml $(BUILD_DIR)/Launchpad.js
 	cp $^ $(HOME)/Library/Application\ Support/Mixxx/controllers
 
+install_Linux: $(BUILD_DIR)/Launchpad.midi.xml $(BUILD_DIR)/Launchpad.js
+	cp $^ $(HOME)/Library/Application\ Support/Mixxx/controllers
+
 $(BUILD_DIR)/Launchpad.midi.xml: ./src/Launchpad/buttons.js ./package.json ./src/Launchpad/Launchpad.midi.xml.ejs
 	mkdir -p $(BUILD_DIR)
 	./scripts/compile-mapping.js $^ $(BUILD_DIR)

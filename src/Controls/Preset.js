@@ -3,8 +3,8 @@ import bbind from './ButtonBinding'
 import cbind from './ControlBinding'
 import { Button } from '../Launchpad'
 
-export default (id, template) => {
-  const { controlBindings, buttonBindings, controlListeners, buttonListeners } = initTemplate(id, template)
+export default (id, template, offset) => {
+  const { controlBindings, buttonBindings, controlListeners, buttonListeners } = initTemplate(id, template, offset)
   return new Component({
     onMount () {
       const { launchpadBus, controlBus } = this.target
@@ -22,7 +22,7 @@ export default (id, template) => {
   })
 }
 
-const initTemplate = (id, template) => {
+const initTemplate = (id, template, offset) => {
   const controlBindings = {}
   const controlListeners = {}
   const buttonBindings = {}
@@ -52,7 +52,8 @@ const initTemplate = (id, template) => {
               }
             })
           } else if (binding.type === 'button') {
-            const name = nameOf(binding.target[0], binding.target[1])
+            const position = tr(binding.target, offset)
+            const name = nameOf(position[0], position[1])
             if (!buttonBindings[name]) {
               buttonBindings[name] = bbind.create(Button.buttons[name])
             }
@@ -65,6 +66,11 @@ const initTemplate = (id, template) => {
                 })
               }
             })
+            if (typeof binding['unmount'] !== 'function') {
+              appendListener('unmount', buttonListeners[name], function (data) {
+                Button.send(instance.bindings[bk].button, Button.colors.black)
+              })
+            }
           }
         }
       })
@@ -72,6 +78,8 @@ const initTemplate = (id, template) => {
   })
   return { controlBindings, controlListeners, buttonBindings, buttonListeners }
 }
+
+const tr = (a, b) => [a[0] + b[0], a[1] + b[1]]
 
 const nameOf = (x, y) => `${7 - y},${x}`
 

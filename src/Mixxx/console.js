@@ -1,4 +1,5 @@
 import { engine } from './globals'
+import startsWith from 'lodash.startswith'
 
 const stringify = require('json-stringify-safe')
 const moduleName = require('../../package.json').mixxx.moduleName
@@ -7,9 +8,9 @@ function assemble () {
   let str = `[${moduleName}]`
   Array.prototype.slice.call(arguments).forEach((arg) => {
     let appendend
-    if (typeof arg.toString === 'function') {
+    if (arg != null && typeof arg.toString === 'function') {
       appendend = arg.toString()
-      if (arg.toString().startsWith('[object')) {
+      if (startsWith(arg.toString(), '[object')) {
         appendend = stringify(arg, null, 2)
       }
     } else {
