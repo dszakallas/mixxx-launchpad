@@ -1,27 +1,45 @@
-# Mixxx mapping for Novation Launchpad
+# Mixxx mapping for Novation Launchpad 🦄
 
-Flexible and (soon) customizable controller mapping for Launchpad.
+**Flexible and (soon) customizable controller mapping for Launchpad. Make DJing
+with Mixxx fun on Launchpad!**
 
-## Features
+There's already a Launchpad mapping shipping with Mixxx however it
+has several quirks and limitations:
 
- - map up to 4 channels (decks or samplers) on a single Launchpad
- - change between layouts with ease
- - 5 different deck presets in 3 sizes created for you and ready to use
- - rich arsenal of controls
+- it has a single hardcoded layout, supporting only the first 2 decks.
+  You can't e.g. change to decks 3 and 4, or sampler decks. This painfully
+  limits usability especially if you have multiple Launchpads (as I do!) and
+  want to control more decks.
+- It would be better if the deck layout was customizable. This is a problem
+  that crops up as you add support for sampler decks. E.g. when you play samplers, a small 4x4 interface with only hotcues is ideal.
+- Some of the controls are broken on recent Mixxx.
+- It has a mixer interface, but why? Launchpad is really not fit for mixing.
+- 8 of the buttons have no mapping, what a waste of resources!
+
+So I decided to make one that is more stable, flexible and customizable!
+
+## Features ✨
+
+ - map from 1 up to 4 channels (decks or samplers) on a single Launchpad at the same time ✨
+ - utilize presetes with multiple sizes and features, change between them with ease 🦄
+ - x5 different deck presets in 3 sizes created for you and ready to use ✨, make it easy for the user to create new presets for their own needs (coming soon!)
+ - rich arsenal of controls 🦄
    - play, cue, hotcues
    - loop controls, beatloop, beatjump
    - sync/master, tap, pitch shift
    - custom controls like bouncy jumps
    - and much more...
- - "launch" type controls are favored - no clumsy mixers and faders
- - library navigation
- - LED lights mimic Mixxx UI
+ - trigger-like controls are favored - no clumsy mixers and faders ✨
+ - library navigation 🦄
+ - LED lights mimic Mixxx UI ✨
 
-## Download
+## How to get started
 
- - Download the [latest release from here](https://github.com/szdavid92/mixxx-launchpad/releases/latest).
+ 💾 Download the [latest release from here](https://github.com/szdavid92/mixxx-launchpad/releases/latest).
 
- - Follow the [instructions in the Mixxx User Manual](https://www.mixxx.org/manual/latest/chapters/controlling_mixxx.html#installing-a-preset-from-the-forum) to install the preset.
+ 💾 Follow the [instructions in the Mixxx User Manual](https://www.mixxx.org/manual/latest/chapters/controlling_mixxx.html#installing-a-preset-from-the-forum) to install the preset.
+
+ Alternatively, see [Build](#build) the build it from source
 
 ## User guide
 
@@ -35,7 +53,7 @@ samplers to be laid out on the main grid. *D1-D4* are mapped to corresponding
 *decks*, *S1-S4* to *samplers*.
 
 **Library controls** are located on the sidebar to the right. They occupy the
-upper 5 buttons. Their bindings (from top to bottom):
+upper 5 buttons. Their functions from top to bottom:
 
  - up in the library sidebar
  - down in the library sidebar
@@ -380,29 +398,41 @@ The controller mapping is generated from a [template][mapping-template] with
 
 ### Build
 
-To compile the sources and install the artifacts into Mixxx simply run
+To build you need to have make, a recent Node (>=4) and npm.
+
+First clone the repo and install the package dependencies with npm:
 
 ```
-make install
+git clone https://github.com/szdavid92/mixxx-launchpad
+cd mixxx-launchpad
+npm install
 ```
 
-If you only want to compile the sources, run
+To compile the sources run
 
 ```
 make compile
 ```
+
+Afterward the `dist` folder will contain the files that need to be
+copied the Mixxx's controller folder.
+
+```
+make install
+```
+does this for you on macOS.
 
 ### Known Issues
 
 #### Build only works on Mac OS X
 I have a Mac OS X system, and I didn't port it to Windows or Linux yet.
 
-#### Source and build file paths cannot contain spaces
+#### Source and build file paths can't contain spaces
 The build files were written with this limitation.
 
 #### Lingering ES3 future reserved keywords
 
-Due to parser discrepancies, ES3 keywords and future reserved words that have been removed from ES5 cannot be used as *(1) identifiers*, *(2) property literals* and *(3) member expression literals*. In ES5 you can use keywords and future reserved words in the last two cases.
+Due to parser discrepancies, ES3 keywords and future reserved words that have been removed from ES5 can't be used as *(1) identifiers*, *(2) property literals* and *(3) member expression literals*. In ES5 you can use keywords and future reserved words in the last two cases.
 We have [transforms](.babelrc) for these two cases, however you still **can't use ES3 keywords and future reserved words as identifiers**, even if some of the latter was removed from ES5, for example `public`, `private` or `final`.
 
 
