@@ -1,21 +1,28 @@
 #!/usr/bin/env node
 
+var prify = require('es6-promisify')
 var path = require('path')
 var browserify = require('browserify')
 var createWriteStream = require('fs').createWriteStream
+var mkdirp = prify(require('mkdirp'))
 
-if (process.argv.length !== 5) {
-  throw Error('Usage: package index outDir')
+if (process.argv.length !== 4) {
+  throw Error('Usage: target outFile')
 }
 
-var pkg = require(path.resolve(process.argv[2]))
+var pkg = require(path.resolve('package.json'))
+var tgt = process.argv[2]
+var entry = path.resolve('packages', tgt, 'app.js')
 
-var moduleName = pkg.mixxx.moduleName
-var id = pkg.mixxx.id
+var moduleName = pkg.buildTargets[tgt].moduleName
 
-var output = createWriteStream(path.resolve(process.argv[4], id + '.js'))
+mkdirp(path.dirname(path.resolve(process.argv[3])))
+  .then(function () {
+    var output = createWriteStream(path.resolve(process.argv[3]))
 
-browserify(path.resolve(process.argv[3]), {
-  transform: 'babelify',
-  standalone: moduleName
-}).bundle().pipe(output)
+    browserify(entry, {
+      transform: 'babelify',
+      standalone: moduleName,
+      paths: [ path.resolve('packages', tgt, 'node_modules') ]
+    }).bundle().pipe(output)
+  })

@@ -1,32 +1,40 @@
 #!/usr/bin/env node
 
+var prify = require('es6-promisify')
 var ejs = require('ejs')
 var path = require('path')
-var readFile = require('fs').readFile
-var writeFile = require('fs').writeFile
+var readFile = prify(require('fs').readFile)
+var writeFile = prify(require('fs').writeFile)
+var mkdirp = prify(require('mkdirp'))
 
-if (process.argv.length !== 6) {
-  throw Error('Usage: buttons package template outDir')
+if (process.argv.length !== 4) {
+  throw Error('Usage: target outFile')
 }
 
-var buttons = require(path.resolve(process.argv[2])).buttons
-var pkg = require(path.resolve(process.argv[3]))
+var pkg = require(path.resolve('package.json'))
+var tgt = process.argv[2]
+var buttons = require(path.resolve('packages', tgt, 'buttons'))
+var templateFile = path.join('packages', tgt, 'template.xml.ejs')
 
-readFile(process.argv[4], function (err, template) {
-  if (err) throw err
-  var rendered = ejs.render(template.toString(), {
-    name: pkg.name,
-    author: pkg.author,
-    description: pkg.description,
-    homepage: pkg.homepage,
-    id: pkg.mixxx.id,
-    moduleName: pkg.mixxx.moduleName,
-    callbackPrefix: pkg.mixxx.callbackPrefix,
-    buttons: Object.keys(buttons).map(function (key) { return buttons[key] })
+readFile(templateFile)
+  .then(function (template) {
+    var rendered = ejs.render(template.toString(), {
+      author: pkg.author,
+      description: pkg.description,
+      homepage: pkg.homepage,
+      device: pkg.buildTargets[tgt].device,
+      manufacturer: pkg.buildTargets[tgt].manufacturer,
+      moduleName: pkg.buildTargets[tgt].moduleName,
+      buttons: Object.keys(buttons).map(function (key) { return buttons[key] })
+    })
+    return mkdirp(path.dirname(path.resolve(process.argv[3])))
+      .then(function () {
+        return rendered
+      })
   })
-  writeFile(path.resolve(process.argv[5], pkg.mixxx.id + '.midi.xml'), rendered, function (err) {
-    if (err) {
-      throw err
-    }
+  .then(function (rendered) {
+    return writeFile(path.resolve(process.argv[3]), rendered)
   })
-})
+  .catch(function (err) {
+    throw err
+  })

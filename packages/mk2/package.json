@@ -1,0 +1,11 @@
+{
+  "name": "@mixxx-launchpad/mk2",
+  "private": true,
+  "version": "1.0.0",
+  "author": "Midiparse",
+  "license": "MIT",
+  "dependencies": {
+    "@mixxx-launchpad/app": "1.0.0",
+    "@mixxx-launchpad/mk-specs": "../mk-specs@2.0.0"
+  }
+}

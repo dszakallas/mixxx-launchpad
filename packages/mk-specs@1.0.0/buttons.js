@@ -1,4 +1,5 @@
-module.exports.buttons = {
+'use strict'
+module.exports = {
   /* eslint-disable key-spacing, no-multi-spaces */
   'up':      [ '0xB0', '0x68', 'up' ],
   'down':    [ '0xB0', '0x69', 'down' ],

@@ -21,7 +21,7 @@ So I decided to make one that is more stable, flexible and customizable!
 ## Features ✨
 
  - map from 1 up to 4 channels (decks or samplers) on a single Launchpad at the same time ✨
- - utilize presetes with multiple sizes and features, change between them with ease 🦄
+ - utilize presets with multiple sizes and features, change between them with ease 🦄
  - x5 different deck presets in 3 sizes created for you and ready to use ✨, make it easy for the user to create new presets for their own needs (coming soon!)
  - rich arsenal of controls 🦄
    - play, cue, hotcues
