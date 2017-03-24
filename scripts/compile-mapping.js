@@ -11,8 +11,9 @@ if (process.argv.length !== 4) {
   throw Error('Usage: target outFile')
 }
 
-var pkg = require(path.resolve('package.json'))
 var tgt = process.argv[2]
+var pkg = require(path.resolve('package.json'))
+var tgtPkg = require(path.resolve('packages', tgt, 'package.json'))
 var buttons = require(path.resolve('packages', tgt, 'buttons'))
 var templateFile = path.join('packages', tgt, 'template.xml.ejs')
 
@@ -22,9 +23,9 @@ readFile(templateFile)
       author: pkg.author,
       description: pkg.description,
       homepage: pkg.homepage,
-      device: pkg.buildTargets[tgt].device,
-      manufacturer: pkg.buildTargets[tgt].manufacturer,
-      moduleName: pkg.buildTargets[tgt].moduleName,
+      device: tgtPkg.controller.device,
+      manufacturer: tgtPkg.controller.manufacturer,
+      global: tgtPkg.controller.global,
       buttons: Object.keys(buttons).map(function (key) { return buttons[key] })
     })
     return mkdirp(path.dirname(path.resolve(process.argv[3])))

@@ -16,13 +16,11 @@ export default (id, i, offset) => {
       const { controlBus, launchpadBus } = this.target
       controls.mount({ controlBus, launchpadBus })
       this.state = { controls }
-      console.log('mounted sampler')
       return this.state
     },
     onUnmount () {
       const { controls } = this.state
       controls.unmount()
-      console.log('unmounted sampler')
       this.state = null
     }
   })

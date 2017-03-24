@@ -22,6 +22,7 @@ export class MidiBus extends EventEmitter {
     Object.keys(buttons).forEach((buttonName) => {
       const button = buttons[buttonName]
       this.registry[`${callbackPrefix}_${button[0]}_${button[1]}`] = (channel, control, value, status, group) => {
+        console.log('received', channel, control, value, status, group)
         const preprocessed = value
           ? Object.keys(this._plugins.press).reduce(
             ({ value, button, context }, pluginName) => this._plugins.press[pluginName](value, button, context),

@@ -5,23 +5,21 @@ import { Timer, ControlBus } from './Mixxx'
 import Screen from './App/Screen'
 import Component from './Component'
 
-const Mapping = (component) => {
-  const modul = { }
-  modul.init = () => { component.mount(modul) }
-  modul.shutdown = () => { component.unmount() }
-  return modul
+export function create (globalName, globalObj = {}) {
+  const globalComponent = new Component({
+    onMount () {
+      const timer = Timer.create(globalName, this.target)
+      const controlBus = ControlBus.create(globalName, this.target)
+      const launchpadBus = LaunchpadBus.create(this.target)
+      this.screen = Screen('main')(timer)
+
+      this.screen.mount({ controlBus, launchpadBus })
+    },
+    onUnmount () {
+      this.screen.unmount()
+    }
+  })
+  globalObj.init = () => { globalComponent.mount(globalObj) }
+  globalObj.shutdown = () => { globalComponent.unmount() }
+  return globalObj
 }
-
-module.exports = Mapping(new Component({
-  onMount () {
-    const timer = Timer.create(this.target)
-    const controlBus = ControlBus.create(this.target)
-    const launchpadBus = LaunchpadBus.create(this.target)
-    this.screen = Screen('main')(timer)
-
-    this.screen.mount({ controlBus, launchpadBus })
-  },
-  onUnmount () {
-    this.screen.unmount()
-  }
-}))

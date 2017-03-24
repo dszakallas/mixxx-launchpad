@@ -1,10 +1,9 @@
 import { engine } from './globals'
 
-const moduleName = require('../../package.json').mixxx.moduleName
 const timerPrefix = '__mixxx_timer'
 
 export class Timer {
-  static create (registry) {
+  static create (moduleName, registry) {
     return function (task, interval) {
       return new Timer(moduleName, registry, task, interval)
     }
