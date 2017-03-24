@@ -370,42 +370,25 @@ name `NovationLaunchpad`. Due to the lack of module loading system in the
 environment, the bundled code is placed on the global object with the above
 name. This works, because the same name is specified in the MIDI mapping XML file, so Mixxx will look for this name, and will call its `init` method upon loading.
 
-### Source files
-The source files consist of ES2015 modules and are organized according to
-functionality.
-```
-.
-├── App
-│   ├── controls
-│   └── presets
-├── Controls
-├── Launchpad
-├── Mixxx
-└── Utility
-```
-
-`Mixxx` contains engine related glue code, and control definitions.
-`Launchpad` contains Launchpad related glue code and MIDI
-definitions.
-`Controls` hosts some abstractions for controls specialized enough not to go into `Mixxx` or `Launchpad`.
-`App` contains application specific code like presets,
-concrete controls, the layout manager, etc.
-
 ### MIDI mapping
 
-The controller mapping is generated from a [template][mapping-template] with
-[ejs]. The mapping reuses config from the package description and [buttons.js].
+The controller mapping is generated from a template like
+[this][mapping-template] with [ejs]. The mapping reuses config from the package
+description and [buttons.js].
 
 ### Build
 
 To build you need to have make, a recent Node (>=4) and npm.
 
-First clone the repo and install the package dependencies with npm:
+The multi-project build is managed with [lerna.js]. You need to  install it
+globally to make it available on the command line.  First clone the repo and
+install the dependencies:
 
 ```
 git clone https://github.com/szdavid92/mixxx-launchpad
 cd mixxx-launchpad
-npm install
+npm i --global lerna
+lerna bootstrap
 ```
 
 To compile the sources run
@@ -443,3 +426,4 @@ We have [transforms](.babelrc) for these two cases, however you still **can't us
 [mapping-template]:src/Launchpad/Launchpad.midi.xml.ejs
 [ejs]:http://ejs.co/
 [buttons.js]:src/Launchpad/buttons.js
+[lerna.js]: https://lernajs.io/
