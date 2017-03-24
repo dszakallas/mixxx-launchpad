@@ -13,11 +13,12 @@ depGraph = $(shell ./scripts/deps-scripts.js $(1))
 arch := $(shell uname)
 package := ./package.json
 buildDir := ./dist
+version := $(shell jq -r .version package.json)
 
 targets := $(shell jq -r '.controllers | join (" ")' package.json)
 
 define targetScriptRules
-$(call script,$(1)) : # Would be nice to do incremental build here but it needs magic
+$(call script,$(1)) : # $(package) $(call depGraph, $(1))
 	./scripts/compile-scripts.js $(1) $$@
 .PHONY : $(call script,$(1))
 endef
@@ -45,10 +46,19 @@ install_Darwin : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$
 
 endef
 
+define releaseRule
+mixxx-launchpad-$(version) : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
+	zip -9 $$@.zip $$^
+endef
+
 $(foreach target,$(targets),$(eval $(call targetScriptRules,$(target))))
 $(foreach target,$(targets),$(eval $(call targetMappingRules,$(target))))
 $(eval $(call compileRule,$(targets)))
 $(eval $(call installRule,$(targets)))
+$(eval $(call releaseRule,$(targets)))
+
+release : mixxx-launchpad-$(version)
+.PHONY : release
 
 clean :
 	rm -rf dist
