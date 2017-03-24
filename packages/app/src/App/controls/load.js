@@ -7,7 +7,7 @@ export default (button) => (deck) => {
     if (loaded && playing) {
       Button.send(bindings.button.button, Button.colors.lo_red)
     } else if (loaded) {
-      Button.send(bindings.button.button, Button.colors.lo_amber)
+      Button.send(bindings.button.button, Button.colors.lo_yellow)
     } else {
       Button.send(bindings.button.button, Button.colors.lo_green)
     }

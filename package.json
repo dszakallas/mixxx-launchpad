@@ -39,16 +39,5 @@
     "through2": "^2.0.1",
     "lerna": "2.0.0-beta.38"
   },
-  "buildTargets": {
-    "mk1": {
-      "device": "Launchpad",
-      "manufacturer": "Novation",
-      "moduleName": "NovationLaunchpadMK1"
-    },
-    "mk2": {
-      "device": "Launchpad-MK2",
-      "manufacturer": "Novation",
-      "moduleName": "NovationLaunchpadMK2"
-    }
-  }
+  "controllers": [ "mk1", "mk2" ]
 }

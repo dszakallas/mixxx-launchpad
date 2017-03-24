@@ -8,12 +8,12 @@
     </info>
     <controller id="<%= manufacturer %> <%= device %>">
         <scriptfiles>
-            <file functionprefix="<%= moduleName %>" filename="<%= manufacturer %>-<%= device %>-scripts.js"/>
+            <file functionprefix="<%= global %>" filename="<%= manufacturer %>-<%= device %>-scripts.js"/>
         </scriptfiles>
         <controls>
             <% buttons.forEach(function (button) { %><control>
                 <group>[Master]</group>
-                <key><%= moduleName %>.__lp_<%= button[0] %>_<%= button[1] %></key>
+                <key><%= global %>.__lp_<%= button[0] %>_<%= button[1] %></key>
                 <status><%= button[0] %></status>
                 <midino><%= button[1] %></midino>
                 <options>

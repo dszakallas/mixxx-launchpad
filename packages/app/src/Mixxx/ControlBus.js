@@ -1,14 +1,13 @@
 import { engine } from './globals'
 
-const moduleName = require('../../package.json').mixxx.moduleName
 const callbackPrefix = '__mixxx_ctrl'
 
 const sanitize = (name) => {
-  return name.replace('.', '$DOT$').replace('[', '$SBS$').replace(']', '$SBE$')
+  return name.replace('.', '$dot$').replace('[', '$sbs$').replace(']', '$sbe$')
 }
 
 export class ControlBus {
-  static create (registry) {
+  static create (moduleName, registry) {
     return new ControlBus(moduleName, registry)
   }
 
