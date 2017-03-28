@@ -42,7 +42,9 @@ install_Darwin : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$
 	cp $$^ $$(HOME)/Library/Application\ Support/Mixxx/controllers
 .PHONY : install_Darwin
 
-# TODO write for Linux 
+install_Linux : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
+	cp $$^ $$(HOME)/.mixxx/controllers
+.PHONY : install_Linux
 
 endef
 
