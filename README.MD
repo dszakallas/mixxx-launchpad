@@ -378,7 +378,7 @@ description and [buttons.js].
 
 ### Build
 
-To build you need to have make, a recent Node (>=4) and npm.
+To build you need to have make, a recent Node (>=4), npm and jq.
 
 The multi-project build is managed with [lerna.js]. You need to  install it
 globally to make it available on the command line.  First clone the repo and
@@ -389,6 +389,7 @@ git clone https://github.com/szdavid92/mixxx-launchpad
 cd mixxx-launchpad
 npm i --global lerna
 lerna bootstrap
+npm install
 ```
 
 To compile the sources run
