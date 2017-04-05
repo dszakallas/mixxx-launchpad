@@ -410,11 +410,8 @@ does this for you on macOS.
 
 ### Known Issues
 
-#### No Windows build
+#### No Windows build recipes
 Sorry, but building anything on Windows is pain.
-
-#### Source and build file paths can't contain spaces
-The build files were written with this limitation.
 
 #### Lingering ES3 future reserved keywords
 
