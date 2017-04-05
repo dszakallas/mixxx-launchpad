@@ -1,4 +1,4 @@
-SHELL := $(shell which zsh)
+SHELL := $(shell which zsh || which bash)
 
 empty :=
 space := $(empty) $(empty)
@@ -9,8 +9,6 @@ device = $(call join-with,\ ,$(shell jq -r .controller.device packages/$(1)/pack
 manufacturer = $(call join-with,\ ,$(shell jq -r .controller.manufacturer packages/$(1)/package.json))
 mapping = $(buildDir)/$(call manufacturer,$(1))\ $(call device,$(1)).midi.xml
 script = $(buildDir)/$(call manufacturer,$(1))-$(call device,$(1))-scripts.js
-
-depGraph = $(shell ./scripts/deps-scripts.js $(1))
 
 arch := $(shell uname)
 package := ./package.json
@@ -61,6 +59,11 @@ $(eval $(call releaseRule,$(targets)))
 
 release : mixxx-launchpad-$(version)
 .PHONY : release
+
+test :
+	npm run lint
+	npm run check
+.PHONY : test
 
 clean :
 	rm -rf dist

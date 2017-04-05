@@ -1,13 +1,13 @@
 {
   "name": "@mixxx-launchpad/project",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Novation Launchpad mapping for Mixxx",
   "homepage": "https://github.com/szdavid92/mixxx-launchpad",
   "main": "index.js",
   "scripts": {
-    "compile": "make compile",
+    "postinstall": "lerna bootstrap",
     "lint": "eslint packages",
-    "check": "flow"
+    "check": "cd packages/app && flow"
   },
   "author": "Midiparse",
   "license": "MIT",
