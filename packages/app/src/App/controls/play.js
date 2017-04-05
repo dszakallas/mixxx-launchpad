@@ -1,29 +1,33 @@
-import { Button } from '../../Launchpad'
-import { Control } from '../../Mixxx'
-import modes from '../../Utility/modes'
+/* @flow */
+import { Colors } from '../../Launchpad'
 
-export default (button) => (deck) => {
+import type { ControlMessage, ChannelControl } from '../../Mixxx'
+
+import { modes } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
   return {
     bindings: {
       playIndicator: {
         type: 'control',
         target: deck.play_indicator,
-        update: ({ value }, { bindings }) => {
+        update: ({ value }: ControlMessage, { bindings }: Object) => {
           if (value) {
-            Button.send(bindings.play.button, Button.colors.hi_red)
+            bindings.play.button.sendColor(Colors.hi_red)
           } else if (!value) {
-            Button.send(bindings.play.button, Button.colors.black)
+            bindings.play.button.sendColor(Colors.black)
           }
         }
       },
       play: {
         type: 'button',
-        target: button,
-        attack: ({ context }, { bindings }) => {
-          modes(context,
-            () => Control.setValue(deck.play, Number(!Control.getValue(deck.play))),
-            () => Control.setValue(deck.start_play, 1),
-            () => Control.setValue(deck.start_stop, 1)
+        target: gridPosition,
+        attack: () => {
+          modes(modifier.getState(),
+            () => deck.play.setValue(Number(!deck.play.getValue())),
+            () => deck.start_play.setValue(1),
+            () => deck.start_stop.setValue(1)
           )
         }
       }

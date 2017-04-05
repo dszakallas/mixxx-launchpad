@@ -1,20 +1,25 @@
-import { Button } from '../../Launchpad'
-import { Control } from '../../Mixxx'
-import modes from '../../Utility/modes'
+/* @flow */
 
-export default (button) => (deck) => {
-  const onGrid = (dir) => ({ value, context }, { bindings, state }) => {
+import { Colors } from '../../Launchpad'
+import type { MidiMessage } from '../../Launchpad'
+
+import { modes } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+import type { ChannelControl } from '../../Mixxx'
+
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+  const onGrid = (dir) => ({ value }: MidiMessage, { bindings, state }: Object) => {
     if (!value) {
-      Button.send(bindings[dir].button, Button.colors.black)
+      bindings[dir].button.sendColor(Colors.black)
     } else {
-      modes(context,
+      modes(modifier.getState(),
         () => {
-          Button.send(bindings[dir].button, Button.colors.hi_yellow)
-          Control.setValue(state[dir].normal, 1)
+          bindings[dir].button.sendColor(Colors.hi_yellow)
+          state[dir].normal.setValue(1)
         },
         () => {
-          Button.send(bindings[dir].button, Button.colors.hi_amber)
-          Control.setValue(state[dir].ctrl, 1)
+          bindings[dir].button.sendColor(Colors.hi_amber)
+          state[dir].ctrl.setValue(1)
         })
     }
   }
@@ -22,12 +27,12 @@ export default (button) => (deck) => {
     bindings: {
       back: {
         type: 'button',
-        target: button,
+        target: gridPosition,
         midi: onGrid('back')
       },
       forth: {
         type: 'button',
-        target: [button[0] + 1, button[1]],
+        target: [gridPosition[0] + 1, gridPosition[1]],
         midi: onGrid('forth')
       }
     },

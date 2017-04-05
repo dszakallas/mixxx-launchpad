@@ -1,20 +1,26 @@
-import { Button } from '../../Launchpad'
-import modes from '../../Utility/modes'
+/* @flow */
+import { Colors } from '../../Launchpad'
+import type { MidiMessage } from '../../Launchpad'
 
-export default (button) => (deck) => {
+import type { ControlMessage, ChannelControl } from '../../Mixxx'
+
+import { modes } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
   return {
     bindings: {
       quantize: {
         type: 'control',
         target: deck.quantize,
-        update: ({ value }, { bindings }) => value
-          ? Button.send(bindings.button.button, Button.colors.hi_orange)
-          : Button.send(bindings.button.button, Button.colors.black)
+        update: ({ value }: ControlMessage, { bindings }: Object) => value
+          ? bindings.button.button.sendColor(Colors.hi_orange)
+          : bindings.button.button.sendColor(Colors.black)
       },
       button: {
         type: 'button',
-        target: button,
-        attack: ({ context }, { bindings }) => modes(context,
+        target: gridPosition,
+        attack: (message: MidiMessage, { bindings }: Object) => modes(modifier.getState(),
           () => bindings.quantize.setValue(Number(!bindings.quantize.getValue())))
       }
     }

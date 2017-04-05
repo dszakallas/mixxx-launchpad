@@ -20,8 +20,9 @@ mkdirp(path.dirname(path.resolve(process.argv[3])))
     var output = createWriteStream(path.resolve(process.argv[3]))
 
     browserify(entry, {
-      transform: 'babelify',
       standalone: global,
       paths: [ path.resolve('packages', tgt, 'node_modules') ]
-    }).bundle().pipe(output)
+    })
+      .transform('babelify', { global: true })
+      .bundle().pipe(output)
   })

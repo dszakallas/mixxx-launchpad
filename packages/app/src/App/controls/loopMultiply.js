@@ -1,24 +1,26 @@
-import { Button } from '../../Launchpad'
-import { Control } from '../../Mixxx'
+/* @flow */
+import { Colors } from '../../Launchpad'
+import type { ChannelControl } from '../../Mixxx'
 
-export default (button) => (deck) => {
-  const onMount = (k) => (dk, { bindings }) => {
-    Button.send(bindings[k].button, Button.colors.lo_yellow)
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => () => {
+  const onMount = (k) => (dk: null, { bindings }: Object) => {
+    bindings[k].button.sendColor(Colors.lo_yellow)
   }
-  const onAttack = (k) => () => {
-    Control.setValue(deck[`loop_${k}`], 1)
+  const onAttack = (k: 'double' | 'halve') => () => {
+    // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
+    deck[(`loop_${k}`: any)].setValue(1)
   }
   return {
     bindings: {
       halve: {
         type: 'button',
-        target: button,
+        target: gridPosition,
         mount: onMount('halve'),
         attack: onAttack('halve')
       },
       double: {
         type: 'button',
-        target: [button[0] + 1, button[1]],
+        target: [gridPosition[0] + 1, gridPosition[1]],
         mount: onMount('double'),
         attack: onAttack('double')
       }

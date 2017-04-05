@@ -1,29 +1,33 @@
-import { Button } from '../../Launchpad'
-import { Control } from '../../Mixxx'
-import modes from '../../Utility/modes'
+/* @flow */
+import { Colors } from '../../Launchpad'
+
+import type { ControlMessage, ChannelControl } from '../../Mixxx'
 import Bpm from '../../App/Bpm'
 
-export default (button) => (deck) => {
+import { modes } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
   const tempoBpm = new Bpm()
   tempoBpm.on('tap', (avg) => {
-    Control.setValue(deck.bpm, avg)
+    deck.bpm.setValue(avg)
   })
   return {
     bindings: {
       tap: {
         type: 'button',
-        target: button,
-        attack: ({ context }) => {
-          modes(context,
+        target: gridPosition,
+        attack: () => {
+          modes(modifier.getState(),
             () => {
               tempoBpm.tap()
             },
             undefined,
             () => {
-              Control.setValue(deck.beats_translate_curpos, 1)
+              deck.beats_translate_curpos.setValue(1)
             },
             () => {
-              Control.setValue(deck.beats_translate_match_alignment, 1)
+              deck.beats_translate_match_alignment.setValue(1)
             }
           )
         }
@@ -31,11 +35,11 @@ export default (button) => (deck) => {
       beat: {
         type: 'control',
         target: deck.beat_active,
-        update: ({ value }, { bindings }) => {
+        update: ({ value }: ControlMessage, { bindings }: Object) => {
           if (value) {
-            Button.send(bindings.tap.button, Button.colors.hi_red)
+            bindings.tap.button.sendColor(Colors.hi_red)
           } else {
-            Button.send(bindings.tap.button, Button.colors.black)
+            bindings.tap.button.sendColor(Colors.black)
           }
         }
       }

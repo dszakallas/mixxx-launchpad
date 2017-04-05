@@ -1,27 +1,32 @@
-import { Control } from '../../Mixxx'
-import { Button } from '../../Launchpad'
-import modes from '../../Utility/modes'
+/* @flow */
 
-export default (button) => (deck) => {
+import type { ControlMessage, ChannelControl } from '../../Mixxx'
+import { Colors } from '../../Launchpad'
+import type { MidiMessage } from '../../Launchpad'
+
+import { modes } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
   return {
     bindings: {
       sync: {
         type: 'button',
-        target: button,
-        attack: ({ context }, { bindings }) => {
-          modes(context,
+        target: gridPosition,
+        attack: (message: MidiMessage, { bindings }: Object) => {
+          modes(modifier.getState(),
             () => {
               if (bindings.syncMode.getValue()) {
-                Control.setValue(deck.sync_enabled, 0)
+                deck.sync_enabled.setValue(0)
               } else {
-                Control.setValue(deck.sync_enabled, 1)
+                deck.sync_enabled.setValue(1)
               }
             },
             () => {
               if (bindings.syncMode.getValue() === 2) {
-                Control.setValue(deck.sync_master, 0)
+                deck.sync_master.setValue(0)
               } else {
-                Control.setValue(deck.sync_master, 1)
+                deck.sync_master.setValue(1)
               }
             }
           )
@@ -30,13 +35,13 @@ export default (button) => (deck) => {
       syncMode: {
         type: 'control',
         target: deck.sync_mode,
-        update: ({ value }, { bindings }) => {
+        update: ({ value }: ControlMessage, { bindings }: Object) => {
           if (value === 0) {
-            Button.send(bindings.sync.button, Button.colors.black)
+            bindings.sync.button.sendColor(Colors.black)
           } else if (value === 1) {
-            Button.send(bindings.sync.button, Button.colors.hi_orange)
+            bindings.sync.button.sendColor(Colors.hi_orange)
           } else if (value === 2) {
-            Button.send(bindings.sync.button, Button.colors.hi_red)
+            bindings.sync.button.sendColor(Colors.hi_red)
           }
         }
       }

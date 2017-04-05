@@ -1,33 +1,37 @@
+/* @flow */
 import range from 'lodash.range'
-import { Control } from '../../Mixxx'
-import { Button } from '../../Launchpad'
-import modes from '../../Utility/modes'
 
-export default (n, d, s = 0) => (button) => (deck) => {
-  const onHotcueMidi = (i) => ({ context, value }, { bindings }) => {
-    modes(context,
+import { Colors } from '../../Launchpad'
+
+import { modes } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+import type { ChannelControl } from '../../Mixxx'
+
+export default (n: number, d: number, s: number = 0) => (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+  const onHotcueMidi = (i) => ({ value }, { bindings }) => {
+    modes(modifier.getState(),
       () => {
         if (value) {
-          Control.setValue(deck.hotcues[i + s].activate, 1)
+          deck.hotcues[i + s].activate.setValue(1)
         } else {
-          Control.setValue(deck.hotcues[i + s].activate, 0)
+          deck.hotcues[i + s].activate.setValue(0)
         }
       },
       () => {
         if (value) {
           if (bindings[`${i}.enabled`].getValue()) {
-            Control.setValue(deck.hotcues[i + s].clear, 1)
+            deck.hotcues[i + s].clear.setValue(1)
           } else {
-            Control.setValue(deck.hotcues[i + s].set, 1)
+            deck.hotcues[i + s].set.setValue(1)
           }
         }
       })
   }
   const onHotcueEnabled = (i) => ({ value }, { bindings }) => {
     if (value) {
-      Button.send(bindings[`${i}.btn`].button, Button.colors.lo_yellow)
+      bindings[`${i}.btn`].button.sendColor(Colors.lo_yellow)
     } else {
-      Button.send(bindings[`${i}.btn`].button, Button.colors.black)
+      bindings[`${i}.btn`].button.sendColor(Colors.black)
     }
   }
   const bindings = { }
@@ -36,12 +40,12 @@ export default (n, d, s = 0) => (button) => (deck) => {
     const dy = ~~(i / d)
     bindings[`${i}.btn`] = {
       type: 'button',
-      target: [button[0] + dx, button[1] + dy],
+      target: [gridPosition[0] + dx, gridPosition[1] + dy],
       midi: onHotcueMidi(i)
     }
     bindings[`${i}.enabled`] = {
       type: 'control',
-      target: deck.hotcues[i + s].enabled,
+      target: deck.hotcues[1 + i + s].enabled,
       update: onHotcueEnabled(i)
     }
   })

@@ -1,39 +1,42 @@
-import modes from '../../Utility/modes'
-import retainAttackMode from '../../Utility/retainAttackMode'
-import { Control } from '../../Mixxx'
-import { Button } from '../../Launchpad'
+/* @flow */
 
-export default (shifts, d) => (button) => (deck) => {
+import { Colors } from '../../Launchpad'
+
+import { modes, retainAttackMode } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+import type { ChannelControl } from '../../Mixxx'
+
+export default (shifts: [number, number][], d: number) => (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
   const bindings = { }
 
   const temporaryChange = (i, value, bindings, state) => {
     if (value) {
-      const base = state.on === -1 ? Control.getValue(deck.key) : state.base
+      const base = state.on === -1 ? deck.key.getValue() : state.base
       if (state.on !== -1) {
-        Button.send(bindings[state.on].button, Button.colors[`lo_${state.color[state.set]}`])
+        bindings[state.on].button.sendColor(Colors[`lo_${state.color[state.set]}`])
       }
-      Button.send(bindings[i].button, Button.colors[`hi_${state.color[state.set]}`])
-      Control.setValue(deck.key, ((base + shifts[i][state.set]) % 12) + 12)
+      bindings[i].button.sendColor(Colors[`hi_${state.color[state.set]}`])
+      deck.key.setValue(((base + shifts[i][state.set]) % 12) + 12)
       state.on = i
       state.base = base
     } else {
       if (state.on === i) {
-        Button.send(bindings[i].button, Button.colors[`lo_${state.color[state.set]}`])
-        Control.setValue(deck.key, state.base)
+        bindings[i].button.sendColor(Colors[`lo_${state.color[state.set]}`])
+        deck.key.setValue(state.base)
         state.on = -1
       }
     }
   }
 
-  const onMidi = (i) => retainAttackMode(({ context, value }, { bindings, state }) => {
-    modes(context,
+  const onMidi = (i) => (modifier) => retainAttackMode(modifier, (mode, { value }, { bindings, state }) => {
+    modes(mode,
       () => temporaryChange(i, value, bindings, state),
       () => {
         if (value) {
           if (state.set === 1) {
             state.set = 0
             for (let i = 0; i < shifts.length; ++i) {
-              Button.send(bindings[i].button, Button.colors[`lo_${state.color[state.set]}`])
+              bindings[i].button.sendColor(Colors[`lo_${state.color[state.set]}`])
             }
           }
         }
@@ -43,7 +46,7 @@ export default (shifts, d) => (button) => (deck) => {
           if (state.set === 0) {
             state.set = 1
             for (let i = 0; i < shifts.length; ++i) {
-              Button.send(bindings[i].button, Button.colors[`lo_${state.color[state.set]}`])
+              bindings[i].button.sendColor(Colors[`lo_${state.color[state.set]}`])
             }
           }
         }
@@ -54,13 +57,13 @@ export default (shifts, d) => (button) => (deck) => {
   shifts.forEach((s, i) => {
     const dx = i % d
     const dy = ~~(i / d)
-    const position = [button[0] + dx, button[1] + dy]
+    const position = [gridPosition[0] + dx, gridPosition[1] + dy]
     bindings[i] = {
       type: 'button',
       target: position,
-      midi: onMidi(i),
+      midi: onMidi(i)(modifier),
       mount: function (dontKnow, { bindings, state }) {
-        Button.send(bindings[i].button, Button.colors[`lo_${state.color[state.set]}`])
+        bindings[i].button.sendColor(Colors[`lo_${state.color[state.set]}`])
       }
     }
   })

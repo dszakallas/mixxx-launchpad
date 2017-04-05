@@ -1,39 +1,99 @@
-import bbind from '../Controls/ButtonBinding'
-import { Button } from '../Launchpad'
-import Component from '../Component'
+/* @flow */
+import { Buttons, Colors } from '../Launchpad'
 
-export default () => {
-  const shift = bbind.create(Button.buttons.solo)
-  const ctrl = bbind.create(Button.buttons.arm)
+import type { MidiMessage } from '../Launchpad'
 
-  const emit = ({ value, button }) => {
-    if (value) {
-      Button.send(button, Button.colors.hi_red)
-    } else {
-      Button.send(button, Button.colors.black)
+import type MidiComponent, { MidiComponentBuilder } from '../Controls/MidiComponent'
+
+export type ModifierState = {
+  ctrl: boolean,
+  shift: boolean
+}
+
+export interface Modifier {
+  getState (): ModifierState
+}
+
+const Component = require('../Component').default // TODO: I don't even ...
+
+export default class ModifierSidebar extends Component implements Modifier {
+  shift: MidiComponent
+  ctrl: MidiComponent
+  state: {| shift: boolean, ctrl: boolean |}
+  listener: (MidiMessage) => void
+
+  constructor (midiComponentBuilder: MidiComponentBuilder) {
+    super()
+    this.shift = midiComponentBuilder(Buttons.solo)
+    this.ctrl = midiComponentBuilder(Buttons.arm)
+
+    this.state = {
+      shift: false,
+      ctrl: false
     }
-    if (button.toString() === Button.buttons.solo.toString()) {
-      component.emit('shift', value)
-    } else {
-      component.emit('ctrl', value)
+
+    this.listener = ({ value, button }) => {
+      if (value) {
+        button.sendColor(Colors.hi_red)
+      } else {
+        button.sendColor(Colors.black)
+      }
+      if (button.def.name === Buttons.solo.def.name) {
+        this.state.shift = !!value
+        this.emit('shift', value)
+      } else {
+        this.state.ctrl = !!value
+        this.emit('ctrl', value)
+      }
     }
   }
 
-  const component = new Component({
-    onMount () {
-      shift.mount(this.target)
-      ctrl.mount(this.target)
+  onMount () {
+    this.shift.mount()
+    this.ctrl.mount()
 
-      shift.on('midi', emit)
-      ctrl.on('midi', emit)
-    },
-    onUnmount () {
-      shift.removeListener('midi', emit)
-      ctrl.removeListener('midi', emit)
+    this.shift.on('midi', this.listener)
+    this.ctrl.on('midi', this.listener)
+  }
 
-      shift.unmount()
-      ctrl.unmount()
+  onUnmount () {
+    this.shift.removeListener('midi', this.listener)
+    this.ctrl.removeListener('midi', this.listener)
+
+    this.shift.unmount()
+    this.ctrl.unmount()
+  }
+
+  getState () {
+    return this.state
+  }
+}
+
+export const makeModifierSidebar =
+  (midiComponentBuilder: MidiComponentBuilder) => new ModifierSidebar(midiComponentBuilder)
+
+export const modes = (ctx: ModifierState, n?: () => void, c?: () => void, s?: () => void, cs?: () => void) => {
+  if (ctx.shift && ctx.ctrl) {
+    cs && cs()
+  } else if (ctx.shift) {
+    s && s()
+  } else if (ctx.ctrl) {
+    c && c()
+  } else {
+    n && n()
+  }
+}
+
+export const retainAttackMode = <Rest: $ReadOnlyArray<mixed>, R>(modifier: Modifier, cb: (ModifierState, MidiMessage, ...Rest) => R) => {
+  let state = {
+    shift: false,
+    ctrl: false
+  }
+
+  return function (data: MidiMessage, ...rest: Rest) {
+    if (data.value) {
+      state = modifier.getState()
     }
-  })
-  return component
+    return cb(state, data, ...rest)
+  }
 }

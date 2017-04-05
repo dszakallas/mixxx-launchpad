@@ -1,23 +1,43 @@
+/* @flow */
 import { engine } from './globals'
 
-const callbackPrefix = '__mixxx_ctrl'
+import type { ControlDef } from './Control'
 
-const sanitize = (name) => {
+const callbackPrefix = '__ctrl'
+
+const sanitize = (name: string) => {
   return name.replace('.', '$dot$').replace('[', '$sbs$').replace(']', '$sbe$')
 }
 
+type ControlBusHandle = {
+  id: string,
+  group: string,
+  name: string,
+  key: string
+}
+
+export type ControlMessage = {
+  id: string,
+  value: number,
+  control: ControlDef
+}
+
 export class ControlBus {
-  static create (moduleName, registry) {
+  _registryName: string
+  _registry: Object
+  _callbackList: Object
+
+  static create (moduleName: string, registry: Object) {
     return new ControlBus(moduleName, registry)
   }
 
-  constructor (registryName, registry) {
+  constructor (registryName: string, registry: Object) {
     this._registryName = registryName
     this._registry = registry
     this._callbackList = { }
   }
 
-  connect (id, control, cb) {
+  connect (id: string, control: ControlDef, cb: any): ControlBusHandle {
     const { group, name } = control
     const key = `${sanitize(group)}_${sanitize(name)}`
     const engineCb = `${callbackPrefix}_${key}`
@@ -30,7 +50,7 @@ export class ControlBus {
     if (!this._registry[engineCb]) {
       this._registry[engineCb] = (value) => {
         for (const id in this._callbackList[key]) {
-          this._callbackList[key][id]({ value, control, id, controlBus: this })
+          this._callbackList[key][id]({ value, control, id })
         }
       }
       engine.connectControl(group, name, `${this._registryName}.${engineCb}`)
@@ -38,7 +58,7 @@ export class ControlBus {
     return { id, group, name, key }
   }
 
-  disconnect (handle) {
+  disconnect (handle: ControlBusHandle) {
     const { id, group, name, key } = handle
     const engineCb = `${callbackPrefix}_${key}`
 
@@ -47,7 +67,6 @@ export class ControlBus {
     }
 
     if (!Object.keys(this._callbackList[key]).length && this._registry[engineCb]) {
-      console.log('disconnecting', `${this._registryName}.${engineCb}`)
       engine.connectControl(group, name, `${this._registryName}.${engineCb}`, true)
       delete this._callbackList[key]
       delete this._registry[engineCb]

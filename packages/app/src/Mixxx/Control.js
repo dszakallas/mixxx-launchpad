@@ -1,9 +1,33 @@
+/* @flow */
 import { engine } from './globals'
 
-const range = require('lodash.range')
-const assign = require('lodash.assign')
+import range from 'lodash.range'
+import assign from 'lodash.assign'
 
-const Playlist = {
+export type ControlDef = {
+  group: string,
+  name: string,
+  type: string,
+  description?: string
+}
+
+export class Control {
+  def: ControlDef
+
+  constructor (def: ControlDef) {
+    this.def = def
+  }
+
+  setValue (value: number) {
+    engine.setValue(this.def.group, this.def.name, value)
+  }
+
+  getValue (): number {
+    return engine.getValue(this.def.group, this.def.name)
+  }
+}
+
+export const playListControlDef: { [key: string]: ControlDef } = {
   'LoadSelectedIntoFirstStopped': { group: '[Playlist]', name: 'LoadSelectedIntoFirstStopped', type: 'binary', description: 'Loads the currently highlighted song into the first stopped deck' },
   'SelectNextPlaylist': { group: '[Playlist]', name: 'SelectNextPlaylist', type: 'binary', description: 'Switches to the next view (Library, Queue, etc.)' },
   'SelectPrevPlaylist': { group: '[Playlist]', name: 'SelectPrevPlaylist', type: 'binary', description: 'Switches to the previous view (Library, Queue, etc.)' },
@@ -15,7 +39,127 @@ const Playlist = {
   'AutoDjAddTop': { group: '[Playlist]', name: 'AutoDjAddTop', type: 'binary', description: 'Add selected track(s) to Auto DJ Queue (top).' }
 }
 
-const Channel = (type, i) => ({
+export type PlayListControlKey = $Keys<typeof playListControlDef>
+
+export const playListControl: { [key: PlayListControlKey]: Control } = Object.keys(playListControlDef).reduce((obj, key) => {
+  return assign(obj, { [key]: new Control(playListControlDef[key]) })
+}, {})
+
+export type SimpleChannelControlKey =
+  'back'
+  | 'beat_active'
+  | 'beatjump'
+  | 'beatloop'
+  | 'beats_adjust_faster'
+  | 'beats_adjust_slower'
+  | 'beats_translate_curpos'
+  | 'beats_translate_match_alignment'
+  | 'beats_translate_earlier'
+  | 'beats_translate_later'
+  | 'beatsync'
+  | 'beatsync_phase'
+  | 'beatsync_tempo'
+  | 'bpm'
+  | 'bpm_tap'
+  | 'cue_default'
+  | 'cue_gotoandplay'
+  | 'cue_gotoandstop'
+  | 'cue_indicator'
+  | 'cue_cdj'
+  | 'cue_play'
+  | 'cue_point'
+  | 'cue_preview'
+  | 'cue_set'
+  | 'cue_simple'
+  | 'duration'
+  | 'eject'
+  | 'end'
+  | 'file_bpm'
+  | 'file_key'
+  | 'fwd'
+  | 'key'
+  | 'keylock'
+  | 'LoadSelectedTrack'
+  | 'LoadSelectedTrackAndPlay'
+  | 'loop_double'
+  | 'loop_enabled'
+  | 'loop_end_position'
+  | 'loop_halve'
+  | 'loop_in'
+  | 'loop_out'
+  | 'loop_move'
+  | 'loop_scale'
+  | 'loop_start_position'
+  | 'orientation'
+  | 'passthrough'
+  | 'PeakIndicator'
+  | 'pfl'
+  | 'pitch'
+  | 'pitch_adjust'
+  | 'play'
+  | 'play_indicator'
+  | 'play_stutter'
+  | 'playposition'
+  | 'pregain'
+  | 'quantize'
+  | 'rate'
+  | 'rate_dir'
+  | 'rate_perm_down'
+  | 'rate_perm_down_small'
+  | 'rate_perm_up'
+  | 'rate_perm_up_small'
+  | 'rate_temp_down'
+  | 'rate_temp_down_small'
+  | 'rate_temp_up'
+  | 'rate_temp_up_small'
+  | 'rateRange'
+  | 'reloop_exit'
+  | 'repeat'
+  | 'reset_key'
+  | 'reverse'
+  | 'reverseroll'
+  | 'slip_enabled'
+  | 'start'
+  | 'start_play'
+  | 'start_stop'
+  | 'stop'
+  | 'sync_enabled'
+  | 'sync_master'
+  | 'sync_mode'
+  | 'sync_key'
+  | 'track_samplerate'
+  | 'track_samples'
+  | 'volume'
+  | 'mute'
+  | 'vinylcontrol_enabled'
+  | 'vinylcontrol_cueing'
+  | 'vinylcontrol_mode'
+  | 'vinylcontrol_status'
+  | 'visual_bpm'
+  | 'visual_key'
+  | 'visual_key_distance'
+  | 'VuMeter'
+  | 'VuMeterL'
+  | 'VuMeterR'
+  | 'waveform_zoom'
+  | 'waveform_zoom_up'
+  | 'waveform_zoom_down'
+  | 'waveform_zoom_set_default'
+  | 'wheel'
+
+export type HotcueKey = 'activate' | 'clear' | 'enabled' | 'goto' | 'gotoandplay' | 'gotoandstop' | 'position' | 'set'
+export type HotcueDef = { [HotcueKey]: ControlDef }
+export type HotcueControl = { [HotcueKey]: Control }
+
+export type BeatloopKey = 'activate' | 'toggle' | 'enabled'
+export type BeatloopDef = { [BeatloopKey]: ControlDef }
+export type BeatloopControl = { [BeatloopKey]: Control }
+
+export type BeatjumpKey = 'forward' | 'backward'
+export type BeatjumpDef = { [BeatjumpKey]: ControlDef }
+export type BeatjumpControl = { [BeatjumpKey]: Control }
+
+const channelDef = (type: string, i: number) => ({
   'back': { group: `[${type}${i}]`, name: 'back', type: 'binary' },
   'beat_active': { group: `[${type}${i}]`, name: 'beat_active', type: 'binary' },
   'beatjump': { group: `[${type}${i}]`, name: 'beatjump', type: 'real number' },
@@ -137,37 +281,35 @@ const Channel = (type, i) => ({
   'wheel': { group: `[${type}${i}]`, name: 'wheel', type: '-3.0..3.0' }
 })
 
-const jumps = [0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64]
-const loops = jumps
+const beatjumps = [0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64]
+const beatloops = beatjumps
 
-const playlist = Playlist
+const createEnumeratedControl = (array, one) => array.reduce((arr, i) => {
+  const def: any = one(i)
+  const control = Object.keys(def).reduce(
+    (obj, key) => assign(obj, { [key]: new Control(def[key]) }),
+    {})
+  return assign(arr, { [i]: control })
+}, {})
 
-const channels = range(8).map((i) => {
-  const channel = Channel(i < 4 ? 'Channel' : 'Sampler', (i % 4) + 1)
-  return assign(channel, {
-    'beatjumps': jumps.reduce((acc, x) => assign(acc, { [x]: channel.beatjumps(x) })),
-    'beatloops': loops.reduce((acc, x) => assign(acc, { [x]: channel.beatloops(x) })),
-    'hotcues': range(16).map((x) => channel.hotcues(x + 1))
-  })
-})
-
-export const Control = {
-  getValue (control) {
-    const { group, name } = control
-    return engine.getValue(group, name)
-  },
-
-  setValue (control, value) {
-    const { group, name } = control
-    return engine.setValue(group, name, value)
-  },
-
-  controls: {
-    Playlist,
-    Channel,
-    playlist,
-    channels,
-    decks: channels.slice(0, 4),
-    samplers: channels.slice(4, 8)
-  }
+export type ChannelControl = {
+  [SimpleChannelControlKey]: Control,
+  hotcues: HotcueControl[],
+  beatjumps: BeatjumpControl[],
+  beatloops: BeatloopControl[]
 }
+
+export const createChannelControl = (i: number): ChannelControl => {
+  const [name, number] = i < 5 ? ['Channel', i] : ['Sampler', i - 4]
+  const channelDefInstance = channelDef(name, number)
+  const channel = Object.keys(channelDefInstance)
+    .filter((key) => (key !== 'beatjumps') && (key !== 'beatloops') && (key !== 'hotcues'))
+    .reduce((obj, key) => assign(obj, { [key]: new Control((channelDefInstance[key]: any)) }), {})
+  return assign(channel, {
+    'beatjumps': createEnumeratedControl(beatjumps, channelDefInstance.beatjumps),
+    'beatloops': createEnumeratedControl(beatloops, channelDefInstance.beatloops),
+    'hotcues': createEnumeratedControl(range(16).map((x) => x + 1), channelDefInstance.hotcues)
+  })
+}
+
+export const channelControls: ChannelControl[] = range(8).map((i) => createChannelControl(i + 1))

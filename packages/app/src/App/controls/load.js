@@ -1,15 +1,20 @@
-import { Control } from '../../Mixxx'
-import { Button } from '../../Launchpad'
-import modes from '../../Utility/modes'
+/* @flow */
 
-export default (button) => (deck) => {
+import type { ControlMessage, ChannelControl } from '../../Mixxx'
+import { Colors } from '../../Launchpad'
+import type { MidiMessage } from '../../Launchpad'
+
+import { modes } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
   const onStateChanged = (loaded, playing, bindings) => {
     if (loaded && playing) {
-      Button.send(bindings.button.button, Button.colors.lo_red)
+      bindings.button.button.sendColor(Colors.lo_red)
     } else if (loaded) {
-      Button.send(bindings.button.button, Button.colors.lo_yellow)
+      bindings.button.button.sendColor(Colors.lo_yellow)
     } else {
-      Button.send(bindings.button.button, Button.colors.lo_green)
+      bindings.button.button.sendColor(Colors.lo_green)
     }
   }
   return {
@@ -17,27 +22,27 @@ export default (button) => (deck) => {
       samples: {
         type: 'control',
         target: deck.track_samples,
-        update: ({ value }, { bindings }) =>
+        update: ({ value }: ControlMessage, { bindings }: Object) =>
           onStateChanged(value, bindings.play.getValue(), bindings)
       },
       play: {
         type: 'control',
         target: deck.play,
-        update: ({ value }, { bindings }) =>
+        update: ({ value }: ControlMessage, { bindings }: Object) =>
           onStateChanged(bindings.samples.getValue(), value, bindings)
       },
       button: {
         type: 'button',
-        target: button,
-        attack: ({ context }, { bindings }) => {
-          modes(context,
+        target: gridPosition,
+        attack: (message: MidiMessage, { bindings }: Object) => {
+          modes(modifier.getState(),
             () => {
               if (!bindings.samples.getValue()) {
-                Control.setValue(deck.LoadSelectedTrack, 1)
+                deck.LoadSelectedTrack.setValue(1)
               }
             },
-            () => Control.setValue(deck.LoadSelectedTrack, 1),
-            () => Control.setValue(deck.eject, 1)
+            () => deck.LoadSelectedTrack.setValue(1),
+            () => deck.eject.setValue(1)
           )
         }
       }

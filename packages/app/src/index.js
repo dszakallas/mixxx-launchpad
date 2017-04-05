@@ -1,25 +1,38 @@
+/* @flow */
 import './Mixxx/console-polyfill'
 
-import { MidiBus as LaunchpadBus } from './Launchpad'
-import { Timer, ControlBus } from './Mixxx'
-import Screen from './App/Screen'
+import { MidiBus } from './Launchpad'
+import { makeTimer, ControlBus } from './Mixxx'
+import type Screen from './App/Screen'
+import { makeScreen } from './App/Screen'
 import Component from './Component'
+import { makeControlComponent } from './Controls/ControlComponent'
+import { makeMidiComponent } from './Controls/MidiComponent'
 
-export function create (globalName, globalObj = {}) {
-  const globalComponent = new Component({
-    onMount () {
-      const timer = Timer.create(globalName, this.target)
-      const controlBus = ControlBus.create(globalName, this.target)
-      const launchpadBus = LaunchpadBus.create(this.target)
-      this.screen = Screen('main')(timer)
+class Global extends Component {
+  screen: Screen
+  constructor (globalName, globalObj = {}) {
+    const timerBuilder = makeTimer(globalName, globalObj)
+    const controlComponentBuilder = makeControlComponent(ControlBus.create(globalName, globalObj))
+    const midiComponentBuilder = makeMidiComponent(MidiBus.create(globalObj))
+    super()
+    this.screen = makeScreen(timerBuilder)(controlComponentBuilder)(midiComponentBuilder)('main')
+  }
 
-      this.screen.mount({ controlBus, launchpadBus })
-    },
-    onUnmount () {
-      this.screen.unmount()
-    }
-  })
-  globalObj.init = () => { globalComponent.mount(globalObj) }
+  onMount () {
+    this.screen.mount()
+  }
+
+  onUnmount () {
+    this.screen.unmount()
+  }
+}
+
+export function create (globalName: string, globalObj?: Object = {}) {
+  const globalComponent = new Global(globalName, globalObj)
+  globalObj.init = () => {
+    globalComponent.mount()
+  }
   globalObj.shutdown = () => { globalComponent.unmount() }
   return globalObj
 }

@@ -1,9 +1,13 @@
-import { Control } from '../../Mixxx'
-import { Button } from '../../Launchpad'
-import retainAttackMode from '../../Utility/retainAttackMode'
-import modes from '../../Utility/modes'
+/* @flow */
 
-export default (button) => (deck) => {
+import { Colors } from '../../Launchpad'
+import type { MidiMessage } from '../../Launchpad'
+
+import { modes, retainAttackMode } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+import type { ChannelControl, ControlMessage } from '../../Mixxx'
+
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
   const rateEpsilon = 1e-3
 
   const getDirection = (rate) => {
@@ -16,63 +20,69 @@ export default (button) => (deck) => {
     }
   }
 
-  const onNudgeMidi = (dir) => retainAttackMode(({ context, value }, { bindings, state }) => {
+  const onNudgeMidi = (dir: 'up' | 'down') => (modifier) => retainAttackMode(modifier, (mode, { value }: MidiMessage, { bindings, state }: Object) => {
     if (value) {
       state[dir].pressing = true
       if (state.down.pressing && state.up.pressing) {
-        Control.setValue(deck.rate, 0)
+        deck.rate.setValue(0)
       } else {
-        modes(context,
+        modes(mode,
           () => {
             state[dir].nudging = true
-            Button.send(bindings[dir].button, Button.colors.hi_yellow)
-            Control.setValue(deck[`rate_temp_${dir}`], 1)
+            bindings[dir].button(Colors.hi_yellow)
+            // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
+            deck[(`rate_temp_${dir}`: any)].setValue(1)
           },
           () => {
-            Button.send(bindings[dir].button, Button.colors.hi_red)
-            Control.setValue(deck[`rate_perm_${dir}`], 1)
+            bindings[dir].button(Colors.hi_red)
+            // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
+            deck[(`rate_perm_${dir}`: any)].setValue(1)
           },
           () => {
             state[dir].nudging = true
-            Button.send(bindings[dir].button, Button.colors.lo_yellow)
-            Control.setValue(deck[`rate_temp_${dir}_small`], 1)
+            bindings[dir].button(Colors.lo_yellow)
+            // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
+            deck[(`rate_temp_${dir}_small`: any)].setValue(1)
           },
           () => {
-            Button.send(bindings[dir].button, Button.colors.lo_red)
-            Control.setValue(deck[`rate_perm_${dir}_small`], 1)
+            bindings[dir].button(Colors.lo_red)
+            // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
+            deck[(`rate_perm_${dir}_small`: any)].setValue(1)
           }
         )
       }
     } else {
       state[dir].nudging = state[dir].pressing = false
       if (getDirection(bindings.rate.getValue()) === dir) {
-        Button.send(bindings[dir].button, Button.colors.lo_amber)
+        bindings[dir].button.setValue(Colors.lo_amber)
       } else {
-        Button.send(bindings[dir].button, Button.colors.black)
+        bindings[dir].button.setValue(Colors.black)
       }
-      modes(context,
-        () => Control.setValue(deck[`rate_temp_${dir}`], 0),
+      modes(mode,
+        // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
+        () => deck[(`rate_temp_${dir}`: any)].setValue(0),
         undefined,
-        () => Control.setValue(deck[`rate_temp_${dir}_small`], 0)
+        // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
+        () => deck[(`rate_temp_${dir}_small`: any)].setValue(0)
       )
     }
   })
 
-  const onRate = ({ value }, { state, bindings }) => {
-    let up = Button.colors.black
-    let down = Button.colors.black
+  const onRate = ({ value }: ControlMessage, { state, bindings }: Object) => {
+    let up = Colors.black
+    let down = Colors.black
     if (value < -rateEpsilon) {
-      down = Button.colors.lo_amber
+      down = Colors.lo_green
     } else if (value > rateEpsilon) {
-      up = Button.colors.lo_amber
+      up = Colors.lo_green
     }
 
     if (!state.down.nudging) {
-      Button.send(bindings.down.button, down)
+      bindings.down.button.sendColor(down)
     }
 
     if (!state.up.nudging) {
-      Button.send(bindings.up.button, up)
+      bindings.up.button.sendColor(up)
     }
   }
 
@@ -80,13 +90,13 @@ export default (button) => (deck) => {
     bindings: {
       down: {
         type: 'button',
-        target: button,
-        midi: onNudgeMidi('down')
+        target: gridPosition,
+        midi: onNudgeMidi('down')(modifier)
       },
       up: {
         type: 'button',
-        target: [button[0] + 1, button[1]],
-        midi: onNudgeMidi('up')
+        target: [gridPosition[0] + 1, gridPosition[1]],
+        midi: onNudgeMidi('up')(modifier)
       },
       rate: {
         type: 'control',

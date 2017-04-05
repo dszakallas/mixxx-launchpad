@@ -1,6 +1,6 @@
-import { Control } from '../../Mixxx'
-import Preset from '../../Controls/Preset'
-import Component from '../../Component'
+/* @flow */
+import { makePresetFromPartialTemplate } from '../Preset'
+import { channelControls } from '../../Mixxx/Control'
 
 import play from '../controls/play'
 import sync from '../controls/sync'
@@ -16,36 +16,29 @@ import reloop from '../controls/reloop'
 import loopIo from '../controls/loopIo'
 import slip from '../controls/slip'
 
-export default (id, i, offset) => {
-  const deck = Control.controls.channels[i]
+import type { Modifier } from '../ModifierSidebar'
+import type { ControlComponentBuilder } from '../../Controls/ControlComponent'
+import type { MidiComponentBuilder } from '../../Controls/MidiComponent'
 
-  const template = {
-    play: play([0, 0])(deck),
-    sync: sync([1, 0])(deck),
-    nudge: nudge([2, 0])(deck),
-    cue: cue([0, 1])(deck),
-    tap: tap([1, 1])(deck),
-    grid: grid([2, 1])(deck),
-    pfl: pfl([0, 2])(deck),
-    quantize: quantize([1, 2])(deck),
-    loopIo: loopIo([2, 2])(deck),
-    load: load([0, 3])(deck),
-    key: key([1, 3])(deck),
-    reloop: reloop([2, 3])(deck),
-    slip: slip([3, 3])(deck)
-  }
-  return new Component({
-    onMount () {
-      const controls = Preset(id, template, offset)
-      const { controlBus, launchpadBus } = this.target
-      controls.mount({ controlBus, launchpadBus })
-      this.state = { controls }
-      return this.state
-    },
-    onUnmount () {
-      const { controls } = this.state
-      controls.unmount()
-      this.state = null
+export default (controlComponentBuilder: ControlComponentBuilder) =>
+  (midiComponentBuilder: MidiComponentBuilder) =>
+    (modifier: Modifier) => (id: string) => (i: number) => (offset: [number, number]) => {
+      const deck = channelControls[i]
+
+      const partial = {
+        play: play([0, 0]),
+        sync: sync([1, 0]),
+        nudge: nudge([2, 0]),
+        cue: cue([0, 1]),
+        tap: tap([1, 1]),
+        grid: grid([2, 1]),
+        pfl: pfl([0, 2]),
+        quantize: quantize([1, 2]),
+        loopIo: loopIo([2, 2]),
+        load: load([0, 3]),
+        key: key([1, 3]),
+        reloop: reloop([2, 3]),
+        slip: slip([3, 3])
+      }
+      return makePresetFromPartialTemplate(id, partial, offset)(deck)(controlComponentBuilder)(midiComponentBuilder)(modifier)
     }
-  })
-}

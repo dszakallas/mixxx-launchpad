@@ -1,26 +1,31 @@
-import { Button } from '../../Launchpad'
-import { Control } from '../../Mixxx'
-import modes from '../../Utility/modes'
+/* @flow */
 
-export default (button) => (deck) => {
+import type { ControlMessage, ChannelControl } from '../../Mixxx'
+import { Colors } from '../../Launchpad'
+import type { MidiMessage } from '../../Launchpad'
+
+import { modes } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
   return {
     bindings: {
       button: {
         type: 'button',
-        target: button,
-        attack: ({ context }, { bindings }) => {
-          modes(context,
+        target: gridPosition,
+        attack: (message: MidiMessage, { bindings }: Object) => {
+          modes(modifier.getState(),
             () => {
               bindings.keylock.setValue(Number(!bindings.keylock.getValue()))
             },
             () => {
-              Control.setValue(deck.key, Control.getValue(deck.key) - 1)
+              deck.key.setValue(deck.key.getValue() - 1)
             },
             () => {
-              Control.setValue(deck.key, Control.getValue(deck.key) + 1)
+              deck.key.setValue(deck.key.getValue() + 1)
             },
             () => {
-              Control.setValue(deck.reset_key, 1)
+              deck.reset_key.setValue(1)
             }
           )
         }
@@ -28,11 +33,11 @@ export default (button) => (deck) => {
       keylock: {
         type: 'control',
         target: deck.keylock,
-        update: ({ value }, { bindings }) => {
+        update: ({ value }: ControlMessage, { bindings }: Object) => {
           if (value) {
-            Button.send(bindings.button.button, Button.colors.hi_red)
+            bindings.button.button.sendColor(Colors.hi_red)
           } else {
-            Button.send(bindings.button.button, Button.colors.black)
+            bindings.button.button.sendColor(Colors.black)
           }
         }
       }

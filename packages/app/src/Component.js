@@ -1,25 +1,16 @@
-import { EventEmitter } from 'eventemitter3'
+/* @flow */
+
+import EventEmitter from 'eventemitter3'
 
 export default class Component extends EventEmitter {
-  constructor ({ onMount, onUnmount } = { }) {
-    super()
-    this._mountHandler = onMount || this.onMount
-    this._unmountHandler = onUnmount || this.onUnmount
-    this.target = null
-  }
-
-  mount (state) {
-    if (!this.target) {
-      this.target = state
-      this.emit(`mount`, this._mountHandler())
-    }
+  mount () {
+    this.onMount(this)
+    this.emit(`mount`, this)
   }
 
   unmount () {
-    if (this.target) {
-      this.emit(`unmount`, this._unmountHandler())
-      this.target = null
-    }
+    this.onUnmount(this)
+    this.emit(`unmount`, this)
   }
 
   onMount () { }

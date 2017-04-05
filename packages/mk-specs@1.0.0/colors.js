@@ -1,7 +1,6 @@
 'use strict'
 module.exports = {
   black: 4,
-
   lo_red: 1 + 4,
   hi_red: 3 + 4,
   lo_green: 16 + 4,

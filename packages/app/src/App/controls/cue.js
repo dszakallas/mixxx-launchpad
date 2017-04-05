@@ -1,35 +1,38 @@
-import { Control } from '../../Mixxx'
-import { Button } from '../../Launchpad'
-import retainAttackMode from '../../Utility/retainAttackMode'
-import modes from '../../Utility/modes'
+/* @flow */
 
-export default (button) => (deck) => {
+import type { ControlMessage, ChannelControl } from '../../Mixxx'
+import { Colors } from '../../Launchpad'
+
+import { modes, retainAttackMode } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
   return {
     bindings: {
       cue: {
         type: 'button',
-        target: button,
-        midi: retainAttackMode(({ context, value }) => {
-          modes(context,
+        target: gridPosition,
+        midi: retainAttackMode(modifier, (mode, { value }) => {
+          modes(mode,
             () => {
               if (value) {
-                Control.setValue(deck.cue_default, 1)
+                deck.cue_default.setValue(1)
               } else {
-                Control.setValue(deck.cue_default, 0)
+                deck.cue_default.setValue(0)
               }
             },
-            () => value && Control.setValue(deck.cue_set, 1),
+            () => value && deck.cue_set.setValue(1),
           )
         })
       },
       cueIndicator: {
         type: 'control',
         target: deck.cue_indicator,
-        update: ({ value }, { bindings }) => {
+        update: ({ value }: ControlMessage, { bindings }: Object) => {
           if (value) {
-            Button.send(bindings.cue.button, Button.colors.hi_red)
+            bindings.cue.button.sendColor(Colors.hi_red)
           } else if (!value) {
-            Button.send(bindings.cue.button, Button.colors.black)
+            bindings.cue.button.sendColor(Colors.black)
           }
         }
       }

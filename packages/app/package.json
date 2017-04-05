@@ -19,8 +19,5 @@
   },
   "peerDependencies": {
     "@mixxx-launchpad/mk-specs": "*"
-  },
-  "browserify": {
-    "transform": ["babelify"]
   }
 }

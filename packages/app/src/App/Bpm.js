@@ -1,11 +1,19 @@
-import { EventEmitter } from 'eventemitter3'
+/* @flow */
+import EventEmitter from 'eventemitter3'
 
 export default class Bpm extends EventEmitter {
-  constructor (max) {
+  tapTime: number
+  taps: number[]
+  max: number
+
+  constructor (max: ?number) {
     super()
+    if (max == null) {
+      max = 8
+    }
     this.tapTime = 0
     this.taps = []
-    this.max = max || 8
+    this.max = max
   }
   reset () {
     this.taps = []

@@ -1,39 +1,39 @@
-import PlaylistSidebar from './PlaylistSidebar'
-import ModifierSidebar from './ModifierSidebar'
-import Layout from './Layout'
+/* @flow */
+import { makePlaylistSidebar } from './PlaylistSidebar'
+import { makeModifierSidebar } from './ModifierSidebar'
+import Layout, { makeLayout } from './Layout'
 import Component from '../Component'
 
-import assign from 'lodash.assign'
+import type { TimerBuilder } from '../Mixxx/Timer'
+import type { ControlComponentBuilder } from '../Controls/ControlComponent'
+import type { MidiComponentBuilder } from '../Controls/MidiComponent'
+import type PlaylistSidebar from './PlaylistSidebar'
+import type ModifierSidebar from './ModifierSidebar'
 
-const ModifierPlugin = (modifier) => {
-  let ctrl = false
-  let shift = false
-  modifier.on('ctrl', (value) => { ctrl = !!value })
-  modifier.on('shift', (value) => { shift = !!value })
-  return {
-    press: (value, button, context) => {
-      return { value, button, context: assign(context, { shift, ctrl }) }
-    }
+export default class Screen extends Component {
+  modifier: ModifierSidebar
+  playListSidebar: PlaylistSidebar
+  layout: Layout
+
+  constructor (timerBuilder: TimerBuilder, controlComponentBuilder: ControlComponentBuilder, midiComponentBuilder: MidiComponentBuilder, id: string) {
+    super()
+    this.modifier = makeModifierSidebar(midiComponentBuilder)
+    this.playListSidebar = makePlaylistSidebar(timerBuilder)(midiComponentBuilder)
+    this.layout = makeLayout(controlComponentBuilder)(midiComponentBuilder)(this.modifier)(`${id}.layout`)
+  }
+  onMount () {
+    this.modifier.mount()
+    this.playListSidebar.mount()
+    this.layout.mount()
+  }
+  onUnmount () {
+    this.layout.unmount()
+    this.playListSidebar.unmount()
+    this.modifier.unmount()
   }
 }
 
-export default (id) => (timer) => {
-  const modifierSidebar = ModifierSidebar()
-  const modifierPlugin = ModifierPlugin(modifierSidebar)
-  const playListSidebar = PlaylistSidebar(timer)
-  const layout = Layout(`${id}.layout`)
-  return new Component({
-    onMount () {
-      this.target.launchpadBus.addPlugin(`${id}.modifierPlugin`, modifierPlugin)
-      modifierSidebar.mount(this.target.launchpadBus)
-      playListSidebar.mount(this.target)
-      layout.mount(this.target)
-    },
-    onUnmount () {
-      layout.unmount()
-      playListSidebar.unmount()
-      modifierSidebar.unmount()
-      this.target.launchpadBus.removePlugin(`${id}.modifierPlugin`)
-    }
-  })
-}
+export const makeScreen = (timerBuilder: TimerBuilder) =>
+  (controlComponentBuilder: ControlComponentBuilder) =>
+    (midiComponentBuilder: MidiComponentBuilder) =>
+      (id: string) => new Screen(timerBuilder, controlComponentBuilder, midiComponentBuilder, id)

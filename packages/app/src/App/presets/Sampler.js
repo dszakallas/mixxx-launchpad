@@ -1,27 +1,20 @@
-import { Control } from '../../Mixxx'
-import Preset from '../../Controls/Preset'
-import Component from '../../Component'
+/* @flow */
+import { makePresetFromPartialTemplate } from '../Preset'
+import { channelControls } from '../../Mixxx/Control'
 
 import hotcue from '../controls/hotcue'
 
-export default (id, i, offset) => {
-  const deck = Control.controls.channels[i]
+import type { Modifier } from '../ModifierSidebar'
+import type { ControlComponentBuilder } from '../../Controls/ControlComponent'
+import type { MidiComponentBuilder } from '../../Controls/MidiComponent'
 
-  const template = {
-    hotcue: hotcue(16, 4)([0, 0])(deck)
-  }
-  return new Component({
-    onMount () {
-      const controls = Preset(id, template, offset)
-      const { controlBus, launchpadBus } = this.target
-      controls.mount({ controlBus, launchpadBus })
-      this.state = { controls }
-      return this.state
-    },
-    onUnmount () {
-      const { controls } = this.state
-      controls.unmount()
-      this.state = null
+export default (controlComponentBuilder: ControlComponentBuilder) =>
+  (midiComponentBuilder: MidiComponentBuilder) =>
+    (modifier: Modifier) => (id: string) => (i: number) => (offset: [number, number]) => {
+      const deck = channelControls[i]
+
+      const partial = {
+        hotcue: hotcue(16, 4)([0, 0])
+      }
+      return makePresetFromPartialTemplate(id, partial, offset)(deck)(controlComponentBuilder)(midiComponentBuilder)(modifier)
     }
-  })
-}

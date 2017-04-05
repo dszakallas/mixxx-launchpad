@@ -1,20 +1,25 @@
-import modes from '../../Utility/modes'
-import { Button } from '../../Launchpad'
+/* @flow */
+import { Colors } from '../../Launchpad'
+import type { MidiMessage } from '../../Launchpad'
+import type { ControlMessage, ChannelControl } from '../../Mixxx'
 
-export default (button) => (deck) => {
+import { modes } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
   return {
     bindings: {
       pfl: {
         type: 'control',
         target: deck.pfl,
-        update: ({ value }, { bindings }) => value
-          ? Button.send(bindings.button.button, Button.colors.hi_green)
-          : Button.send(bindings.button.button, Button.colors.black)
+        update: ({ value }: ControlMessage, { bindings }: Object) => value
+          ? bindings.button.button(Colors.hi_green)
+          : bindings.button.button.sendColor(Colors.black)
       },
       button: {
         type: 'button',
-        target: button,
-        attack: ({ context }, { bindings }) => modes(context,
+        target: gridPosition,
+        attack: (message: MidiMessage, { bindings }: Object) => modes(modifier.getState(),
           () => bindings.pfl.setValue(Number(!bindings.pfl.getValue())))
       }
     }

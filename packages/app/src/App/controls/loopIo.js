@@ -1,17 +1,22 @@
-import { Button } from '../../Launchpad'
-import { Control } from '../../Mixxx'
-import modes from '../../Utility/modes'
+/* @flow */
+import { Colors } from '../../Launchpad'
+import type { MidiMessage } from '../../Launchpad'
 
-export default (button) => (deck) => {
-  const onMidi = (dir) => ({ value, context }, { bindings }) => {
-    modes(context, () => {
+import { modes } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+import type { ChannelControl } from '../../Mixxx'
+
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+  const onMidi = (dir: 'in' | 'out') => ({ value }: MidiMessage, { bindings }: Object) => {
+    modes(modifier.getState(), () => {
       if (value) {
-        Control.setValue(deck[`loop_${dir}`], 1)
-        Button.send(bindings[dir].button, Button.colors.hi_green)
+        // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
+        deck[(`loop_${dir}`: any)].setValue(1)
+        bindings[dir].button.sendColor(Colors.hi_green)
       } else {
-        // only needed to mimick the UI
-        Control.setValue(deck[`loop_${dir}`], 0)
-        Button.send(bindings[dir].button, Button.colors.black)
+        // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
+        deck[(`loop_${dir}`: any)].setValue(0)
+        bindings[dir].button.sendColor(Colors.black)
       }
     })
   }
@@ -19,12 +24,12 @@ export default (button) => (deck) => {
     bindings: {
       in: {
         type: 'button',
-        target: button,
+        target: gridPosition,
         midi: onMidi('in')
       },
       out: {
         type: 'button',
-        target: [button[0] + 1, button[1]],
+        target: [gridPosition[0] + 1, gridPosition[1]],
         midi: onMidi('out')
       }
     }

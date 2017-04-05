@@ -1,10 +1,14 @@
-import { Button } from '../../Launchpad'
-import modes from '../../Utility/modes'
-import retainAttackMode from '../../Utility/retainAttackMode'
+/* @flow */
+import { Colors } from '../../Launchpad'
 
-export default (button) => (deck) => {
-  const onMidi = retainAttackMode(({ context, value }, { bindings, state }) => {
-    modes(context,
+import type { ControlMessage, ChannelControl } from '../../Mixxx'
+
+import { modes, retainAttackMode } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+  const onMidi = (modifier) => retainAttackMode(modifier, (mode, { value }, { bindings, state }) => {
+    modes(mode,
       () => {
         if (value) {
           bindings.control.setValue(Number(!bindings.control.getValue()))
@@ -18,7 +22,7 @@ export default (button) => (deck) => {
         if (value) {
           state.mode = !state.mode
           const color = state.mode ? 'orange' : 'red'
-          Button.send(bindings.button.button, Button.colors[`lo_${color}`])
+          bindings.button.button.sendColor(Colors[`lo_${color}`])
         }
       }
     )
@@ -28,22 +32,22 @@ export default (button) => (deck) => {
       control: {
         type: 'control',
         target: deck.slip_enabled,
-        update: ({ value }, { bindings, state }) => {
+        update: ({ value }: ControlMessage, { bindings, state }: Object) => {
           const color = state.mode ? 'orange' : 'red'
           if (value) {
-            Button.send(bindings.button.button, Button.colors[`hi_${color}`])
+            bindings.button.button.sendColor(Colors[`hi_${color}`])
           } else {
-            Button.send(bindings.button.button, Button.colors[`lo_${color}`])
+            bindings.button.button.sendColor(Colors[`lo_${color}`])
           }
         }
       },
       button: {
         type: 'button',
-        target: button,
-        midi: onMidi,
-        mount: (dk, { bindings, state }) => {
+        target: gridPosition,
+        midi: onMidi(modifier),
+        mount: (dk: null, { bindings, state }: Object) => {
           const color = state.mode ? 'orange' : 'red'
-          Button.send(bindings.button.button, Button.colors[`lo_${color}`])
+          bindings.button.button.sendColor(Colors[`lo_${color}`])
         }
       }
     },

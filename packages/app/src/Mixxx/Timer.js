@@ -1,55 +1,64 @@
+/* @flow */
 import { engine } from './globals'
 
-const timerPrefix = '__mixxx_timer'
+const timerPrefix = '__timer'
+
+type TimerState = {
+  handle: ?number,
+  key: ?string,
+  started: ?number
+}
+
+export type TimerBuilder = (() => void) => Timer
+
+export const makeTimer = (moduleName: string, registry: Object): TimerBuilder =>
+  (task: () => void) => {
+    return new Timer(moduleName, registry, task)
+  }
 
 export class Timer {
-  static create (moduleName, registry) {
-    return function (task, interval) {
-      return new Timer(moduleName, registry, task, interval)
-    }
-  }
+  task: () => void
 
-  constructor (registryName, registry, task, interval) {
+  _state: ?TimerState
+
+  _registryName: string
+  _registry: Object
+
+  constructor (registryName: string, registry: Object, task: () => void) {
     this._registryName = registryName
     this._registry = registry
-    this._handle = undefined
-    this._key = undefined
-    this._started = undefined
     this.task = task
-    this._interval = interval
+    this._state = undefined
   }
 
-  start (interval) {
-    if (this._handle == null) {
-      if (interval != null) {
-        this._interval = interval
-      }
-      this._started = Date.now()
-      this._key = `${timerPrefix}_${this._started}_${parseInt(Math.random() * 100)}`
-      this._registry[this._key] = this.task
-      this._handle = engine.beginTimer(this._interval, `${this._registryName}.${this._key}`)
-      return this._started
+  start (interval: number) {
+    if (this._state == null) {
+      const started = Date.now()
+      const key = `${timerPrefix}_${started}_${parseInt(Math.random() * 100)}`
+      const handle = engine.beginTimer(interval, `${this._registryName}.${key}`)
+      this._state = { handle, key, started }
+      this._registry[key] = this.task
+      return started
     }
   }
 
   end () {
-    if (this._handle != null) {
-      engine.stopTimer(this._handle)
-      delete this._registry[this._key]
-      this._key = undefined
-      this._started = undefined
-      this._handle = undefined
+    const state = this._state
+    if (state != null) {
+      engine.stopTimer(state.handle)
+      delete this._registry[state.key]
+      this._state = undefined
     }
   }
 
-  restart (interval) {
-    if (this._handle != null) {
+  restart (interval: number) {
+    if (this._state != null) {
       this.end()
       return this.start(interval)
     }
   }
 
   getStartTime () {
-    return this._started
+    return this._state && this._state.started
   }
 }

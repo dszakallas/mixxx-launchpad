@@ -1,20 +1,23 @@
-import { Button } from '../../Launchpad'
-import { Control } from '../../Mixxx'
-import modes from '../../Utility/modes'
+/* @flow */
+import { Colors } from '../../Launchpad'
 
-export default (loops, d) => (button) => (deck) => {
+import { modes } from '../ModifierSidebar'
+import type { Modifier } from '../ModifierSidebar'
+import type { ChannelControl } from '../../Mixxx'
+
+export default (loops: number[], d: number) => (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
   const bindings = { }
-  const onAttack = (l) => ({ context }) => {
-    modes(context,
-      () => Control.setValue(deck.beatloops[l].toggle, 1)
+  const onAttack = (l) => (modifier) => () => {
+    modes(modifier.getState(),
+      () => deck.beatloops[l].toggle.setValue(1)
     )
   }
 
   const onUpdate = (i) => ({ value }, { bindings }) => {
     if (value) {
-      Button.send(bindings[i].button, Button.colors.hi_red)
+      bindings[i].button.sendColor(Colors.hi_red)
     } else {
-      Button.send(bindings[i].button, Button.colors.lo_red)
+      bindings[i].button.sendColor(Colors.lo_red)
     }
   }
 
@@ -23,8 +26,8 @@ export default (loops, d) => (button) => (deck) => {
     const dy = ~~(i / d)
     bindings[i] = {
       type: 'button',
-      target: [button[0] + dx, button[1] + dy],
-      attack: onAttack(loop)
+      target: [gridPosition[0] + dx, gridPosition[1] + dy],
+      attack: onAttack(loop)(modifier)
     }
     bindings[`${loop}.enabled`] = {
       type: 'control',

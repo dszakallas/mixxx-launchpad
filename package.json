@@ -5,25 +5,19 @@
   "homepage": "https://github.com/szdavid92/mixxx-launchpad",
   "main": "index.js",
   "scripts": {
-    "compile": "make compile"
+    "compile": "make compile",
+    "lint": "eslint packages",
+    "check": "flow"
   },
   "author": "Midiparse",
   "license": "MIT",
-  "dependencies": {
-    "eventemitter3": "^2.0.2",
-    "json-stringify-safe": "^5.0.1",
-    "lodash.assign": "^4.2.0",
-    "lodash.findindex": "^4.6.0",
-    "lodash.flatmap": "^4.5.0",
-    "lodash.isequal": "^4.5.0",
-    "lodash.mapkeys": "^4.6.0",
-    "lodash.pick": "^4.4.0",
-    "lodash.range": "^3.2.0",
-    "lodash.startswith": "^4.2.1"
-  },
   "devDependencies": {
+    "babel-eslint": "^7.2.1",
+    "babel-plugin-transform-class-properties": "^6.23.0",
     "babel-plugin-transform-es3-member-expression-literals": "^6.8.0",
     "babel-plugin-transform-es3-property-literals": "^6.8.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-preset-babili": "0.0.12",
     "babel-preset-es2015": "^6.18.0",
     "babelify": "^7.3.0",
     "browserify": "^13.1.1",
@@ -31,13 +25,16 @@
     "es6-promisify": "^5.0.0",
     "eslint": "^3.10.2",
     "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-flowtype": "^2.30.4",
+    "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-promise": "^3.3.2",
     "eslint-plugin-standard": "^2.0.1",
-    "mkdirp": "^0.5.1",
-    "nodemon": "^1.11.0",
-    "sinon": "^1.17.6",
-    "through2": "^2.0.1",
-    "lerna": "2.0.0-beta.38"
+    "flow-bin": "^0.42.0",
+    "lerna": "2.0.0-beta.38",
+    "mkdirp": "^0.5.1"
   },
-  "controllers": [ "mk1", "mk2" ]
+  "controllers": [
+    "mk1",
+    "mk2"
+  ]
 }
