@@ -41,14 +41,14 @@ install_Darwin : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$
 .PHONY : install_Darwin
 
 install_Linux : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
-	cp $$^ $$(HOME)/.mixxx/controllers
+	cp $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) $$(HOME)/.mixxx/controllers
 .PHONY : install_Linux
 
 endef
 
 define releaseRule
 mixxx-launchpad-$(version) : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
-	zip -9 $$@.zip $$^
+	zip -9 $$@.zip $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
 endef
 
 $(foreach target,$(targets),$(eval $(call targetScriptRules,$(target))))
