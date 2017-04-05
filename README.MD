@@ -3,6 +3,8 @@
 **Flexible and (soon) customizable controller mapping for Launchpad. Make DJing
 with Mixxx fun on Launchpad!**
 
+[![Build status](https://img.shields.io/circleci/project/github/szdavid92/mixxx-launchpad.svg)](https://circleci.com/gh/szdavid92/mixxx-launchpad)
+
 There's already a Launchpad mapping shipping with Mixxx however it
 has several quirks and limitations:
 
