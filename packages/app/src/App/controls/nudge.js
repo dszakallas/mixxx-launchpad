@@ -29,8 +29,6 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
         modes(mode,
           () => {
             state[dir].nudging = true
-            console.log(bindings)
-            console.log(dir)
             bindings[dir].button.sendColor(Colors.hi_yellow)
             // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
             deck[(`rate_temp_${dir}`: any)].setValue(1)
