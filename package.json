@@ -1,6 +1,6 @@
 {
   "name": "@mixxx-launchpad/project",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "Novation Launchpad mapping for Mixxx",
   "homepage": "https://github.com/szdavid92/mixxx-launchpad",
   "main": "index.js",
