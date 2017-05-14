@@ -1,9 +1,5 @@
 /* @flow */
-import { flatMap } from 'lodash-es'
-import { assign } from 'lodash-es'
-import { isEqual } from 'lodash-es'
-import { pick } from 'lodash-es'
-import { findIndex } from 'lodash-es'
+import { assign, isEqual, findIndex, flatMap, pick } from 'lodash-es'
 
 import Grande from './presets/Grande'
 import Juggler from './presets/Juggler'
