@@ -1,5 +1,5 @@
 /* @flow */
-import range from 'lodash.range'
+import { range } from 'lodash-es'
 
 import { Colors } from '../../Launchpad'
 

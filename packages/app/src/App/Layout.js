@@ -1,9 +1,9 @@
 /* @flow */
-import flatMap from 'lodash.flatmap'
-import assign from 'lodash.assign'
-import isEqual from 'lodash.isequal'
-import pick from 'lodash.pick'
-import findIndex from 'lodash.findindex'
+import { flatMap } from 'lodash-es'
+import { assign } from 'lodash-es'
+import { isEqual } from 'lodash-es'
+import { pick } from 'lodash-es'
+import { findIndex } from 'lodash-es'
 
 import Grande from './presets/Grande'
 import Juggler from './presets/Juggler'
@@ -15,7 +15,7 @@ import Component from '../Component'
 import type { MidiMessage } from '../Launchpad'
 import { Buttons, Colors } from '../Launchpad'
 
-import { retainAttackMode, modes } from './ModifierSidebar'
+import { modes, retainAttackMode } from './ModifierSidebar'
 import type { Preset } from './Preset'
 import type { Modifier } from './ModifierSidebar'
 import type { ControlComponentBuilder } from '../Controls/ControlComponent'

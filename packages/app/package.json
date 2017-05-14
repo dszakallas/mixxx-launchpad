@@ -19,5 +19,8 @@
   },
   "peerDependencies": {
     "@mixxx-launchpad/mk-specs": "*"
+  },
+  "devDependencies": {
+    "lodash-es": "^4.17.4"
   }
 }

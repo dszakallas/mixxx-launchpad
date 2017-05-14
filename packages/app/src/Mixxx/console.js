@@ -1,7 +1,7 @@
 import { engine } from './globals'
-import startsWith from 'lodash.startswith'
+import { startsWith } from 'lodash-es'
 
-const stringify = require('json-stringify-safe')
+import stringify from 'json-stringify-safe'
 
 function assemble () {
   let str = ''

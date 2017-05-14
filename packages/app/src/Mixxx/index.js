@@ -1,8 +1,7 @@
 /* @flow */
 
-export type { ControlDef } from './Control'
+export type { ChannelControl, ControlDef } from './Control'
 export {
-  ChannelControl,
   channelControls,
   createChannelControl,
   Control, playListControl
