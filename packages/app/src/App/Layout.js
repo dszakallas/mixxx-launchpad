@@ -111,6 +111,9 @@ class SelectorBar extends Component {
       } else {
         this.bindings[block.channel][0].button.sendColor(Colors.hi_green)
       }
+      console.log(block.size)
+      console.log(block.index)
+      console.log(cycled)
       this.mountedPresets[block.channel] = cycled[block.size][block.index](this.controlComponentBuilder)(this.midiComponentBuilder)(this.modifier)(`${this.id}.deck.${block.channel}`)(block.channel)(block.offset)
       this.mountedPresets[block.channel].mount()
     })
@@ -213,9 +216,9 @@ const presets = {
 }
 
 const cycled = {
-  'grande': flatMap(pick(presets, ['grande', 'tall', 'short']), (x) => x),
-  'tall': flatMap(pick(presets, ['tall', 'short']), (x) => x),
-  'short': flatMap(pick(presets, ['short']), (x) => x)
+  'grande': [...presets.grande, ...presets.tall, ...presets.short],
+  'tall': [...presets.tall, ...presets.short],
+  'short': presets.short
 }
 
 const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
@@ -285,12 +288,14 @@ const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
   }, [[], next])
 }
 
+const posMod = (x, n) => ((x % n) + n) % n
+
 const cycle = (channel: number, current: Block[], dir: 1 | -1): Diff => {
   const matched = findIndex(current, (block) => block.channel === channel)
   if (matched === -1) {
     return [[], []]
   }
-  const nextIndex = (current[matched].index + dir) % cycled[current[matched].size].length
+  const nextIndex = posMod((current[matched].index + dir), cycled[current[matched].size].length)
   if (nextIndex === current[matched].index) {
     return [[], []]
   }
