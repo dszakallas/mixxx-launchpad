@@ -111,9 +111,6 @@ class SelectorBar extends Component {
       } else {
         this.bindings[block.channel][0].button.sendColor(Colors.hi_green)
       }
-      console.log(block.size)
-      console.log(block.index)
-      console.log(cycled)
       this.mountedPresets[block.channel] = cycled[block.size][block.index](this.controlComponentBuilder)(this.midiComponentBuilder)(this.modifier)(`${this.id}.deck.${block.channel}`)(block.channel)(block.offset)
       this.mountedPresets[block.channel].mount()
     })
