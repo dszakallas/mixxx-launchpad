@@ -85,5 +85,5 @@ watch :
 .PHONY : watch
 
 clean :
-	rm -rf dist
+	rm -rf dist tmp
 .PHONY : clean
