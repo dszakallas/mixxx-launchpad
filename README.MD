@@ -380,7 +380,7 @@ description and [buttons.js].
 
 ### Build
 
-To build you need to have make, a recent Node (>=4), npm and jq.
+To build you need to have make, a recent Node (>=4), `npm` and `jq`. The watch tasks require `fswatch`.
 
 The multi-project build is managed with [lerna.js]. You need to  install it
 globally to make it available on the command line.  First clone the repo and
@@ -397,7 +397,7 @@ npm install
 To compile the sources run
 
 ```
-make compile
+make
 ```
 
 Afterward the `dist` folder will contain the files that need to be
@@ -408,6 +408,13 @@ make install
 ```
 does this for you on macOS and Linux.
 
+These two tasks have watch counterparts making them rerun automatically on file changes. This is handy during development:
+
+```
+make watch
+make watch-install
+```
+ 
 ### Known Issues
 
 #### No Windows build recipes
