@@ -27,7 +27,6 @@ var entry = path.resolve('packages', tgt, tgtPkg.main)
 
 var global = tgtPkg.controller.global
 
-var config =
 mkdirp(path.dirname(path.resolve(process.argv[3])))
   .then(() => readFile('tmp/cache.json'))
   .then((cache) => JSON.parse(cache))
