@@ -412,7 +412,7 @@ These two tasks have watch counterparts making them rerun automatically on file 
 
 ```
 make watch
-make watch-install
+make watch_install
 ```
  
 ### Known Issues

@@ -71,12 +71,12 @@ test :
 	npm run check
 .PHONY : test
 
-watch-install :
+watch_install :
 	@echo Stop watching with Ctrl-C
 	@sleep 1 # Wait a bit so users can read
 	@$(MAKE) install
 	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE) install; done	
-.PHONY : install-watch
+.PHONY : watch_install
 
 watch :
 	@echo Stop watching with Ctrl-C
