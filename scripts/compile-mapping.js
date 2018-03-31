@@ -17,19 +17,17 @@ const tgtPkg = require(path.resolve('packages', tgt, 'package.json'))
 const buttons = require(path.resolve('packages', tgt, 'buttons'))
 const templateFile = path.join('packages', tgt, 'template.xml.ejs')
 
-readFile(templateFile)
-  .then((template) => {
-    const rendered = ejs.render(template.toString(), {
-      author: pkg.author,
-      description: pkg.description,
-      homepage: pkg.homepage,
-      device: tgtPkg.controller.device,
-      manufacturer: tgtPkg.controller.manufacturer,
-      global: tgtPkg.controller.global,
-      buttons: Object.keys(buttons).map((key) => buttons[key])
-    })
-    return mkdirp(path.dirname(path.resolve(process.argv[3])))
-      .then(() => rendered)
+Promise.resolve().then(async () => {
+  const template = await readFile(templateFile)
+  const rendered = ejs.render(template.toString(), {
+    author: pkg.author,
+    description: pkg.description,
+    homepage: pkg.homepage,
+    device: tgtPkg.controller.device,
+    manufacturer: tgtPkg.controller.manufacturer,
+    global: tgtPkg.controller.global,
+    buttons: Object.keys(buttons).map((key) => buttons[key])
   })
-  .then((rendered) => writeFile(path.resolve(process.argv[3]), rendered))
-  .catch((err) => { throw err })
+  await mkdirp(path.dirname(path.resolve(process.argv[3])))
+  await writeFile(path.resolve(process.argv[3]), rendered)
+}).catch((err) => { throw err })

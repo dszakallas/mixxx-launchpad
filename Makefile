@@ -21,12 +21,12 @@ mappingFiles = $(package) packages/$(1)/buttons.js packages/$(1)/template.xml.ej
 targets := $(shell jq -r '.controllers | join (" ")' package.json)
 
 define targetScriptRules
-$(call script,$(1)) : $(scriptFiles) 
+$(call script,$(1)) : $(scriptFiles)
 	./scripts/compile-scripts.js $(1) "$$@"
 endef
 
 define targetMappingRules
-$(call mapping,$(1)) : $(mappingFiles) 
+$(call mapping,$(1)) : $(mappingFiles)
 	./scripts/compile-mapping.js $(1) "$$@"
 endef
 

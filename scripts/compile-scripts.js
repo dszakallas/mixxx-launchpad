@@ -23,39 +23,31 @@ const input = path.resolve('packages', tgt, tgtPkg.main)
 
 const global = tgtPkg.controller.global
 
-mkdirp(path.dirname(path.resolve(process.argv[3])))
-  .then(() => readFile('tmp/cache.json'))
-  .then((cache) => JSON.parse(cache))
-  .catch((err) => null)
-  .then((cache) => {
-    return rollup.rollup({
-      cache,
-      input,
-      plugins: [
-        nodeResolve({
-          extensions: ['.js', '.json'],
-          main: true,
-          modulesOnly: false, // required for rollup-plugin-commonjs
-          // for valid values see https://github.com/substack/node-resolve
-          customResolveOptions: {
-            paths: [ path.resolve('packages', tgt, 'node_modules') ]
-          }}),
-        json(),
-        babel({
-          exclude: 'node_modules/**'}),
-        commonjs()]})
-  })
-  .then((bundle) => {
-    const cache = JSON.stringify(bundle)
-    return mkdirp('tmp')
-      .then(() => writeFile('tmp/cache.json', cache))
-      .then(() => bundle.write({
-        format: 'iife',
-        name: global,
-        file: path.resolve(process.argv[3])
-      }))
-  })
-  .catch((err) => {
-    console.error(err)
-    process.exit(1)
-  })
+Promise.resolve().then(async () => {
+  await mkdirp(path.dirname(path.resolve(process.argv[3])))
+  const cache = await readFile('tmp/cache.json').then((cache) => JSON.parse(cache)).catch((err) => null)
+  const bundle = await rollup.rollup({
+    cache,
+    input,
+    plugins: [
+      nodeResolve({
+        extensions: ['.js', '.json'],
+        main: true,
+        modulesOnly: false, // required for rollup-plugin-commonjs
+        // for valid values see https://github.com/substack/node-resolve
+        customResolveOptions: {
+          paths: [ path.resolve('packages', tgt, 'node_modules') ]
+        }}),
+      json(),
+      babel({
+        exclude: 'node_modules/**'}),
+      commonjs()]})
+  await mkdirp('tmp')
+  await Promise.all([
+    writeFile('tmp/cache.json', JSON.stringify(bundle)),
+    bundle.write({
+      format: 'iife',
+      name: global,
+      file: path.resolve(process.argv[3])
+    })])
+}).catch((err) => { throw err })
