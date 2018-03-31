@@ -1,31 +1,27 @@
 #!/usr/bin/env node
 
-var prify = require('es6-promisify')
-var path = require('path')
-var mkdirp = prify(require('mkdirp'))
-var fs = require('fs')
+const { promisify } = require('es6-promisify')
+const path = require('path')
+const mkdirp = promisify(require('mkdirp'))
+const fs = require('fs')
 
-var rollup = require('rollup')
-var nodeResolve = require('rollup-plugin-node-resolve')
-var babel = require('rollup-plugin-babel')
-var commonjs = require('rollup-plugin-commonjs')
-var json = require('rollup-plugin-json')
-var writeFile = prify(fs.writeFile)
-var readFile = prify(fs.readFile)
+const rollup = require('rollup')
+const nodeResolve = require('rollup-plugin-node-resolve')
+const babel = require('rollup-plugin-babel')
+const commonjs = require('rollup-plugin-commonjs')
+const json = require('rollup-plugin-json')
+const writeFile = promisify(fs.writeFile)
+const readFile = promisify(fs.readFile)
 
-if (process.argv.length > 5 || (process.argv.length === 5 && process.argv[4] !== "watch")) {
-  throw Error('Usage: target outFile [watch]')
+if (process.argv.length !== 4) {
+  throw Error('Usage: target outFile')
 }
 
-var watch = process.argv.length === 5
+const tgt = process.argv[2]
+const tgtPkg = require(path.resolve('packages', tgt, 'package.json'))
+const input = path.resolve('packages', tgt, tgtPkg.main)
 
-var watcher = null
-
-var tgt = process.argv[2]
-var tgtPkg = require(path.resolve('packages', tgt, 'package.json'))
-var entry = path.resolve('packages', tgt, tgtPkg.main)
-
-var global = tgtPkg.controller.global
+const global = tgtPkg.controller.global
 
 mkdirp(path.dirname(path.resolve(process.argv[3])))
   .then(() => readFile('tmp/cache.json'))
@@ -34,7 +30,7 @@ mkdirp(path.dirname(path.resolve(process.argv[3])))
   .then((cache) => {
     return rollup.rollup({
       cache,
-      entry,
+      input,
       plugins: [
         nodeResolve({
           extensions: ['.js', '.json'],
@@ -55,19 +51,11 @@ mkdirp(path.dirname(path.resolve(process.argv[3])))
       .then(() => writeFile('tmp/cache.json', cache))
       .then(() => bundle.write({
         format: 'iife',
-        moduleName: global,
-        dest: path.resolve(process.argv[3])
+        name: global,
+        file: path.resolve(process.argv[3])
       }))
   })
-  .catch(function (err) {
+  .catch((err) => {
     console.error(err)
     process.exit(1)
   })
-
-process.on('SIGINT', () => {
-  if (watcher) {
-    watcher.close()
-    watcher = null
-  }
-  process.exit(125)
-})
