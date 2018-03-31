@@ -9,13 +9,6 @@ type TimerState = {
   started: ?number
 }
 
-export type TimerBuilder = (() => void) => Timer
-
-export const makeTimer = (moduleName: string, registry: Object): TimerBuilder =>
-  (task: () => void) => {
-    return new Timer(moduleName, registry, task)
-  }
-
 export class Timer {
   task: () => void
 
@@ -62,3 +55,10 @@ export class Timer {
     return this._state && this._state.started
   }
 }
+
+export type TimerBuilder = (() => void) => Timer
+
+export const makeTimer = (moduleName: string, registry: Object): TimerBuilder =>
+  (task: () => void) => {
+    return new Timer(moduleName, registry, task)
+  }

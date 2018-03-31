@@ -4,7 +4,6 @@ import Component from '../Component'
 import type { MidiBus, MidiMessage } from '../Launchpad/MidiBus'
 import type { LaunchpadMidiButton } from '../Launchpad/Button'
 
-export type MidiComponentBuilder = (button: LaunchpadMidiButton) => MidiComponent
 export const makeMidiComponent = (midibus: MidiBus) => (button: LaunchpadMidiButton) => new MidiComponent(midibus, button)
 
 export default class MidiComponent extends Component {
@@ -34,3 +33,5 @@ export default class MidiComponent extends Component {
     this.midibus.removeListener(this.button.def.name, this._cb)
   }
 }
+
+export type MidiComponentBuilder = (button: LaunchpadMidiButton) => MidiComponent

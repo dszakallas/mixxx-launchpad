@@ -5,8 +5,6 @@ import { Control } from '../Mixxx'
 
 import type { ControlBus } from '../Mixxx'
 
-export type ControlComponentBuilder = (string) => (Control) => ControlComponent
-
 export const makeControlComponent = (controlBus: ControlBus) =>
   (id: string) =>
     (control: Control) =>
@@ -56,9 +54,11 @@ export default class ControlComponent extends Component {
   }
 
   getValue () {
-    if (!this.handle) {
+    if (!this._handle) {
       this.value = this.control.getValue()
     }
     return this.value
   }
 }
+
+export type ControlComponentBuilder = (string) => (Control) => ControlComponent

@@ -21,7 +21,7 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
                 deck.cue_default.setValue(0)
               }
             },
-            () => value && deck.cue_set.setValue(1),
+            () => value && deck.cue_set.setValue(1)
           )
         })
       },

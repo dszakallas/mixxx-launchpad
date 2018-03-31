@@ -280,8 +280,8 @@ const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
     const [neg, pos] = diff
     const matched = findIndex(pos, (b) => isEqual(block, b))
     return matched === -1
-    ? [neg.concat([block]), pos]
-    : [neg, pos.slice(0, matched).concat(pos.slice(matched + 1, pos.length))]
+      ? [neg.concat([block]), pos]
+      : [neg, pos.slice(0, matched).concat(pos.slice(matched + 1, pos.length))]
   }, [[], next])
 }
 

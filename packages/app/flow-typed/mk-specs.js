@@ -4,10 +4,10 @@ declare module '@mixxx-launchpad/mk-specs/buttons' {
     midino: number,
     name: string
   }
-  declare var exports: { [id: string]: LaunchpadMidiButtonDef }
+  declare module.exports: { [id: string]: LaunchpadMidiButtonDef }
 }
 
 declare module '@mixxx-launchpad/mk-specs/colors' {
   declare type LaunchpadMidiButtonColor = number
-  declare var exports: { [key: string]: LaunchpadMidiButtonColor }
+  declare module.exports: { [key: string]: LaunchpadMidiButtonColor }
 }
