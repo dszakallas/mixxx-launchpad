@@ -3,11 +3,11 @@
   "version": "2.1.6",
   "description": "Novation Launchpad mapping for Mixxx",
   "homepage": "https://github.com/szdavid92/mixxx-launchpad",
-  "main": "index.js",
   "scripts": {
     "postinstall": "lerna bootstrap",
     "lint": "eslint packages",
-    "check": "cd packages/app && flow"
+    "check": "cd packages && flow",
+    "which": "which"
   },
   "author": "Midiparse",
   "license": "MIT",

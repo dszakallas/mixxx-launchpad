@@ -1,5 +1,5 @@
 {
-  "name": "@mixxx-launchpad/app",
+  "name": "@mixxx-launchpad/mixxx",
   "private": true,
   "version": "1.0.0",
   "main": "src/index.js",
@@ -7,9 +7,7 @@
   "author": "Midiparse",
   "license": "MIT",
   "dependencies": {
-    "eventemitter3": "~3.0.1",
     "json-stringify-safe": "~5.0.1",
-    "lodash-es": "~4.17.4",
-    "@mixxx-launchpad/mixxx": "~1.0.0"
+    "lodash-es": "~4.17.4"
   }
 }

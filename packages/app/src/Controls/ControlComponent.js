@@ -1,9 +1,9 @@
 /* @flow */
 
 import Component from '../Component'
-import { Control } from '../Mixxx'
+import { Control } from '@mixxx-launchpad/mixxx'
 
-import type { ControlBus } from '../Mixxx'
+import type { ControlBus } from '@mixxx-launchpad/mixxx'
 
 export const makeControlComponent = (controlBus: ControlBus) =>
   (id: string) =>
