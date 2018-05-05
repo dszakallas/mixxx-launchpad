@@ -1,8 +1,7 @@
 /* @flow */
 
 import type { ChannelControl, ControlMessage } from '@mixxx-launchpad/mixxx'
-import type { LaunchpadDevice } from '../../'
-import type { MidiMessage } from '../../'
+import type { LaunchpadDevice, MidiMessage } from '../../'
 
 import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'

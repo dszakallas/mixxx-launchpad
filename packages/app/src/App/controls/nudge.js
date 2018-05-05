@@ -1,7 +1,6 @@
 /* @flow */
 
-import type { LaunchpadDevice } from '../../'
-import type { MidiMessage } from '../../'
+import type { LaunchpadDevice, MidiMessage } from '../../'
 
 import { modes, retainAttackMode } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'

@@ -1,6 +1,5 @@
 /* @flow */
-import type { LaunchpadDevice } from '../../'
-import type { MidiMessage } from '../../'
+import type { LaunchpadDevice, MidiMessage } from '../../'
 
 import type { ChannelControl, ControlMessage } from '@mixxx-launchpad/mixxx'
 
