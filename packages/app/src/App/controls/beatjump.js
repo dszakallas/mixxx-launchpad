@@ -69,7 +69,7 @@ export default (jumps: [number, number][], vertical?: boolean) => (gridPosition:
       }
     )
   })
-  const onMount = (k) => (dontKnow, { bindings, state }) => {
+  const onMount = (k) => (_, { bindings, state }) => {
     const prefix = state.mode ? 'lo' : 'hi'
     bindings[k].button.sendColor(device.colors[`${prefix}_${state.color[state.set]}`])
   }
