@@ -1,8 +1,9 @@
 {
   "name": "@mixxx-launchpad/project",
-  "version": "2.1.7",
+  "version": "2.1.8",
   "description": "Novation Launchpad mapping for Mixxx",
-  "homepage": "https://github.com/szdavid92/mixxx-launchpad",
+  "homepage": "https://github.com/dszakallas/mixxx-launchpad",
+  "respository": "https://github.com/dszakallas/mixxx-launchpad.git",
   "scripts": {
     "postinstall": "lerna bootstrap",
     "lint": "eslint packages",
@@ -21,7 +22,6 @@
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-preset-env": "^1.6.1",
     "ejs": "^2.5.2",
-    "es6-promisify": "^6.0.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-flowtype": "^2.30.4",
