@@ -1,6 +1,6 @@
 {
   "name": "@mixxx-launchpad/project",
-  "version": "2.1.8",
+  "version": "2.2.0",
   "description": "Novation Launchpad mapping for Mixxx",
   "homepage": "https://github.com/dszakallas/mixxx-launchpad",
   "respository": "https://github.com/dszakallas/mixxx-launchpad.git",
@@ -40,6 +40,7 @@
   },
   "controllers": [
     "mk1",
-    "mk2"
+    "mk2",
+    "pro"
   ]
 }
