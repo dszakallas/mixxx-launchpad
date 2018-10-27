@@ -1,8 +1,6 @@
 /* @flow */
 import { assign, isEqual, findIndex } from 'lodash-es'
 
-import { channelControls } from '@mixxx-launchpad/mixxx'
-
 import Grande from './presets/Grande'
 import Juggler from './presets/Juggler'
 import Sampler from './presets/Sampler'

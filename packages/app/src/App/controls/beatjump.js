@@ -1,5 +1,5 @@
 /* @flow */
-import { flatMap } from 'lodash-es'
+import { flatten, map } from 'lodash-es'
 
 import type { LaunchpadDevice } from '../../'
 
@@ -74,7 +74,7 @@ export default (jumps: [number, number][], vertical?: boolean) => (gridPosition:
     bindings[k].button.sendColor(device.colors[`${prefix}_${state.color[state.set]}`])
   }
 
-  const spec = flatMap(jumps, (j, i) => [[j, -1], [j, 1]])
+  const spec = flatten(map(jumps, (j, i) => [[j, -1], [j, 1]])) // TODO flatMap is badly typed
 
   spec.forEach(([jump, dir], i) => {
     bindings[i] = {
