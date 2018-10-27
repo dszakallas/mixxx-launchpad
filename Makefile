@@ -7,12 +7,12 @@ join-with = $(subst $(space),$1,$(strip $2))
 
 device = $(call join-with,\ ,$(shell jq -r .controller.device packages/$(1)/package.json))
 manufacturer = $(call join-with,\ ,$(shell jq -r .controller.manufacturer packages/$(1)/package.json))
-mapping = $(buildDir)/$(call manufacturer,$(1))\ $(call device,$(1)).midi.xml
-script = $(buildDir)/$(call manufacturer,$(1))-$(call device,$(1))-scripts.js
+mapping = $(builddir)/$(call manufacturer,$(1))\ $(call device,$(1)).midi.xml
+script = $(builddir)/$(call manufacturer,$(1))-$(call device,$(1))-scripts.js
 
 arch := $(shell uname)
 package := ./package.json
-buildDir := ./dist
+builddir ?= ./dist
 version := $(shell jq -r .version package.json)
 
 scriptFiles = $(shell ls packages/**/*.js) 
@@ -50,12 +50,15 @@ install_Linux : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(
 endef
 
 define releaseRule
-mixxx-launchpad-$(version) : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
-	zip -9 $$@.zip $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
+$(builddir)/mixxx-launchpad-$(version).zip : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) | $(builddir)
+	zip -j -9 $$@ $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
 endef
 
 default : compile
 .PHONY : default
+
+$(builddir):
+	mkdir -p $@
 
 $(foreach target,$(targets),$(eval $(call targetScriptRules,$(target))))
 $(foreach target,$(targets),$(eval $(call targetMappingRules,$(target))))
@@ -63,7 +66,7 @@ $(eval $(call compileRule,$(targets)))
 $(eval $(call installRule,$(targets)))
 $(eval $(call releaseRule,$(targets)))
 
-release : mixxx-launchpad-$(version)
+release : $(builddir)/mixxx-launchpad-$(version).zip
 .PHONY : release
 
 test :
@@ -86,5 +89,5 @@ watch :
 .PHONY : watch
 
 clean :
-	rm -rf dist tmp
+	rm -rf $(builddir) tmp
 .PHONY : clean
