@@ -35,6 +35,12 @@ So I decided to make one that is more stable, flexible and customizable!
  - library navigation 🦄
  - LED lights mimic Mixxx UI ✨
 
+## Supported controllers
+
+ - Launchpad Pro (Experimental)
+ - Launchpad Mk2
+ - Launchpad Mk1
+
 ## How to get started
 
  💾 Download the [latest release from here](https://github.com/szdavid92/mixxx-launchpad/releases/latest).
@@ -414,7 +420,7 @@ name. This works, because the same name is specified in the MIDI mapping XML fil
 The controller mapping is generated from a template like
 [this][mapping-template] with [ejs]. The mapping reuses config from the package
 description and [buttons.js].
- 
+
 ### Known Issues
 
 #### No Windows build recipes
