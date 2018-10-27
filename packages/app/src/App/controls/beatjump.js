@@ -73,6 +73,7 @@ export default (jumps: [number, number][], vertical?: boolean) => (gridPosition:
     const prefix = state.mode ? 'lo' : 'hi'
     bindings[k].button.sendColor(device.colors[`${prefix}_${state.color[state.set]}`])
   }
+
   const spec = flatMap(jumps, (j, i) => [[j, -1], [j, 1]])
 
   spec.forEach(([jump, dir], i) => {

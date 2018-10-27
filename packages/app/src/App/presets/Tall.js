@@ -19,21 +19,23 @@ import loopIo from '../controls/loopIo'
 import slip from '../controls/slip'
 
 export default {
-  play: play([0, 0]),
-  sync: sync([1, 0]),
-  nudge: nudge([2, 0]),
-  cue: cue([0, 1]),
-  tap: tap([1, 1]),
-  grid: grid([2, 1]),
-  pfl: pfl([0, 2]),
-  quantize: quantize([1, 2]),
-  loopIo: loopIo([2, 2]),
-  load: load([0, 3]),
-  key: key([1, 3]),
-  reloop: reloop([2, 3]),
-  slip: slip([3, 3]),
-  hotcue: hotcue(4, 2)([0, 4]),
-  loopMultiply: loopMultiply([2, 4]),
-  beatloop: beatloop([0.5, 1, 2, 4, 8, 16], 2)([2, 5]),
-  beatjump: beatjump([[1, 16], [2, 32]])([0, 6])
+  deck: {
+    play: play([0, 0]),
+    sync: sync([1, 0]),
+    nudge: nudge([2, 0]),
+    cue: cue([0, 1]),
+    tap: tap([1, 1]),
+    grid: grid([2, 1]),
+    pfl: pfl([0, 2]),
+    quantize: quantize([1, 2]),
+    loopIo: loopIo([2, 2]),
+    load: load([0, 3]),
+    key: key([1, 3]),
+    reloop: reloop([2, 3]),
+    slip: slip([3, 3]),
+    hotcue: hotcue(4, 2)([0, 4]),
+    loopMultiply: loopMultiply([2, 4]),
+    beatloop: beatloop([0.5, 1, 2, 4, 8, 16], 2)([2, 5]),
+    beatjump: beatjump([[1, 16], [2, 32]])([0, 6])
+  }
 }

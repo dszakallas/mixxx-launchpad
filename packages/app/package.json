@@ -11,5 +11,8 @@
     "json-stringify-safe": "~5.0.1",
     "lodash-es": "~4.17.4",
     "@mixxx-launchpad/mixxx": "~1.0.0"
+  },
+  "devDependencies": {
+    "flow-bin": "^0.84.0"
   }
 }

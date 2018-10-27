@@ -8,7 +8,8 @@
     "postinstall": "lerna bootstrap",
     "lint": "eslint packages",
     "check": "cd packages && flow",
-    "which": "which"
+    "which": "which",
+    "lerna": "lerna"
   },
   "author": "Midiparse",
   "license": "MIT",
@@ -16,6 +17,7 @@
     "babel-core": "^6.0.0",
     "babel-eslint": "^10.0.1",
     "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-transform-class-properties": "^6.23.0",
     "babel-plugin-transform-es3-member-expression-literals": "^6.8.0",
     "babel-plugin-transform-es3-property-literals": "^6.8.0",
