@@ -360,27 +360,11 @@ Feedback
 - **bright green**: loop on
 - **dim green**: loop off
 
-## Technical details
-
-### JavaScript
-
-The code is written according to the [ES2015] specification. This is
-incompatible with the runtime running in Mixxx so it has to be transpiled back
-to ES5, which is done with [Babel] using the es2015 preset. Sadly due to the interpreter's only partial compatibility with the standard [even some ES3 transforms have to be enabled](bad-interpreter). The transpiled code
-is then bundled with [browserify] into a so called [standalone] module with the
-name `NovationLaunchpad`. Due to the lack of module loading system in the
-environment, the bundled code is placed on the global object with the above
-name. This works, because the same name is specified in the MIDI mapping XML file, so Mixxx will look for this name, and will call its `init` method upon loading.
-
-### MIDI mapping
-
-The controller mapping is generated from a template like
-[this][mapping-template] with [ejs]. The mapping reuses config from the package
-description and [buttons.js].
+## For developers
 
 ### Build
 
-To build you need to have make, a recent Node (>=8), `npm` and `jq`. The watch tasks require `fswatch`.
+To build you need to have a make, Node (>=8), bash (>=4.0) and `jq`. Watch tasks require `fswatch`.
 
 The multi-project build is managed with [lerna.js]. You need to  install it
 globally to make it available on the command line.  First clone the repo and
@@ -414,6 +398,22 @@ These two tasks have watch counterparts making them rerun automatically on file 
 make watch
 make watch_install
 ```
+
+### JavaScript
+
+The code is written according to the [ES2015] specification. This is
+incompatible with the runtime running in Mixxx so it has to be transpiled back
+to ES5, which is done with [Babel] using the es2015 preset. Sadly due to the interpreter's only partial compatibility with the standard [even some ES3 transforms have to be enabled](bad-interpreter). The transpiled code
+is then bundled with [browserify] into a so called [standalone] module with the
+name `NovationLaunchpad`. Due to the lack of module loading system in the
+environment, the bundled code is placed on the global object with the above
+name. This works, because the same name is specified in the MIDI mapping XML file, so Mixxx will look for this name, and will call its `init` method upon loading.
+
+### MIDI mapping
+
+The controller mapping is generated from a template like
+[this][mapping-template] with [ejs]. The mapping reuses config from the package
+description and [buttons.js].
  
 ### Known Issues
 

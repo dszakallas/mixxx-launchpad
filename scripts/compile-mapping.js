@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { promisify } = require('es6-promisify')
+const { promisify } = require('util')
 const ejs = require('ejs')
 const path = require('path')
 const readFile = promisify(require('fs').readFile)

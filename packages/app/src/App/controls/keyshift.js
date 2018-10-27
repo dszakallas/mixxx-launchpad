@@ -62,7 +62,7 @@ export default (shifts: [number, number][], d: number) => (gridPosition: [number
       type: 'button',
       target: position,
       midi: onMidi(i)(modifier),
-      mount: function (dontKnow, { bindings, state }) {
+      mount: function (_, { bindings, state }) {
         bindings[i].button.sendColor(device.colors[`lo_${state.color[state.set]}`])
       }
     }

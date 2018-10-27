@@ -27,9 +27,9 @@ export class LaunchpadMidiButton {
 }
 
 export interface LaunchpadDevice {
-  init (): void;
-  shutdown (): void;
-  buttons: { [key: string]: LaunchpadMidiButton };
+  init (): void,
+  shutdown (): void,
+  buttons: { [key: string]: LaunchpadMidiButton },
   colors: { [key: string]: number }
 }
 

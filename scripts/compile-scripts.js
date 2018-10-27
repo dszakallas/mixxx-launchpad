@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { promisify } = require('es6-promisify')
+const { promisify } = require('util')
 const path = require('path')
 const mkdirp = promisify(require('mkdirp'))
 const fs = require('fs')
@@ -33,8 +33,6 @@ Promise.resolve().then(async () => {
       nodeResolve({
         extensions: ['.js', '.json'],
         main: true,
-        modulesOnly: false, // required for rollup-plugin-commonjs
-        // for valid values see https://github.com/substack/node-resolve
         customResolveOptions: {
           paths: [ path.resolve('packages', tgt, 'node_modules') ]
         }}),
