@@ -379,11 +379,9 @@ install the dependencies:
 ```
 git clone https://github.com/szdavid92/mixxx-launchpad
 cd mixxx-launchpad
-npm i --global lerna
-lerna bootstrap
 npm install
 ```
-
+You can also invoke lerna commands through npm like `npm run lerna -- --version`.
 To compile the sources run
 
 ```
