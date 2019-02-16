@@ -212,26 +212,16 @@ const cycled = {
 }
 
 const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
-  const next = selectedChannels.length <= 1
-    ? [{
-      offset: offsets[0],
-      size: 'grande',
-      channel: selectedChannels[0],
-      index: 0
-    }]
-    : selectedChannels.length <= 2
+  const next = selectedChannels.length <= 0
+    ? []
+    : selectedChannels.length <= 1
       ? [{
         offset: offsets[0],
-        size: 'tall',
+        size: 'grande',
         channel: selectedChannels[0],
         index: 0
-      }, {
-        offset: offsets[1],
-        size: 'tall',
-        channel: selectedChannels[1],
-        index: 0
       }]
-      : selectedChannels.length <= 3
+      : selectedChannels.length <= 2
         ? [{
           offset: offsets[0],
           size: 'tall',
@@ -239,36 +229,48 @@ const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
           index: 0
         }, {
           offset: offsets[1],
-          size: 'short',
+          size: 'tall',
           channel: selectedChannels[1],
           index: 0
-        }, {
-          offset: offsets[3],
-          size: 'short',
-          channel: selectedChannels[2],
-          index: 0
         }]
-        : [{
-          offset: offsets[0],
-          size: 'short',
-          channel: selectedChannels[0],
-          index: 0
-        }, {
-          offset: offsets[1],
-          size: 'short',
-          channel: selectedChannels[1],
-          index: 0
-        }, {
-          offset: offsets[2],
-          size: 'short',
-          channel: selectedChannels[2],
-          index: 0
-        }, {
-          offset: offsets[3],
-          size: 'short',
-          channel: selectedChannels[3],
-          index: 0
-        }]
+        : selectedChannels.length <= 3
+          ? [{
+            offset: offsets[0],
+            size: 'tall',
+            channel: selectedChannels[0],
+            index: 0
+          }, {
+            offset: offsets[1],
+            size: 'short',
+            channel: selectedChannels[1],
+            index: 0
+          }, {
+            offset: offsets[3],
+            size: 'short',
+            channel: selectedChannels[2],
+            index: 0
+          }]
+          : [{
+            offset: offsets[0],
+            size: 'short',
+            channel: selectedChannels[0],
+            index: 0
+          }, {
+            offset: offsets[1],
+            size: 'short',
+            channel: selectedChannels[1],
+            index: 0
+          }, {
+            offset: offsets[2],
+            size: 'short',
+            channel: selectedChannels[2],
+            index: 0
+          }, {
+            offset: offsets[3],
+            size: 'short',
+            channel: selectedChannels[3],
+            index: 0
+          }]
   return current.reduce((diff, block) => {
     const [neg, pos] = diff
     const matched = findIndex(pos, (b) => isEqual(block, b))

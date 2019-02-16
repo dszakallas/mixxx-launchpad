@@ -14,16 +14,10 @@ export type LaunchpadMidiButtonDef = {
   name: string
 }
 
-export class LaunchpadMidiButton {
-  def: LaunchpadMidiButtonDef
-
-  constructor (def: LaunchpadMidiButtonDef) {
-    this.def = def
-  }
-
-  sendColor (value: number) {
-    midi.sendShortMsg(this.def.status, this.def.midino, value)
-  }
+export interface LaunchpadMidiButton {
+  def: LaunchpadMidiButtonDef,
+  sendColor (value: number): void,
+  sendRgbColor(value: [[number, number, number], number]): void
 }
 
 export interface LaunchpadDevice {
