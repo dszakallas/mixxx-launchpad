@@ -11,11 +11,18 @@ mapping = $(builddir)/$(call manufacturer,$(1))\ $(call device,$(1)).midi.xml
 script = $(builddir)/$(call manufacturer,$(1))-$(call device,$(1))-scripts.js
 
 arch := $(shell uname)
+
+# List the default Resource directories of Mixxx on different architectures
+installDirDarwin := $(HOME)/Library/Application\ Support/Mixxx
+installDirLinux := $(HOME)/.mixxx
+
+installDir ?= $(installDir$(arch))
+
 package := ./package.json
 builddir ?= ./dist
 version := $(shell jq -r .version package.json)
 
-scriptFiles = $(shell ls packages/**/*.js) 
+scriptFiles = $(shell ls packages/**/*.js)
 mappingFiles = $(package) packages/$(1)/buttons.js packages/$(1)/template.xml.ejs
 
 targets := $(shell jq -r '.controllers | join (" ")' package.json)
@@ -36,17 +43,11 @@ compile : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target
 endef
 
 define installRule
-install : install_$(arch)
+install : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
+	cd $$(installDir) && mkdir -p controllers
+	cp $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) $$(installDir)/controllers
+
 .PHONY : install
-
-install_Darwin : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
-	cp $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) $$(HOME)/Library/Application\ Support/Mixxx/controllers
-.PHONY : install_Darwin
-
-install_Linux : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
-	cp $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) $$(HOME)/.mixxx/controllers
-.PHONY : install_Linux
-
 endef
 
 define releaseRule
@@ -78,7 +79,7 @@ watch_install :
 	@echo Stop watching with Ctrl-C
 	@sleep 1 # Wait a bit so users can read
 	@$(MAKE) install
-	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE) install; done	
+	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE) install; done
 .PHONY : watch_install
 
 watch :
