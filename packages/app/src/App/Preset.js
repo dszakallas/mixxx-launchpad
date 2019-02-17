@@ -2,7 +2,9 @@
 
 // This monstrous dynamic giant needs some serious refactor
 
-import { assign } from 'lodash-es'
+import { assign, range } from 'lodash-es'
+
+import { channelControls } from '@mixxx-launchpad/mixxx'
 
 import MidiComponent from '../Controls/MidiComponent'
 import MidiButtonComponent from '../Controls/MidiButtonComponent'
@@ -23,16 +25,53 @@ export type PresetType = {
 
 export type Template = Object
 
-export type PartialTemplate = { [key: string]: (ChannelControl) => (Modifier) => (LaunchpadDevice) => Template }
+type DeckDef = { [string]: (ChannelControl) => (Modifier) => (LaunchpadDevice) => Template }
 
-export const makePresetFromPartialTemplate = (id: string, partialTemplate: PartialTemplate, offset: [number, number]) =>
-  (deck: ChannelControl) => (controlComponentBuilder: ControlComponentBuilder) =>
+type PaletteDef = [number, number] => (ChannelControl) => (Modifier) => (LaunchpadDevice) => Template
+
+export type DeckTemplate = {|
+  deck: DeckDef
+|}
+
+export type SamplerPaletteTemplate = {|
+  samplerPalette: PaletteDef
+|}
+
+export type PartialTemplate = DeckTemplate | SamplerPaletteTemplate
+
+const makeDeck = (deckDef: DeckDef, modifier: Modifier, midibus: MidiBus, selector: number) => {
+  const template = {}
+  Object.keys(deckDef).forEach((k) => {
+    assign(template, { [k]: deckDef[k](channelControls[selector])(modifier)(midibus.device) })
+  })
+  return template
+}
+
+const makeSamplerPalette = (paletteDef: PaletteDef, modifier: Modifier, midibus: MidiBus, selector: number) => {
+  const sel = selector % 4
+  const template = {}
+  const hAlias = 2
+  const hDim = 4
+  const vDim = 4
+  const samplerOffset = 4
+  const channelOffset = samplerOffset + (sel % hAlias) * hDim + Math.floor(sel / hAlias) * hAlias * vDim * hDim
+  range(vDim).forEach(j => range(hDim).forEach(i => {
+    const k = i + (2 * j * hDim)
+    assign(template, { [k]: paletteDef([i, vDim - j - 1])(channelControls[channelOffset + k])(modifier)(midibus.device) })
+  }))
+  return template
+}
+
+export const makePresetFromPartialTemplate = (id: string, partialTemplate: PartialTemplate, offset: [number, number], selector: number) =>
+  (controlComponentBuilder: ControlComponentBuilder) =>
     (midibus: MidiBus) =>
       (modifier: Modifier) => {
-        const template = {}
-        Object.keys(partialTemplate).forEach((k) => {
-          assign(template, { [k]: partialTemplate[k](deck)(modifier)(midibus.device) })
-        })
+        const template = partialTemplate.samplerPalette != null ? makeSamplerPalette(
+          partialTemplate.samplerPalette,
+          modifier, midibus, selector
+        ) : makeDeck(
+          ((partialTemplate: any): DeckTemplate).deck, // don't know why I have to resort to an unsafe cast here
+          modifier, midibus, selector)
         return new Preset(midibus, controlComponentBuilder, modifier, id, template, offset)
       }
 

@@ -311,4 +311,4 @@ export const createChannelControl = (i: number): ChannelControl => {
   })
 }
 
-export const channelControls: ChannelControl[] = range(8).map((i) => createChannelControl(i + 1))
+export const channelControls: ChannelControl[] = range(68).map((i) => createChannelControl(i + 1))
