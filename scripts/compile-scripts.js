@@ -43,7 +43,8 @@ Promise.resolve().then(async () => {
   await mkdirp('tmp')
   await Promise.all([
     writeFile('tmp/cache.json', JSON.stringify(bundle)),
-    bundle.write({
+    bundle.write({	    
+      strict: false, // FIXME: see https://github.com/mixxxdj/mixxx/pull/1795#discussion_r251744258
       format: 'iife',
       name: global,
       file: path.resolve(process.argv[3])
