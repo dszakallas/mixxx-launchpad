@@ -212,63 +212,29 @@ const cycled = {
 }
 
 const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
-  const next = selectedChannels.length <= 1
-    ? [{
-      offset: offsets[0],
-      size: 'grande',
-      channel: selectedChannels[0],
-      index: 0
-    }]
-    : selectedChannels.length <= 2
-      ? [{
-        offset: offsets[0],
-        size: 'tall',
-        channel: selectedChannels[0],
-        index: 0
-      }, {
-        offset: offsets[1],
-        size: 'tall',
-        channel: selectedChannels[1],
-        index: 0
-      }]
-      : selectedChannels.length <= 3
-        ? [{
-          offset: offsets[0],
-          size: 'tall',
-          channel: selectedChannels[0],
-          index: 0
-        }, {
-          offset: offsets[3],
-          size: 'short',
-          channel: selectedChannels[1],
-          index: 0
-        }, {
-          offset: offsets[1],
-          size: 'short',
-          channel: selectedChannels[2],
-          index: 0
-        }]
-        : [{
-          offset: offsets[2],
-          size: 'short',
-          channel: selectedChannels[0],
-          index: 0
-        }, {
-          offset: offsets[3],
-          size: 'short',
-          channel: selectedChannels[1],
-          index: 0
-        }, {
-          offset: offsets[0],
-          size: 'short',
-          channel: selectedChannels[2],
-          index: 0
-        }, {
-          offset: offsets[1],
-          size: 'short',
-          channel: selectedChannels[3],
-          index: 0
-        }]
+  const next = ((chs) => {
+    switch (chs.length) {
+      case 0: return []
+      case 1: return [
+        { offset: offsets[0], size: 'grande', channel: chs[0], index: 0 }
+      ]
+      case 2: return [
+        { offset: offsets[0], size: 'tall', channel: chs[0], index: 0 },
+        { offset: offsets[1], size: 'tall', channel: chs[1], index: 0 }
+      ]
+      case 3: return [
+        { offset: offsets[0], size: 'tall', channel: chs[0], index: 0 },
+        { offset: offsets[3], size: 'short', channel: chs[1], index: 0 },
+        { offset: offsets[1], size: 'short', channel: chs[2], index: 0 }
+      ]
+      default: return [
+        { offset: offsets[2], size: 'short', channel: chs[0], index: 0 },
+        { offset: offsets[3], size: 'short', channel: chs[1], index: 0 },
+        { offset: offsets[0], size: 'short', channel: chs[2], index: 0 },
+        { offset: offsets[1], size: 'short', channel: chs[3], index: 0 }
+      ]
+    }
+  })(selectedChannels)
   return current.reduce((diff, block) => {
     const [neg, pos] = diff
     const matched = findIndex(pos, (b) => isEqual(block, b))

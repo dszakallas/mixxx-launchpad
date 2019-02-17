@@ -1,26 +1,27 @@
 {
   "name": "@mixxx-launchpad/project",
-  "version": "2.1.8",
+  "version": "2.2.2",
   "description": "Novation Launchpad mapping for Mixxx",
   "homepage": "https://github.com/dszakallas/mixxx-launchpad",
   "respository": "https://github.com/dszakallas/mixxx-launchpad.git",
   "scripts": {
     "postinstall": "lerna bootstrap",
     "lint": "eslint packages",
+    "lerna": "lerna",
     "check": "cd packages && flow",
     "which": "which"
   },
   "author": "Midiparse",
   "license": "MIT",
   "devDependencies": {
-    "babel-core": "^6.0.0",
+    "babel-core": "^6.26.3",
     "babel-eslint": "^10.0.1",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-class-properties": "^6.23.0",
     "babel-plugin-transform-es3-member-expression-literals": "^6.8.0",
     "babel-plugin-transform-es3-property-literals": "^6.8.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "ejs": "^2.5.2",
     "eslint": "^5.7.0",
     "eslint-config-standard": "^12.0.0",
@@ -30,7 +31,7 @@
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "flow-bin": "^0.83.0",
-    "lerna": "3.4.3",
+    "lerna": "^3.13.0",
     "mkdirp": "^0.5.1",
     "rollup": "^0.66.6",
     "rollup-plugin-babel": "^3.0.3",
@@ -40,6 +41,7 @@
   },
   "controllers": [
     "mk1",
-    "mk2"
+    "mk2",
+    "pro"
   ]
 }

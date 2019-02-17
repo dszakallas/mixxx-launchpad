@@ -25,8 +25,8 @@ export default class Screen extends MidiComponent {
     this.layout.mount()
   }
   onUnmount () {
+    this.layout.unmount()
     this.playListSidebar.unmount()
     this.modifier.unmount()
-    this.layout.unmount()
   }
 }
