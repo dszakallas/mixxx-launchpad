@@ -25,6 +25,7 @@ const global = tgtPkg.controller.global
 
 Promise.resolve().then(async () => {
   await mkdirp(path.dirname(path.resolve(process.argv[3])))
+  // eslint-disable-next-line handle-callback-err
   const cache = await readFile('tmp/cache.json').then((cache) => JSON.parse(cache)).catch((err) => null)
   const bundle = await rollup.rollup({
     cache,
@@ -35,15 +36,18 @@ Promise.resolve().then(async () => {
         main: true,
         customResolveOptions: {
           paths: [ path.resolve('packages', tgt, 'node_modules') ]
-        }}),
+        }
+      }),
       json(),
       babel({
-        exclude: 'node_modules/**'}),
-      commonjs()]})
+        exclude: 'node_modules/**'
+      }),
+      commonjs()]
+  })
   await mkdirp('tmp')
   await Promise.all([
     writeFile('tmp/cache.json', JSON.stringify(bundle)),
-    bundle.write({	    
+    bundle.write({
       strict: false, // FIXME: see https://github.com/mixxxdj/mixxx/pull/1795#discussion_r251744258
       format: 'iife',
       name: global,

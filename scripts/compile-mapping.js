@@ -17,6 +17,16 @@ const tgtPkg = require(path.resolve('packages', tgt, 'package.json'))
 const buttons = require(path.resolve('packages', tgt, 'buttons'))
 const templateFile = path.join('packages', tgt, 'template.xml.ejs')
 
+const leftPad = (str, padString, length) => {
+  let buf = str
+  while (buf.length < length) {
+    buf = padString + buf
+  }
+  return buf
+}
+
+const hexFormat = (n, d) => '0x' + leftPad(n.toString(16).toUpperCase(), '0', d)
+
 Promise.resolve().then(async () => {
   const template = await readFile(templateFile)
   const rendered = ejs.render(template.toString(), {
@@ -26,7 +36,8 @@ Promise.resolve().then(async () => {
     device: tgtPkg.controller.device,
     manufacturer: tgtPkg.controller.manufacturer,
     global: tgtPkg.controller.global,
-    buttons: Object.keys(buttons).map((key) => buttons[key])
+    buttons: Object.keys(buttons).map((key) => buttons[key]),
+    hexFormat: hexFormat
   })
   await mkdirp(path.dirname(path.resolve(process.argv[3])))
   await writeFile(path.resolve(process.argv[3]), rendered)
