@@ -8,6 +8,8 @@ import Screen from './App/Screen'
 import Component from './Component'
 import { makeControlComponent } from './Controls/ControlComponent'
 
+// const x: string = 5
+
 export type LaunchpadMidiButtonDef = {
   status: number,
   midino: number,

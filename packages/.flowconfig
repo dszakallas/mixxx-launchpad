@@ -1,9 +1,12 @@
 [ignore]
 
 [include]
-*/src
+app/src/
+mk1/
+mk2/
+pro/
 
 [libs]
-*/flow-typed
+flow-typed
 
 [options]

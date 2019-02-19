@@ -1,3 +1,4 @@
+/* @flow */
 'use strict'
 module.exports = {
   /* eslint-disable key-spacing, no-multi-spaces */
