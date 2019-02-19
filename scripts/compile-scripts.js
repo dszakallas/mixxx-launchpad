@@ -26,7 +26,7 @@ const global = tgtPkg.controller.global
 Promise.resolve().then(async () => {
   await mkdirp(path.dirname(path.resolve(process.argv[3])))
   // eslint-disable-next-line handle-callback-err
-  const cache = await readFile('tmp/cache.json').then((cache) => JSON.parse(cache)).catch((err) => null)
+  const cache = await readFile(`tmp/${tgt}.cache.json`).then((cache) => JSON.parse(cache), (err) => null)
   const bundle = await rollup.rollup({
     cache,
     input,
@@ -40,17 +40,22 @@ Promise.resolve().then(async () => {
       }),
       json(),
       babel({
-        exclude: 'node_modules/**'
+        exclude: [
+          '**/node_modules/@babel/runtime/**'
+        ],
+        configFile: path.resolve('babel.config.js'),
+        runtimeHelpers: true
       }),
-      commonjs()]
+      commonjs()
+    ]
   })
   await mkdirp('tmp')
   await Promise.all([
-    writeFile('tmp/cache.json', JSON.stringify(bundle)),
+    writeFile(`tmp/${tgt}.cache.json`, JSON.stringify(bundle.cache)),
     bundle.write({
       strict: false, // FIXME: see https://github.com/mixxxdj/mixxx/pull/1795#discussion_r251744258
       format: 'iife',
       name: global,
       file: path.resolve(process.argv[3])
     })])
-}).catch((err) => { throw err })
+}).catch((err) => { console.error(err.stack); process.exit(1) })

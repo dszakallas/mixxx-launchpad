@@ -7,9 +7,9 @@
   "author": "Midiparse",
   "license": "MIT",
   "dependencies": {
+    "@mixxx-launchpad/mixxx": "~1.0.0",
     "eventemitter3": "~3.1.0",
     "json-stringify-safe": "~5.0.1",
-    "lodash-es": "~4.17.4",
-    "@mixxx-launchpad/mixxx": "~1.0.0"
+    "lodash-es": "~4.17.4"
   }
 }
