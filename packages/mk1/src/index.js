@@ -1,6 +1,7 @@
+/* @flow */
 import { create, LaunchpadMidiButton } from '@mixxx-launchpad/app'
 import { assign } from 'lodash-es'
-import pkg from './package.json'
+import pkg from '../package.json'
 import colors from './colors'
 import buttons from './buttons'
 

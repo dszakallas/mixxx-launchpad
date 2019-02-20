@@ -41,7 +41,7 @@ Promise.resolve().then(async () => {
       json(),
       babel({
         exclude: [
-          '**/node_modules/@babel/runtime/**'
+          'packages/*/node_modules/@babel/runtime/**'
         ],
         configFile: path.resolve('babel.config.js'),
         runtimeHelpers: true

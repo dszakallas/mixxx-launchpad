@@ -72,7 +72,7 @@ export const loopjump = (jumps: [number, number][]) => (gridPosition: [number, n
     const prefix = state.mode ? 'lo' : 'hi'
     bindings[k].button.sendColor(device.colors[`${prefix}_${state.color[state.set]}`])
   }
-  const spec = flatMap(jumps, (j, i) => [[j, 1], [j, -1]])
+  const spec = flatMap((jumps: any), (j, i) => [[j, 1], [j, -1]]) // FIXME: flatMap is incorrectly typed see https://github.com/flow-typed/flow-typed/issues/2463
 
   spec.forEach(([jump, dir], i) => {
     bindings[i] = {

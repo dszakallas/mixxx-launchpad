@@ -138,11 +138,11 @@ class SelectorBar extends MidiComponent {
   addToChord (channel: number) {
     if (this.chord.length === 4) {
       const rem = this.chord.shift()
-      const found = findIndex(this.layout, (b) => b.channel === rem)
+      const found = findIndex((this.layout: any), (b) => b.channel === rem) // FIXME: badly typed
       if (found === -1) {
         this.bindings[rem][0].button.sendColor(this.device.colors.black)
       } else {
-        const layout = this.layout[found]
+        const layout = this.layout[String(found)]
         if (layout.index) {
           this.bindings[rem][0].button.sendColor(this.device.colors.hi_orange)
         } else {

@@ -14,8 +14,8 @@ if (process.argv.length !== 4) {
 const tgt = process.argv[2]
 const pkg = require(path.resolve('package.json'))
 const tgtPkg = require(path.resolve('packages', tgt, 'package.json'))
-const buttons = require(path.resolve('packages', tgt, 'buttons'))
-const templateFile = path.join('packages', tgt, 'template.xml.ejs')
+const buttons = require(path.resolve('packages', tgt, tgtPkg.controller.path, 'buttons'))
+const templateFile = path.join('packages', tgt, tgtPkg.controller.path, 'template.xml.ejs')
 
 const leftPad = (str, padString, length) => {
   let buf = str

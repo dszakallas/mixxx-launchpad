@@ -2,8 +2,8 @@
   "name": "@mixxx-launchpad/mk1",
   "private": true,
   "version": "1.0.0",
-  "main": "index.js",
-  "module": "index.js",
+  "main": "src/index.js",
+  "module": "src/index.js",
   "dependencies": {
     "@babel/runtime": "^7.3.1",
     "@mixxx-launchpad/app": "1.0.0",
@@ -12,6 +12,7 @@
   "controller": {
     "device": "Launchpad",
     "manufacturer": "Novation",
-    "global": "NovationLaunchpad"
+    "global": "NovationLaunchpad",
+    "path": "src"
   }
 }

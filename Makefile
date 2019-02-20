@@ -1,4 +1,4 @@
-SHELL := $(shell which bash) -O globstar -c
+SHELL := $(shell which bash) -O globstar -O extglob -c
 
 empty :=
 space := $(empty) $(empty)
@@ -7,6 +7,7 @@ join-with = $(subst $(space),$1,$(strip $2))
 
 device = $(call join-with,\ ,$(shell jq -r .controller.device packages/$(1)/package.json))
 manufacturer = $(call join-with,\ ,$(shell jq -r .controller.manufacturer packages/$(1)/package.json))
+path = $(call join-with,\ ,$(shell jq -r .controller.path packages/$(1)/package.json))
 mapping = $(builddir)/$(call manufacturer,$(1))\ $(call device,$(1)).midi.xml
 script = $(builddir)/$(call manufacturer,$(1))-$(call device,$(1))-scripts.js
 
@@ -23,7 +24,7 @@ builddir ?= ./dist
 version := $(shell jq -r .version package.json)
 
 scriptFiles = $(shell ls packages/**/*.js)
-mappingFiles = $(package) packages/$(1)/buttons.js packages/$(1)/template.xml.ejs
+mappingFiles = $(package) packages/$(1)/$(path)/buttons.js packages/$(1)/$(path)/template.xml.ejs
 
 targets := $(shell jq -r '.controllers | join (" ")' package.json)
 
@@ -86,7 +87,7 @@ watch :
 	@echo Stop watching with Ctrl-C
 	@sleep 1 # Wait a bit so users can read
 	@$(MAKE)
-	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE); done	
+	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE); done
 .PHONY : watch
 
 clean :

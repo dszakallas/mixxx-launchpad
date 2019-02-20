@@ -1,12 +1,13 @@
+/* @flow */
 import { create, LaunchpadMidiButton } from '@mixxx-launchpad/app'
 import { assign } from 'lodash-es'
-import pkg from './package.json'
+import pkg from '../package.json'
 import colors from './colors'
 import buttons from './buttons'
 
 import type { LaunchpadDevice } from '@mixxx-launchpad/app'
 
-class LaunchpadProDevice implements LaunchpadDevice {
+class LaunchpadMK2Device implements LaunchpadDevice {
   buttons: { [key: string]: LaunchpadMidiButton }
   colors: { [key: string]: number }
 
@@ -19,12 +20,6 @@ class LaunchpadProDevice implements LaunchpadDevice {
   init () { }
 
   shutdown () { }
-
-  buttons () {
-    return this._buttons
-  }
-
-  colors () { return colors }
 }
 
-export default create(pkg.controller.global, new LaunchpadProDevice())
+export default create(pkg.controller.global, new LaunchpadMK2Device())
