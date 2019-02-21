@@ -1,6 +1,6 @@
 /* @flow */
 import type { LaunchpadDevice } from '../../'
-import { flatMap } from 'lodash-es'
+import flatMap from 'lodash-es/flatMap'
 
 import { modes, retainAttackMode } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'

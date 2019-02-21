@@ -1,5 +1,5 @@
 /* @flow */
-import { flatMap } from 'lodash-es'
+import flatMap from 'lodash-es/flatMap'
 
 import type { LaunchpadDevice } from '../../'
 

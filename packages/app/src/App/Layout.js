@@ -1,5 +1,7 @@
 /* @flow */
-import { assign, isEqual, findIndex } from 'lodash-es'
+import assign from 'lodash-es/assign'
+import isEqual from 'lodash-es/isEqual'
+import findIndex from 'lodash-es/findIndex'
 
 import { channelControls } from '@mixxx-launchpad/mixxx'
 

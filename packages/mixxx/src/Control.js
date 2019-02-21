@@ -1,7 +1,8 @@
 /* @flow */
 import { engine } from './globals'
 
-import { assign, range } from 'lodash-es'
+import assign from 'lodash-es/assign'
+import range from 'lodash-es/range'
 
 export type ControlDef = {
   group: string,

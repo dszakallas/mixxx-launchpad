@@ -1,5 +1,5 @@
 import { engine } from './globals'
-import { startsWith } from 'lodash-es'
+import startsWith from 'lodash-es/startsWith'
 
 import stringify from 'json-stringify-safe'
 

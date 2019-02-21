@@ -1,5 +1,5 @@
 /* @flow */
-import { range } from 'lodash-es'
+import range from 'lodash-es/range'
 
 import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'

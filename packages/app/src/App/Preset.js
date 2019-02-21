@@ -2,7 +2,7 @@
 
 // This monstrous dynamic giant needs some serious refactor
 
-import { assign } from 'lodash-es'
+import assign from 'lodash-es/assign'
 
 import MidiComponent from '../Controls/MidiComponent'
 import MidiButtonComponent from '../Controls/MidiButtonComponent'
