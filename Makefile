@@ -23,7 +23,7 @@ package := ./package.json
 builddir ?= ./dist
 version := $(shell jq -r .version package.json)
 
-scriptFiles = $(shell ls packages/**/*.js)
+scriptFiles = $(shell ls packages/*/!(node_modules)/**.js)
 mappingFiles = $(package) packages/$(1)/$(path)/buttons.js packages/$(1)/$(path)/template.xml.ejs
 
 targets := $(shell jq -r '.controllers | join (" ")' package.json)

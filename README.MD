@@ -385,14 +385,16 @@ You can also invoke lerna commands through npm like `npm run lerna -- --version`
 To compile the sources run
 
 ```
-make
+make -j 4
 ```
+
+(`-j 4` will enable 4 jobs to be executed in parallel which makes the build significantly faster)
 
 Afterward the `dist` folder will contain the files that need to be
 copied the Mixxx's controller folder.
 
 ```
-make install
+make -j 4 install
 ```
 does this for you on macOS and Linux.
 
