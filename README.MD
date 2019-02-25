@@ -205,8 +205,8 @@ Feedback
   - **bright yellow**: while nudging with primary speed
   - **dim yellow**: while nudging with secondary speed
   - **bright red**: while permanently changing pitch with primary speed
-  - **dim red**: while permanently changing pitch with primary speed
-  - **dim amber**: while not pressing, and pitch has been altered in that direction
+  - **dim red**: while permanently changing pitch with secondary speed
+  - **dim orange**: while not pressing, and pitch has been altered in that direction
 
 #### CUE
 

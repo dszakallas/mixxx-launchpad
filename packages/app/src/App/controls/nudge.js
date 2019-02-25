@@ -11,9 +11,9 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
 
   const getDirection = (rate) => {
     if (rate < -rateEpsilon) {
-      return 'down'
-    } else if (rate > rateEpsilon) {
       return 'up'
+    } else if (rate > rateEpsilon) {
+      return 'down'
     } else {
       return ''
     }
@@ -21,13 +21,12 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
 
   const onNudgeMidi = (dir: 'up' | 'down') => (modifier) => retainAttackMode(modifier, (mode, { value }: MidiMessage, { bindings, state }: Object) => {
     if (value) {
-      state[dir].pressing = true
-      if (state.down.pressing && state.up.pressing) {
+      state[dir] = true
+      if (state.down && state.up) {
         deck.rate.setValue(0)
       } else {
         modes(mode,
           () => {
-            state[dir].nudging = true
             bindings[dir].button.sendColor(device.colors.hi_yellow)
             // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
             deck[(`rate_temp_${dir}`: any)].setValue(1)
@@ -38,7 +37,6 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
             deck[(`rate_perm_${dir}`: any)].setValue(1)
           },
           () => {
-            state[dir].nudging = true
             bindings[dir].button.sendColor(device.colors.lo_yellow)
             // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
             deck[(`rate_temp_${dir}_small`: any)].setValue(1)
@@ -51,9 +49,9 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
         )
       }
     } else {
-      state[dir].nudging = state[dir].pressing = false
+      state[dir] = false
       if (getDirection(bindings.rate.getValue()) === dir) {
-        bindings[dir].button.sendColor(device.colors.lo_amber)
+        bindings[dir].button.sendColor(device.colors.lo_orange)
       } else {
         bindings[dir].button.sendColor(device.colors.black)
       }
@@ -70,17 +68,18 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
   const onRate = ({ value }: ControlMessage, { state, bindings }: Object) => {
     let up = device.colors.black
     let down = device.colors.black
-    if (value < -rateEpsilon) {
-      down = device.colors.lo_green
-    } else if (value > rateEpsilon) {
-      up = device.colors.lo_green
+    let rate = getDirection(value)
+    if (rate === 'down') {
+      down = device.colors.lo_orange
+    } else if (rate === 'up') {
+      up = device.colors.lo_orange
     }
 
-    if (!state.down.nudging) {
+    if (!state.down) {
       bindings.down.button.sendColor(down)
     }
 
-    if (!state.up.nudging) {
+    if (!state.up) {
       bindings.up.button.sendColor(up)
     }
   }
@@ -104,15 +103,8 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
       }
     },
     state: {
-      rateEpsilon,
-      up: {
-        pressing: false,
-        nudging: false
-      },
-      down: {
-        pressing: false,
-        nudging: false
-      }
+      up: false,
+      down: false
     }
   }
 }
