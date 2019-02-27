@@ -1,6 +1,5 @@
 /* @flow */
 import assign from 'lodash-es/assign'
-import isEqual from 'lodash-es/isEqual'
 import findIndex from 'lodash-es/findIndex'
 
 import { channelControls } from '@mixxx-launchpad/mixxx'
@@ -213,6 +212,11 @@ const cycled = {
   'short': presets.short
 }
 
+const blockEquals = (a: Block, b: Block): boolean => {
+  return a.offset === b.offset && a.size === b.size &&
+    a.channel === b.channel && a.index === b.index
+}
+
 const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
   const next = ((chs) => {
     switch (chs.length) {
@@ -239,7 +243,7 @@ const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
   })(selectedChannels)
   return current.reduce((diff, block) => {
     const [neg, pos] = diff
-    const matched = findIndex(pos, (b) => isEqual(block, b))
+    const matched = findIndex(pos, (b) => blockEquals(block, b))
     return matched === -1
       ? [neg.concat([block]), pos]
       : [neg, pos.slice(0, matched).concat(pos.slice(matched + 1, pos.length))]
