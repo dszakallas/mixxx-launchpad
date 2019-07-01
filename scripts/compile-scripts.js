@@ -33,7 +33,6 @@ Promise.resolve().then(async () => {
     plugins: [
       nodeResolve({
         extensions: ['.js', '.json'],
-        main: true,
         customResolveOptions: {
           paths: [ path.resolve('packages', tgt, 'node_modules') ]
         }
