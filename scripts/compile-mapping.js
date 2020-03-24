@@ -5,7 +5,7 @@ const ejs = require('ejs')
 const path = require('path')
 const readFile = promisify(require('fs').readFile)
 const writeFile = promisify(require('fs').writeFile)
-const mkdirp = promisify(require('mkdirp'))
+const mkdirp = require('mkdirp')
 
 if (process.argv.length !== 4) {
   throw Error('Usage: target outFile')

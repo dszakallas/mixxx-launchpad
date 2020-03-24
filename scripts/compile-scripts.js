@@ -2,7 +2,7 @@
 
 const { promisify } = require('util')
 const path = require('path')
-const mkdirp = promisify(require('mkdirp'))
+const mkdirp = require('mkdirp')
 const fs = require('fs')
 
 const rollup = require('rollup')
