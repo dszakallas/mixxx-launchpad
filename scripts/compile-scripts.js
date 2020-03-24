@@ -34,7 +34,7 @@ Promise.resolve().then(async () => {
       nodeResolve({
         extensions: ['.js', '.json'],
         customResolveOptions: {
-          paths: [ path.resolve('packages', tgt, 'node_modules') ]
+          paths: [path.resolve('packages', tgt, 'node_modules')]
         }
       }),
       json(),

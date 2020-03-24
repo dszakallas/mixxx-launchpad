@@ -1,6 +1,6 @@
 module.exports = {
   presets: [
-    ['@babel/preset-env', { 'modules': false }]
+    ['@babel/preset-env', { modules: false }]
   ],
   plugins: [
     'transform-es3-member-expression-literals',

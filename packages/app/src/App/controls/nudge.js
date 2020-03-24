@@ -68,7 +68,7 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
   const onRate = ({ value }: ControlMessage, { state, bindings }: Object) => {
     let up = device.colors.black
     let down = device.colors.black
-    let rate = getDirection(value)
+    const rate = getDirection(value)
     if (rate === 'down') {
       down = device.colors.lo_orange
     } else if (rate === 'up') {

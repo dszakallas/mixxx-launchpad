@@ -86,7 +86,7 @@ export class Preset extends MidiComponent {
                   })
                 }
               })
-              if (typeof binding['unmount'] !== 'function') {
+              if (typeof binding.unmount !== 'function') {
                 appendListener('unmount', buttonListeners[name], function (data) {
                   instance.bindings[bk].button.sendColor(this.device.colors.black)
                 })
