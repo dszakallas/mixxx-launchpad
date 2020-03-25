@@ -225,7 +225,7 @@ tap tempo for playback or beatgrid.
 
 - **normal**: tapping adjusts song playback tempo. You should have correctly detected BPM and beatgrid.
 
-- **ctrl**: ~~instead of altering the playback tempo, tapping adjusts the beatgrid.~~ Not implemented. *Why?*
+- **ctrl**: instead of altering the playback tempo, tapping adjusts the beatgrid.
 - **shift**: sets the gridlines so the nearest beat aligns to current play position
 - **ctrl+shift**: second button: sets the gridlines so the nearest beat lines up with the other track's nearest beat
 
@@ -360,6 +360,7 @@ Works the same way as the LOOP button on the GUI, ie. it toggles the current loo
 Controls
 
 - **normal**: toggles loop on/off
+- **ctrl**: activate loop, jump to its loop point and stop
 
 Feedback
 

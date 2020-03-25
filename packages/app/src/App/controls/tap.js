@@ -22,7 +22,9 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
             () => {
               tempoBpm.tap()
             },
-            undefined,
+            () => {
+              deck.bpm_tap.setValue(1)
+            },
             () => {
               deck.beats_translate_curpos.setValue(1)
             },
