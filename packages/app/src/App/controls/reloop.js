@@ -13,7 +13,11 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
         type: 'button',
         target: gridPosition,
         attack: () => {
-          modes(modifier.getState(), () => deck.reloop_exit.setValue(1))
+          modes(
+            modifier.getState(),
+            () => deck.reloop_exit.setValue(1),
+            () => deck.reloop_andstop.setValue(1)
+          )
         }
       },
       control: {
