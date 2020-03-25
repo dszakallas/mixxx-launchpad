@@ -113,6 +113,7 @@ export type SimpleChannelControlKey =
   | 'rate_temp_up'
   | 'rate_temp_up_small'
   | 'rateRange'
+  | 'reloop_andstop'
   | 'reloop_exit'
   | 'repeat'
   | 'reset_key'
@@ -246,6 +247,7 @@ const channelDef = (type: string, i: number) => ({
   rate_temp_up: { group: `[${type}${i}]`, name: 'rate_temp_up', type: 'binary' },
   rate_temp_up_small: { group: `[${type}${i}]`, name: 'rate_temp_up_small', type: 'binary' },
   rateRange: { group: `[${type}${i}]`, name: 'rateRange', type: '0.0..3.0' },
+  reloop_andstop: { group: `[${type}${i}]`, name: 'reloop_andstop', type: 'binary' },
   reloop_exit: { group: `[${type}${i}]`, name: 'reloop_exit', type: 'binary' },
   repeat: { group: `[${type}${i}]`, name: 'repeat', type: 'binary' },
   reset_key: { group: `[${type}${i}]`, name: 'reset_key', type: 'binary' },
