@@ -5,17 +5,29 @@ import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'
 import type { ChannelControl } from '@mixxx-launchpad/mixxx'
 
+const SMALL_SAMPLES = 125
+
 export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => {
+  const loopName = { in: 'loop_in', out: 'loop_out' }
+  const loopPosName = { in: 'loop_start_position', out: 'loop_end_position' }
   const onMidi = (dir: 'in' | 'out') => ({ value }: MidiMessage, { bindings }: Object) => {
     modes(modifier.getState(), () => {
       if (value) {
-        // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
-        deck[(`loop_${dir}`: any)].setValue(1)
-        bindings[dir].button.sendColor(device.colors.hi_green)
-      } else {
-        // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
-        deck[(`loop_${dir}`: any)].setValue(0)
-        bindings[dir].button.sendColor(device.colors.black)
+        const ctrl = loopName[dir]
+        deck[ctrl].setValue(1)
+        deck[ctrl].setValue(0)
+      }
+    },
+    () => {
+      if (value) {
+        const ctrl = loopPosName[dir]
+        deck[ctrl].setValue(deck[ctrl].getValue() - SMALL_SAMPLES)
+      }
+    },
+    () => {
+      if (value) {
+        const ctrl = loopPosName[dir]
+        deck[ctrl].setValue(deck[ctrl].getValue() + SMALL_SAMPLES)
       }
     })
   }

@@ -337,13 +337,23 @@ Feedback
 - **bright red**: beatloop enabled
 - **dim red**: beatloop disabled
 
+#### LOOP IN / out
+
+controls
+
+- **normal**: set loop in/out position
+- **ctrl**: move loop in/out position backward by small amount
+- **shift**: movet loop in/out position forward by small amount
+
+Note: you are able to move the whole loop forward/backward by pressing down in and out the same time, while applying the modifier.
+
 #### LOOPJUMPS
 
 Almost the same as beatjumps, only instead of changing the current play position, they translate the position of the loop markers. As beatjumps, they support two modes and two sets. On how to use these, see [Beatjumps](#beatjumps)
 
 #### HALVE / DOUBLE
 
-They halve / double the current loop length, modifying the  position of the end marker.
+They halve / double the current loop length, modifying the position of the end marker.
 
 #### LOOPJUMP SMALL
 
