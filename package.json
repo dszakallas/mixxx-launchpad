@@ -1,6 +1,6 @@
 {
   "name": "@mixxx-launchpad/project",
-  "version": "2.3.1",
+  "version": "0.0.0-development",
   "description": "Novation Launchpad mapping for Mixxx",
   "homepage": "https://github.com/dszakallas/mixxx-launchpad",
   "respository": "https://github.com/dszakallas/mixxx-launchpad.git",
@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "lerna": "lerna",
     "check": "cd packages && flow",
-    "which": "which"
+    "semantic-release-cli": "semantic-release-cli",
+    "which": "which",
+    "semantic-release": "semantic-release"
   },
   "author": "Midiparse",
   "license": "MIT",
@@ -19,6 +21,10 @@
     "@babel/plugin-transform-flow-strip-types": "^7.9.0",
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
+    "@semantic-release/commit-analyzer": "^8.0.1",
+    "@semantic-release/exec": "^5.0.0",
+    "@semantic-release/github": "^7.0.5",
+    "@semantic-release/release-notes-generator": "^9.0.1",
     "babel-eslint": "^10.1.0",
     "babel-plugin-transform-es3-member-expression-literals": "^6.22.0",
     "babel-plugin-transform-es3-property-literals": "^6.22.0",
@@ -37,11 +43,17 @@
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-json": "^4.0.0",
-    "rollup-plugin-node-resolve": "^5.2.0"
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "semantic-release": "^17.0.7",
+    "semantic-release-cli": "^5.2.3"
   },
   "controllers": [
     "mk1",
     "mk2",
     "pro"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dszakallas/mixxx-launchpad.git"
+  }
 }
