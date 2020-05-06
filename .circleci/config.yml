@@ -9,6 +9,7 @@
 version: 2
 jobs:
   build:
+    resource_class: small
     working_directory: ~/dszakallas/mixxx-launchpad
     parallelism: 1
     shell: /bin/bash --login
