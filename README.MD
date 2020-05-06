@@ -3,7 +3,7 @@
 **Flexible and (soon) customizable controller mapping for Launchpad. Make DJing
 with Mixxx fun on Launchpad!**
 
-[![Build status](https://img.shields.io/circleci/project/github/dszakallas/mixxx-launchpad.svg)](https://circleci.com/gh/dszakallas/mixxx-launchpad)
+[![Build status](https://img.shields.io/circleci/project/github/dszakallas/mixxx-launchpad.svg)](https://circleci.com/gh/dszakallas/mixxx-launchpad) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 There's already a Launchpad mapping shipping with Mixxx however it
 has several quirks and limitations:
@@ -43,11 +43,11 @@ So I decided to make one that is more stable, flexible and customizable!
 
 ## How to get started
 
- 💾 Download the [latest release from here](https://github.com/szdavid92/mixxx-launchpad/releases/latest).
+ 💾 [Download the latest release](https://github.com/szdavid92/mixxx-launchpad/releases/latest).
 
- 💾 Follow the [instructions in the Mixxx User Manual](https://www.mixxx.org/manual/latest/chapters/controlling_mixxx.html#installing-a-preset-from-the-forum) to install the preset.
+ 🛠 Alternatively, see [Build](#build) the build it from source.
 
- Alternatively, see [Build](#build) the build it from source
+ 📘 Follow the [instructions in the Mixxx User Manual](https://www.mixxx.org/manual/latest/chapters/controlling_mixxx.html#installing-a-preset-from-the-forum) to install the preset.
 
 ## User guide
 
