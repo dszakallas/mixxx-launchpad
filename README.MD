@@ -3,7 +3,7 @@
 **Flexible and (soon) customizable controller mapping for Launchpad. Make DJing
 with Mixxx fun on Launchpad!**
 
-[![Build status](https://img.shields.io/circleci/project/github/dszakallas/mixxx-launchpad.svg)](https://circleci.com/gh/dszakallas/mixxx-launchpad) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) ![License](https://img.shields.io/github/license/dszakallas/mixxx-launchpad)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dszakallas/mixxx-launchpad) [![Build status](https://img.shields.io/circleci/project/github/dszakallas/mixxx-launchpad.svg)](https://circleci.com/gh/dszakallas/mixxx-launchpad) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) ![License](https://img.shields.io/github/license/dszakallas/mixxx-launchpad)
 
 ## Features ✨
 
