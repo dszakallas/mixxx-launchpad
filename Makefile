@@ -60,8 +60,8 @@ $(builddir)/mixxx-launchpad-$(version).zip : $(foreach target,$(1),$(call mappin
 	zip -j -9 $$@ $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
 endef
 
-default : configure
-.PHONY : configure
+default : compile
+.PHONY : default
 
 $(builddir):
 	mkdir -p $@
