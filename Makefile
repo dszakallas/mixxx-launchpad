@@ -28,10 +28,6 @@ mappingFiles = $(package) packages/$(1)/$(path)/buttons.js packages/$(1)/$(path)
 
 targets := $(shell jq -r '.controllers | join (" ")' package.json)
 
-configure :
-	npm install
-.PHONY : configure
-
 define targetScriptRules
 $(call script,$(1)) : $(scriptFiles)
 	./scripts/compile-scripts.js $(1) "$$@"
