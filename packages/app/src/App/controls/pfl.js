@@ -5,7 +5,7 @@ import type { ChannelControl, ControlMessage } from '@mixxx-launchpad/mixxx'
 import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'
 
-export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => (device: LaunchpadDevice) => {
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => {
   return {
     bindings: {
       pfl: {
