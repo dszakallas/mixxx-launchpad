@@ -368,8 +368,7 @@ Feedback
 
 To build you need to have a make, Node (>=8), bash (>=4.0) and `jq`. Watch tasks require `fswatch`.
 
-The multi-project build is managed with [lerna.js]. You need to  install it
-globally to make it available on the command line.  First clone the repo and
+The multi-project build is managed with npm workspaces. First clone the repo and
 install the dependencies:
 
 ```
@@ -377,7 +376,6 @@ git clone https://github.com/szdavid92/mixxx-launchpad
 cd mixxx-launchpad
 npm install
 ```
-You can also invoke lerna commands through npm like `npm run lerna -- --version`.
 To compile the sources run
 
 ```
