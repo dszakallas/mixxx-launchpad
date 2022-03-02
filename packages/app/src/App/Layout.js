@@ -236,8 +236,8 @@ const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
         { offset: offsets[3], size: 'short', channel: chs[2], index: 0 }
       ]
       default: return [
-        { offset: offsets[2], size: 'short', channel: chs[0], index: 0 },
-        { offset: offsets[3], size: 'short', channel: chs[1], index: 0 },
+        { offset: offsets[0], size: 'short', channel: chs[0], index: 0 },
+        { offset: offsets[1], size: 'short', channel: chs[1], index: 0 },
         { offset: offsets[2], size: 'short', channel: chs[2], index: 0 },
         { offset: offsets[3], size: 'short', channel: chs[3], index: 0 }
       ]
