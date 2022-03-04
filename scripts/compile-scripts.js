@@ -34,13 +34,13 @@ Promise.resolve().then(async () => {
       nodeResolve({
         extensions: ['.js', '.json'],
         customResolveOptions: {
-          paths: [path.resolve('packages', tgt, 'node_modules')]
+          paths: [path.resolve('node_modules')]
         }
       }),
       json(),
       babel({
         exclude: [
-          'packages/*/node_modules/@babel/runtime/**'
+          'node_modules/@babel/runtime/**'
         ],
         configFile: path.resolve('babel.config.js'),
         runtimeHelpers: true

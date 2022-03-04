@@ -7,6 +7,6 @@ module.exports = {
     'transform-es3-property-literals',
     '@babel/plugin-proposal-class-properties',
     '@babel/plugin-transform-flow-strip-types',
-    ['@babel/plugin-transform-runtime', { useESModules: true }]
+    ['@babel/plugin-transform-runtime', { regenerator: false, absoluteRuntime: true, useESModules: true }]
   ]
 }
