@@ -1,0 +1,23 @@
+branches:
+ - master
+plugins:
+  - - "@semantic-release/commit-analyzer"
+    - preset: conventionalcommits
+      parserOpts:
+        mergePattern: 'Merge pull request #(.*) from (.*)$'
+        mergeCorrespondence:
+          - pr
+          - branch
+  - - "@semantic-release/release-notes-generator"
+    - preset: conventionalcommits
+      parserOpts:
+        mergePattern: 'Merge pull request #(.*) from (.*)$'
+        mergeCorrespondence:
+          - pr
+          - branch
+  - - "@semantic-release/exec"
+    - prepareCmd: make release builddir=dist/release version=${nextRelease.version}
+  - - "@semantic-release/github"
+    - assets:
+      - path: dist/release/*.zip
+        label: Mixxx distribution
