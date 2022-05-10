@@ -23,6 +23,7 @@ with Mixxx fun on Launchpad!**
 ## Supported controllers
 
  - Launchpad Pro (Experimental)
+ - Launchpad Mini Mk3
  - Launchpad Mk2
  - Launchpad Mk1
 

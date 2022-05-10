@@ -44,11 +44,13 @@
     "packages/mixxx",
     "packages/mk1",
     "packages/mk2",
+    "packages/mini-mk3",
     "packages/pro"
   ],
   "controllers": [
     "mk1",
     "mk2",
+    "mini-mk3",
     "pro"
   ],
   "repository": {
