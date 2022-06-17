@@ -1,0 +1,75 @@
+name: Test & Release
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: |
+          echo "NPM_CACHE_DIR=$(npm config get cache)" >> $GITHUB_ENV
+      - name: Restore cache
+        uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: ${{ env.NPM_CACHE_DIR }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: |
+          npm install
+      - name: Run tests
+        run: |
+          make test
+      - name: Compile
+        run: make
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: mixxx-launchpad-${{ github.sha }}-${{ github.run_id }}
+          path: dist
+      - run: rm -rf dist
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: mixxx-launchpad-${{ github.sha }}-${{ github.run_id }}
+          path: dist
+      - run: ls -la dist
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'branch' && github.ref_name == 'main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: |
+          echo "NPM_CACHE_DIR=$(npm config get cache)" >> $GITHUB_ENV
+      - name: Restore cache
+        uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: ${{ env.NPM_CACHE_DIR }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: |
+          npm install
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: mixxx-launchpad-${{ github.sha }}-${{ github.run_id }}
+          path: dist
+      - name: Create release
+        run: npm run semantic-release
