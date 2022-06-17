@@ -36,18 +36,11 @@ jobs:
         with:
           name: mixxx-launchpad-${{ github.sha }}-${{ github.run_id }}
           path: dist
-      - run: rm -rf dist
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: mixxx-launchpad-${{ github.sha }}-${{ github.run_id }}
-          path: dist
-      - run: ls -la dist
 
   release:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref_type == 'branch' && github.ref_name == 'main'
+    if: github.ref_type == 'branch' && github.ref_name == 'master'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -73,3 +66,5 @@ jobs:
           path: dist
       - name: Create release
         run: npm run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
