@@ -5,16 +5,16 @@ space := $(empty) $(empty)
 
 join-with = $(subst $(space),$1,$(strip $2))
 
-device = $(call join-with,\ ,$(shell jq -r .controller.device packages/$(1)/package.json))
-manufacturer = $(call join-with,\ ,$(shell jq -r .controller.manufacturer packages/$(1)/package.json))
-path = $(call join-with,\ ,$(shell jq -r .controller.path packages/$(1)/package.json))
+device = $(call join-with,\ ,$(shell jq -r .device packages/$(1)/controller.json))
+manufacturer = $(call join-with,\ ,$(shell jq -r .manufacturer packages/$(1)/controller.json))
+path = "src"
 mapping = $(builddir)/$(call manufacturer,$(1))\ $(call device,$(1)).midi.xml
 script = $(builddir)/$(call manufacturer,$(1))-$(call device,$(1))-scripts.js
 
 arch := $(shell uname)
 
 # List the default Resource directories of Mixxx on different architectures
-installDirDarwin := $(HOME)/Library/Application\ Support/Mixxx
+installDirDarwin := $(HOME)/Library/Containers/org.mixxx.mixxx/Data/Library/Application\ Support/Mixxx
 installDirLinux := $(HOME)/.mixxx
 
 installDir ?= $(installDir$(arch))
@@ -23,8 +23,8 @@ package := ./package.json
 builddir ?= ./dist
 version ?= $(shell jq -r .version package.json)
 
-scriptFiles = $(shell ls packages/*/!(node_modules)/**/*.js)
-mappingFiles = $(package) packages/$(1)/$(path)/buttons.js packages/$(1)/$(path)/template.xml.ejs
+scriptFiles = $(shell ls packages/*/!(node_modules)/**/*.ts)
+mappingFiles = $(package) packages/$(1)/controller.json scripts/template.xml.ejs
 
 targets := $(shell jq -r '.controllers | join (" ")' package.json)
 
@@ -45,8 +45,8 @@ endef
 
 define installRule
 install : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
-	cd $$(installDir) && mkdir -p controllers
-	cp $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) $$(installDir)/controllers
+	cd "$$(installDir)" && mkdir -p controllers
+	cp $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) "$$(installDir)/controllers"
 
 .PHONY : install
 endef

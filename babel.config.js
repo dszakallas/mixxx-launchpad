@@ -1,12 +1,12 @@
-module.exports = {
+export default {
   presets: [
-    ['@babel/preset-env', { modules: false }]
+    '@babel/preset-typescript',
+    ['@babel/preset-env', { modules: false }],
   ],
   plugins: [
     'transform-es3-member-expression-literals',
     'transform-es3-property-literals',
     '@babel/plugin-proposal-class-properties',
-    '@babel/plugin-transform-flow-strip-types',
-    ['@babel/plugin-transform-runtime', { regenerator: false, absoluteRuntime: true, useESModules: true }]
+    ['@babel/plugin-transform-runtime', { corejs: 3, regenerator: false, absoluteRuntime: true }]
   ]
 }

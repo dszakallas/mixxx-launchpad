@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "isolatedModules": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "esModuleInterop": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Node",
+    "outDir": "dist"
+  },
+  "references": [
+    { "path": "../mixxx" }
+  ]
+}

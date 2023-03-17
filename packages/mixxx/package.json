@@ -2,12 +2,10 @@
   "name": "@mixxx-launchpad/mixxx",
   "private": true,
   "version": "1.0.0",
-  "main": "src/index.js",
-  "module": "src/index.js",
+  "main": "src/index.ts",
   "author": "Midiparse",
   "license": "MIT",
   "dependencies": {
-    "json-stringify-safe": "~5.0.1",
-    "lodash-es": "~4.17.14"
+    "eventemitter3": "~5.0.0"
   }
 }

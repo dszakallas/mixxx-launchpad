@@ -1,0 +1,15 @@
+{
+  "include": [],
+  "references": [
+    { "path": "./packages/app" },
+    {
+      "path": "./packages/mk2"
+    },
+    {
+      "path": "./packages/mk1"
+    },
+    {
+      "path": "./packages/mixxx"
+    }
+  ]
+}
