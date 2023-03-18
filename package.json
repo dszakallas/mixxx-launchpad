@@ -43,11 +43,13 @@
     "packages/app",
     "packages/mixxx",
     "packages/mk1",
-    "packages/mk2"
+    "packages/mk2",
+    "packages/mini-mk3"
   ],
   "controllers": [
     "mk1",
-    "mk2"
+    "mk2",
+    "mini-mk3"
   ],
   "repository": {
     "type": "git",

@@ -19,8 +19,15 @@ Flexible and customizable controller mapping for Novation Launchpad family of co
 
 ## Supported controllers
 
+ - Launchpad Mini Mk3 [Setup instructions](#launchpad-mini-mk3)
  - Launchpad Mk2
  - Launchpad Mk1
+ 
+## Controller setup instructions
+
+### Launchpad Mini Mk3
+
+Mini Mk3 has to be put in "Programmer" mode to get MIDI access to all 9x9 instead of only inner 8x8 in "Live" mode. Push and hold "Session" for about a second, "LED" screen shows up, then push "Stop Solo Mute" button, "Programmer" shows up.
 
 ## How to get started
 
@@ -291,15 +298,17 @@ Feedback
 
 #### BEATJUMPS
 
+_Changed in 3.0.0: changing between sets and modes works differently._
+
 Controls for jumping backward (lower lane) and forward (upper lane).
 Supports two modes:
  - the **normal mode** is represented with bright color. Jumping works as you would expect.
  - the **rebouncing mode** is shown with dim color. It jumps on attack, then jumps back on release. Jumping legato works and uses the same stealing algorithm as key shifting.
  Modes are switched with the CH MODE control (pressing `ctrl` and `shift` at the same time)
 
-You can change modes by pressing **ctrl+shift+[any beatjump key]**.
+You can change modes by pressing **shift+[any beatjump key]**.
 
-There are two sets of jumps, switchable with the `ctrl` and `shift` keys, and shown in their corresponding colors. This means that pressing **ctrl+[any beatjump key]** will switch to the first set, while pressing **shift+[any beatjump key]** will switch to the second set.
+There are two sets of jumps, switchable with the `ctrl` key, and shown in different colors.
 
 #### BEATLOOPS
 
@@ -320,11 +329,13 @@ controls
 
 - **normal**: set loop in/out position
 - **ctrl**: move loop in/out position backward by small amount
-- **shift**: movet loop in/out position forward by small amount
+- **shift**: move loop in/out position forward by small amount
 
 Note: you are able to move the whole loop forward/backward by pressing down in and out the same time, while applying the modifier.
 
 #### LOOPJUMPS
+
+_Changed in 3.0.0: changing between sets and modes works differently._
 
 Almost the same as beatjumps, only instead of changing the current play position, they translate the position of the loop markers. As beatjumps, they support two modes and two sets. On how to use these, see [Beatjumps](#beatjumps)
 
