@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import ejs from 'ejs'
-import path from 'path'
+import { resolve, dirname, join } from 'path'
 import {readFile, writeFile} from 'node:fs/promises'
 import mkdirp from 'mkdirp'
 
@@ -9,20 +9,14 @@ if (process.argv.length !== 4) {
   throw Error('Usage: target outFile')
 }
 
-const tgt = process.argv[2]
-const pkg = JSON.parse(await readFile(path.resolve('packages', tgt, 'package.json')))
-const controller = JSON.parse(await readFile(path.resolve('packages', tgt, 'controller.json')))
-const templateFile = path.join('scripts', 'template.xml.ejs')
+const [tgt, outFile] = process.argv.slice(-2)
+const [pkg, controller] = await Promise.all([
+  readFile(resolve('packages', tgt, 'package.json')).then(JSON.parse),
+  readFile(resolve('packages', tgt, 'controller.json')).then(JSON.parse)
+])
 
-const leftPad = (str, padString, length) => {
-  let buf = str
-  while (buf.length < length) {
-    buf = padString + buf
-  }
-  return buf
-}
-
-const hexFormat = (n, d) => '0x' + leftPad(n.toString(16).toUpperCase(), '0', d)
+const templateFile = join('scripts', 'template.xml.ejs')
+const hexFormat = (n, d) => '0x' + n.toString(16).toUpperCase().padStart(d, '0')
 
 const template = await readFile(templateFile)
 const rendered = ejs.render(template.toString(), {
@@ -35,6 +29,6 @@ const rendered = ejs.render(template.toString(), {
   buttons: Object.keys(controller.controls).map((key) => controller.controls[key]),
   hexFormat: hexFormat
 })
-await mkdirp(path.dirname(path.resolve(process.argv[3])))
-await writeFile(path.resolve(process.argv[3]), rendered)
+await mkdirp(dirname(resolve(outFile)))
+await writeFile(resolve(outFile), rendered)
 
