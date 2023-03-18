@@ -69,6 +69,18 @@ const onMidi = (layout: App, channel: number, modifier: Modifier) =>
     );
   });
 
+
+const buttons = [
+  'up',
+  'down',
+  'left',
+  'right',
+  'session',
+  'user1',
+  'user2',
+  'mixer',
+] as const;
+
 export default class App extends Component {
   bindings: [MidiComponent, Action<MidiMessage>][];
   modifier: ModifierSidebar;
@@ -81,19 +93,6 @@ export default class App extends Component {
   mountedPresets: { [key: number]: Preset };
   device: LaunchpadDevice;
 
-  static buttons = [
-    'up',
-    'down',
-    'left',
-    'right',
-    'session',
-    'user1',
-    'user2',
-    'mixer',
-  ];
-
-  static channels = [0, 1, 2, 3, 4, 5, 6, 7];
-
   constructor(device: LaunchpadDevice, conf: LayoutConf) {
     super();
 
@@ -102,7 +101,7 @@ export default class App extends Component {
     this.playlistSidebar = new PlaylistSidebar(device);
 
     this.device = device;
-    this.bindings = App.buttons.map((v, i) => {
+    this.bindings = buttons.map((v, i) => {
       const binding = new MidiComponent(this.device, this.device.controls[v]);
       return [binding, onMidi(this, i, this.modifier)];
     });

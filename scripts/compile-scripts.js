@@ -44,7 +44,7 @@ const bundle = await rollup({
       configFile: path.resolve('babel.config.js'),
       babelHelpers: 'runtime'
     }),
-    terser()
+    //terser()
   ]
 })
 await mkdirp('tmp')
