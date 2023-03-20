@@ -2,7 +2,7 @@ import { MidiComponent, setValue } from '@mixxx-launchpad/mixxx'
 
 import { Control, MakeControlTemplate } from '../Control';
 import { modes, ModifierState, retainAttackMode } from '../ModifierSidebar';
-import { posMod } from '../math';
+import { posMod } from '../util';
 
 export type Type = {
   type: 'beatjump';

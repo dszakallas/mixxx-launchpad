@@ -16,7 +16,7 @@ import {
   PresetConf,
 } from './Control';
 import PlaylistSidebar from './PlaylistSidebar';
-import { posMod } from './math';
+import { posMod } from './util';
 
 export type PresetSize = 'short' | 'tall' | 'grande';
 

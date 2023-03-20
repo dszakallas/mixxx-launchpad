@@ -7,7 +7,6 @@ import { rollup } from 'rollup'
 import nodeResolve from '@rollup/plugin-node-resolve'
 import babel from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
-import terser from '@rollup/plugin-terser'
 import json from '@rollup/plugin-json'
 import { readFile, writeFile } from 'node:fs/promises'
 
@@ -46,8 +45,7 @@ const bundle = await rollup({
       include: resolve("packages", "**", "*.ts"),
       configFile: resolve('babel.config.js'),
       babelHelpers: 'runtime'
-    }),
-    //terser()
+    })
   ]
 })
 await mkdirp('tmp')

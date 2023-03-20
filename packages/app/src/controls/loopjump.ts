@@ -3,7 +3,7 @@ import type {
 } from '@mixxx-launchpad/mixxx';
 import { setValue } from '@mixxx-launchpad/mixxx';
 import { Control, MakeControlTemplate } from '../Control';
-import { posMod } from '../math';
+import { posMod } from '../util';
 import { modes, retainAttackMode } from '../ModifierSidebar';
 
 export type Type = {

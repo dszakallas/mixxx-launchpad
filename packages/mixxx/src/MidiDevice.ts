@@ -41,8 +41,7 @@ export abstract class MidiDevice extends Component {
 
   onMount() {
     super.onMount()
-    Object.keys(this.controls).forEach((k) => {
-      const control = this.controls[k] as MidiControlDef
+    Object.values(this.controls).forEach((control) => {
       (this as unknown as RawMidiMessageTaskRegistry)[`${callbackPrefix}_${hexFormat(control.status, 2)}_${hexFormat(control.midino, 2)}`] = (_channel, _control, value, _status) => {
         const message: MidiMessage = { value, control }
         this.emit(control.name, message)
@@ -89,3 +88,5 @@ export class MidiComponent extends Component {
 export const sendShortMsg = (control: MidiControlDef, value: number): void => {
   midi.sendShortMsg(control.status, control.midino, value)
 }
+
+export const sendSysexMsg = midi.sendSysexMsg

@@ -1,6 +1,6 @@
-import { LaunchpadDevice, useDevice } from '@mixxx-launchpad/app'
+import { LaunchpadDevice, RGBColor, useDevice } from '@mixxx-launchpad/app'
 import def from '../controller.json'
-import { MidiControlDef } from '@mixxx-launchpad/mixxx'
+import { MidiControlDef, sendSysexMsg } from '@mixxx-launchpad/mixxx'
 
 const colors = {
   black: 0,
@@ -18,6 +18,7 @@ const colors = {
 }
 
 class LaunchpadMK2Device extends LaunchpadDevice {
+  supportsRGBColors: boolean
   controls: { [key: string]: MidiControlDef }
   colors: { [key: string]: number }
 
@@ -25,6 +26,18 @@ class LaunchpadMK2Device extends LaunchpadDevice {
     super()
     this.controls = def.controls
     this.colors = colors
+    this.supportsRGBColors = true
+  }
+
+  onMount() {
+    super.onMount()
+    // Object.values(this.controls).forEach((v) => {
+    //   this.sendRGBColor(v, [255, 255, 255])
+    // })
+  }
+
+  sendRGBColor(control: MidiControlDef, color: RGBColor) {
+    sendSysexMsg([240, 0, 32, 41, 2, 24, 11, control.midino, ...color.map((x) => ~~(x / 4)), 247])
   }
 }
 

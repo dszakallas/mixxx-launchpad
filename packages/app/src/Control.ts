@@ -126,7 +126,7 @@ export class Control<C extends ControlType>
     super.onMount();
 
     Object.keys(this.bindings).forEach((k) => {
-      const b = this.bindings[k] // as Binding
+      const b = this.bindings[k]
       if (b instanceof ControlComponent) {
         const bt = this.bindingTemplates[k] as ControlBindingTemplate<any>;
         controlListeners.forEach((event) => {
@@ -150,14 +150,13 @@ export class Control<C extends ControlType>
       }
     });
 
-    Object.keys(this.bindings).forEach((k) => this.bindings[k].mount());
+    Object.values(this.bindings).forEach((b) => b.mount());
   }
 
   onUnmount() {
-    Object.keys(this.bindings).forEach((k) => this.bindings[k].unmount());
-    Object.keys(this.bindings).forEach((k) =>
-      this.bindings[k].removeAllListeners()
-    );
+    const bs = Object.values(this.bindings)
+    bs.forEach((b) => b.unmount());
+    bs.forEach((b) => b.removeAllListeners());
     super.onUnmount();
   }
 }

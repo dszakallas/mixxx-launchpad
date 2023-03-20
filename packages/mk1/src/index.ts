@@ -1,4 +1,4 @@
-import { LaunchpadDevice, useDevice } from '@mixxx-launchpad/app'
+import { LaunchpadDevice, RGBColor, useDevice } from '@mixxx-launchpad/app'
 import def from '../controller.json'
 import { MidiControlDef } from '@mixxx-launchpad/mixxx'
 
@@ -17,6 +17,7 @@ const colors = {
 }
 
 class LaunchpadMK1Device extends LaunchpadDevice {
+  supportsRGBColors: boolean
   controls: { [key: string]: MidiControlDef }
   colors: { [key: string]: number }
 
@@ -24,6 +25,11 @@ class LaunchpadMK1Device extends LaunchpadDevice {
     super()
     this.controls = def.controls
     this.colors = colors
+    this.supportsRGBColors = false
+  }
+
+  sendRGBColor(_control: MidiControlDef, _value: RGBColor): void {
+    throw new Error('Device does not support RGB Colors.')
   }
 }
 

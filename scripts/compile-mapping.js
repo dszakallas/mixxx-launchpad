@@ -26,7 +26,7 @@ const rendered = ejs.render(template.toString(), {
   device: controller.device,
   manufacturer: controller.manufacturer,
   global: controller.global,
-  buttons: Object.keys(controller.controls).map((key) => controller.controls[key]),
+  buttons: Object.values(controller.controls),
   hexFormat: hexFormat
 })
 await mkdirp(dirname(resolve(outFile)))

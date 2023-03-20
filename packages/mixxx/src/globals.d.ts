@@ -1,8 +1,8 @@
-import { Engine } from './mixxx'
+import { Engine, Midi } from './mixxx'
 
 declare global {
   const engine: Engine
-  const midi: any
+  const midi: Midi
   const script: any
 }
 

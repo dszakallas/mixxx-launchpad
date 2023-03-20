@@ -18,4 +18,9 @@ export type Engine = {
     callback: ControlCallback): Connection
 }
 
+export type Midi = {
+  sendShortMsg(byte1: number, byte2: number, byte3: number): void
+  sendSysexMsg(bytes: number[]): void
+}
+
 export {}

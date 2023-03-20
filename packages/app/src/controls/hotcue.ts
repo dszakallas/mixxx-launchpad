@@ -5,10 +5,17 @@ import type {
   MidiMessage,
 } from '@mixxx-launchpad/mixxx';
 import { getValue, setValue } from '@mixxx-launchpad/mixxx';
+import { RGBColor } from '..';
 import { Control, MakeControlTemplate } from '../Control';
 import { modes } from '../ModifierSidebar';
+import { range } from '../util'
 
-const range = (n: number) => [...Array(n).keys()]
+const parseHotcueValue = (number: number): RGBColor => {
+  const blue = number % 256
+  const green = (number >> 8) % 256
+  const red = (number >> 16) % 256
+  return [red, green, blue]
+}
 
 export type Type = {
   type: 'hotcue';
@@ -18,8 +25,9 @@ export type Type = {
     start?: number;
   };
   bindings: {
-    [k: `b.${string}`]: MidiComponent;
-    [k: `c.${string}`]: ControlComponent;
+    [k: `midi.${string}`]: MidiComponent;
+    [k: `cue.${string}`]: ControlComponent;
+    [k: `color.${string}`]: ControlComponent;
   };
   state: Record<string, unknown>;
 };
@@ -40,7 +48,7 @@ const make: MakeControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosition
         },
         () => {
           if (value) {
-            if (getValue(bindings[`c.${i}`].control)) {
+            if (getValue(bindings[`cue.${i}`].control)) {
               setValue(deck.hotcues[1 + i + start].clear, 1);
             } else {
               setValue(deck.hotcues[1 + i + start].set, 1);
@@ -49,30 +57,53 @@ const make: MakeControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosition
         }
       );
     };
+  const onHotcueColorChanged =
+    (i: number) => 
+    ({ context: { device }, bindings }: Control<Type>) =>
+    ({ value }: ControlMessage) => {
+      if (device.supportsRGBColors) {
+        device.sendRGBColor(
+          bindings[`midi.${i}`].control,
+          parseHotcueValue(value)
+        );
+      }
+    }
   const onHotcueEnabled =
     (i: number) =>
     ({ context: { device }, bindings }: Control<Type>) =>
     ({ value }: ControlMessage) => {
       if (value) {
-        device.sendColor(bindings[`b.${i}`].control, device.colors.lo_yellow);
+        if (device.supportsRGBColors) {
+          device.sendRGBColor(
+            bindings[`midi.${i}`].control,
+            parseHotcueValue(getValue(deck.hotcues[1 + i + start].color))
+          );
+        } else {
+          device.sendColor(bindings[`midi.${i}`].control, device.colors.lo_yellow);
+        }
       } else {
-        device.clearColor(bindings[`b.${i}`].control);
+        device.clearColor(bindings[`midi.${i}`].control);
       }
     };
   const bindings: { [k: string]: any } = {};
   range(cues).map((i) => {
     const dx = i % rows;
     const dy = ~~(i / rows);
-    bindings[`b.${i}`] = {
+    bindings[`midi.${i}`] = {
       type: 'button',
       target: [gridPosition[0] + dx, gridPosition[1] + dy],
       midi: onHotcueMidi(i),
     };
-    bindings[`c.${i}`] = {
+    bindings[`cue.${i}`] = {
       type: 'control',
       target: deck.hotcues[1 + i + start].enabled,
       update: onHotcueEnabled(i),
     };
+    bindings[`color.${i}`] = {
+      type: 'control',
+      target: deck.hotcues[1 + i + start].color,
+      update: onHotcueColorChanged(i),
+    }
   });
   return {
     bindings,

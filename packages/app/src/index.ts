@@ -3,8 +3,12 @@ import App from './App'
 
 import { MidiControlDef, MidiDevice, sendShortMsg } from '@mixxx-launchpad/mixxx'
 
+export type RGBColor = [number, number, number]
+
 export abstract class LaunchpadDevice extends MidiDevice {
   abstract colors: { [key: string]: number }
+
+  abstract supportsRGBColors: boolean
 
   sendColor(control: MidiControlDef, value: number): void {
     sendShortMsg(control, value)
@@ -12,6 +16,8 @@ export abstract class LaunchpadDevice extends MidiDevice {
   clearColor(control: MidiControlDef): void {
     sendShortMsg(control, this.colors.black)
   }
+
+  abstract sendRGBColor(control: MidiControlDef, value: RGBColor): void
 
   constructor() {
     super()

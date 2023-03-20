@@ -6,7 +6,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "esModuleInterop": true,
-    "target": "ES2015",
+    "target": "ES2022",
     "module": "ES2022",
     "moduleResolution": "Node",
     "resolveJsonModule": true,

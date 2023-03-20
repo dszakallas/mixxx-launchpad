@@ -2,7 +2,7 @@ import { getValue, MidiComponent, setValue } from '@mixxx-launchpad/mixxx';
 import { Control, MakeControlTemplate } from '../Control';
 import { LaunchpadDevice } from '../.';
 import { modes, retainAttackMode } from '../ModifierSidebar';
-import { posMod } from '../math';
+import { posMod } from '../util';
 
 export type Type = {
   type: 'keyshift';

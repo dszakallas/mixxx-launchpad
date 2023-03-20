@@ -13,6 +13,6 @@ export type {
   ControlHandle,
   ControlMessage,
 } from './Control';
-export { MidiComponent, MidiDevice, sendShortMsg } from './MidiDevice';
+export { MidiComponent, MidiDevice, sendShortMsg, sendSysexMsg } from './MidiDevice';
 export type { MidiControlDef, MidiMessage } from './MidiDevice';
 export { Timer } from './Timer';

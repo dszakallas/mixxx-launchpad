@@ -92,7 +92,7 @@ const conf: LayoutConf = {
           { pos: [5, 0], control: { type: 'loopIo' } },
           { pos: [7, 0], control: { type: 'slip' } },
         ],
-      },
+      }
     ],
     tall: [
       {
