@@ -7,26 +7,30 @@ import type { Connection } from './mixxx'
 export type ControlDef = {
   group: string,
   name: string,
-  type: string,
-  description?: string
+  type: string
 }
-
 
 const range = (n: number) => [...Array(n).keys()]
 
 export const playListControlDef: { [key: string]: ControlDef } = {
-  LoadSelectedIntoFirstStopped: { group: '[Playlist]', name: 'LoadSelectedIntoFirstStopped', type: 'binary', description: 'Loads the currently highlighted song into the first stopped deck' },
-  SelectNextPlaylist: { group: '[Playlist]', name: 'SelectNextPlaylist', type: 'binary', description: 'Switches to the next view (Library, Queue, etc.)' },
-  SelectPrevPlaylist: { group: '[Playlist]', name: 'SelectPrevPlaylist', type: 'binary', description: 'Switches to the previous view (Library, Queue, etc.)' },
-  ToggleSelectedSidebarItem: { group: '[Playlist]', name: 'ToggleSelectedSidebarItem', type: 'binary', description: 'Toggles (expands/collapses) the currently selected sidebar item.' },
-  SelectNextTrack: { group: '[Playlist]', name: 'SelectNextTrack', type: 'binary', description: 'Scrolls to the next track in the track table.' },
-  SelectPrevTrack: { group: '[Playlist]', name: 'SelectPrevTrack', type: 'binary', description: 'Scrolls to the previous track in the track table.' },
-  SelectTrackKnob: { group: '[Playlist]', name: 'SelectTrackKnob', type: 'relative value', description: 'Scrolls the given number of tracks in the track table (can be negative for reverse direction).' },
-  AutoDjAddBottom: { group: '[Playlist]', name: 'AutoDjAddBottom', type: 'binary', description: 'Add selected track(s) to Auto DJ Queue (bottom).' },
-  AutoDjAddTop: { group: '[Playlist]', name: 'AutoDjAddTop', type: 'binary', description: 'Add selected track(s) to Auto DJ Queue (top).' }
+  LoadSelectedIntoFirstStopped: { group: '[Playlist]', name: 'LoadSelectedIntoFirstStopped', type: 'binary' },
+  SelectNextPlaylist: { group: '[Playlist]', name: 'SelectNextPlaylist', type: 'binary' },
+  SelectPrevPlaylist: { group: '[Playlist]', name: 'SelectPrevPlaylist', type: 'binary' },
+  ToggleSelectedSidebarItem: { group: '[Playlist]', name: 'ToggleSelectedSidebarItem', type: 'binary' },
+  SelectNextTrack: { group: '[Playlist]', name: 'SelectNextTrack', type: 'binary' },
+  SelectPrevTrack: { group: '[Playlist]', name: 'SelectPrevTrack', type: 'binary' },
+  SelectTrackKnob: { group: '[Playlist]', name: 'SelectTrackKnob', type: 'relative value' },
+  AutoDjAddBottom: { group: '[Playlist]', name: 'AutoDjAddBottom', type: 'binary' },
+  AutoDjAddTop: { group: '[Playlist]', name: 'AutoDjAddTop', type: 'binary' }
 }
 
 export type PlayListControlKey = keyof typeof playListControlDef
+
+export const masterControlDef: { [key: string]: ControlDef } = {
+  maximize_library: { group: '[Master]', name: 'maximize_library', type: 'binary' }
+}
+
+export type MasterControlKey = keyof typeof masterControlDef
 
 export type SimpleChannelControlKey =
   'back'

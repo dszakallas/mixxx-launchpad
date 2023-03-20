@@ -14,7 +14,7 @@ script = $(builddir)/$(call manufacturer,$(1))-$(call device,$(1))-scripts.js
 arch := $(shell uname)
 
 # List the default Resource directories of Mixxx on different architectures
-installDirDarwin := "$(HOME)/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support/Mixxx"
+installDirDarwin := $(HOME)/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support/Mixxx
 installDirLinux := $(HOME)/.mixxx
 
 installDir ?= $(installDir$(arch))
