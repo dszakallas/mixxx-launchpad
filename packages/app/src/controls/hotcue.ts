@@ -5,17 +5,10 @@ import type {
   MidiMessage,
 } from '@mixxx-launchpad/mixxx';
 import { getValue, setValue } from '@mixxx-launchpad/mixxx';
-import { RGBColor } from '..';
-import { Control, MakeControlTemplate } from '../Control';
+import { parseRGBColor } from '../color';
+import { Control, MakeDeckControlTemplate } from '../Control';
 import { modes } from '../ModifierSidebar';
 import { range } from '../util'
-
-const parseHotcueValue = (number: number): RGBColor => {
-  const blue = number % 256
-  const green = (number >> 8) % 256
-  const red = (number >> 16) % 256
-  return [red, green, blue]
-}
 
 export type Type = {
   type: 'hotcue';
@@ -32,7 +25,7 @@ export type Type = {
   state: Record<string, unknown>;
 };
 
-const make: MakeControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosition, deck) => {
+const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosition, deck) => {
   const onHotcueMidi =
     (i: number) =>
     ({ context: { modifier }, bindings }: Control<Type>) =>
@@ -64,7 +57,7 @@ const make: MakeControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosition
       if (device.supportsRGBColors) {
         device.sendRGBColor(
           bindings[`midi.${i}`].control,
-          parseHotcueValue(value)
+          parseRGBColor(value)
         );
       }
     }
@@ -76,7 +69,7 @@ const make: MakeControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosition
         if (device.supportsRGBColors) {
           device.sendRGBColor(
             bindings[`midi.${i}`].control,
-            parseHotcueValue(getValue(deck.hotcues[1 + i + start].color))
+            parseRGBColor(getValue(deck.hotcues[1 + i + start].color))
           );
         } else {
           device.sendColor(bindings[`midi.${i}`].control, device.colors.lo_yellow);
@@ -112,3 +105,4 @@ const make: MakeControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosition
 };
 
 export default make;
+

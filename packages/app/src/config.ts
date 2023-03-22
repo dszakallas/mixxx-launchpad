@@ -13,7 +13,7 @@ const conf: LayoutConf = {
     grande: [
       {
         // 'Grande'
-        grid: [
+        deck: [
           { pos: [0, 0], control: { type: 'play' } },
           { pos: [1, 0], control: { type: 'sync' } },
           { pos: [2, 0], control: { type: 'nudge' } },
@@ -92,12 +92,15 @@ const conf: LayoutConf = {
           { pos: [5, 0], control: { type: 'loopIo' } },
           { pos: [7, 0], control: { type: 'slip' } },
         ],
+      },
+      {
+        samplerPalette: { n: 64, offset: 4, rows: 8 } 
       }
     ],
     tall: [
       {
         // 'Tall'
-        grid: [
+        deck: [
           { pos: [0, 0], control: { type: 'play' } },
           { pos: [1, 0], control: { type: 'sync' } },
           { pos: [2, 0], control: { type: 'nudge' } },
@@ -134,7 +137,7 @@ const conf: LayoutConf = {
       },
       {
         // 'Juggler'
-        grid: [
+        deck: [
           { pos: [0, 0], control: { type: 'play' } },
           { pos: [1, 0], control: { type: 'load' } },
           {
@@ -177,7 +180,7 @@ const conf: LayoutConf = {
     short: [
       {
         // 'Short'
-        grid: [
+        deck: [
           { pos: [0, 0], control: { type: 'play' } },
           { pos: [1, 0], control: { type: 'sync' } },
           { pos: [2, 0], control: { type: 'nudge' } },
@@ -195,7 +198,7 @@ const conf: LayoutConf = {
       },
       {
         // 'Sampler'
-        grid: [
+        deck: [
           { pos: [0, 0], control: { type: 'hotcue', params: { cues: 16, rows: 4} } },
         ],
       },

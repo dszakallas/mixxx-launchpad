@@ -3,7 +3,7 @@ import type {
     MidiComponent
 } from '@mixxx-launchpad/mixxx';
 import { setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeControlTemplate } from '../Control';
+import { Control, MakeDeckControlTemplate } from '../Control';
 import { modes } from '../ModifierSidebar';
 
 export type Type = {
@@ -16,7 +16,7 @@ export type Type = {
   params: Record<string, unknown>;
 };
 
-const make: MakeControlTemplate<Type> = (_, gridPosition, deck) => ({
+const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
   state: {},
   bindings: {
     button: {

@@ -1,5 +1,5 @@
 import { getValue, MidiComponent, setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeControlTemplate } from '../Control';
+import { Control, MakeDeckControlTemplate } from '../Control';
 import { LaunchpadDevice } from '../.';
 import { modes, retainAttackMode } from '../ModifierSidebar';
 import { posMod } from '../util';
@@ -20,7 +20,7 @@ export type Type = {
 
 const colors = ['green', 'red'] as const; 
 
-const make: MakeControlTemplate<Type> = ({ shifts, rows }, gridPosition, deck) => {
+const make: MakeDeckControlTemplate<Type> = ({ shifts, rows }, gridPosition, deck) => {
   const bindings: { [k: string]: any } = {};
 
   const temporaryChange = (

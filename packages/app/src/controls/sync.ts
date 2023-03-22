@@ -6,7 +6,7 @@ import type {
   ControlComponent,
 } from '@mixxx-launchpad/mixxx';
 import { setValue, getValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeControlTemplate } from '../Control';
+import { Control, MakeDeckControlTemplate } from '../Control';
 
 export type Type = {
   type: 'sync';
@@ -18,7 +18,7 @@ export type Type = {
   state: Record<string, unknown>;
 };
 
-const make: MakeControlTemplate<Type> = (_, gridPosition, deck) => ({
+const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
   state: {},
   bindings: {
     sync: {

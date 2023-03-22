@@ -32,6 +32,39 @@ export const masterControlDef: { [key: string]: ControlDef } = {
 
 export type MasterControlKey = keyof typeof masterControlDef
 
+// just enough for samplers
+export type SamplerControlKey = 'LoadSelectedTrack' |
+  'cue_gotoandplay' |
+  'stop' |
+  'eject' |
+  'track_color' |
+  'track_loaded' |
+  'play' |
+  'play_latched'
+
+export type SamplerControlDef = {
+  [_ in SamplerControlKey]: ControlDef
+}
+
+const createSamplerControlDef = (type: string, i: number): SamplerControlDef => ({
+  LoadSelectedTrack: { group: `[${type}${i}]`, name: 'LoadSelectedTrack', type: 'binary' },
+  cue_gotoandplay: { group: `[${type}${i}]`, name: 'cue_gotoandplay', type: 'binary' },
+  eject: { group: `[${type}${i}]`, name: 'eject', type: 'binary' },
+  play: { group: `[${type}${i}]`, name: 'play', type: 'binary' },
+  play_latched: { group: `[${type}${i}]`, name: 'play_latched', type: 'binary' },
+  stop: { group: `[${type}${i}]`, name: 'stop', type: 'binary' },
+  track_color: { group: `[${type}${i}]`, name: 'track_color', type: 'number' },
+  track_loaded: { group: `[${type}${i}]`, name: 'track_loaded', type: 'binary' }
+})
+
+const getChannelNameForOrdinal = (i: number): [string, number] => i < 4 ? ['Channel', i + 1] : ['Sampler', i - 4 + 1]
+
+export const samplerControlDefs: SamplerControlDef[] = range(68).map((i: number) => {
+  const [name, number] = getChannelNameForOrdinal(i)
+  return createSamplerControlDef(name, number)
+})
+
+// the full control palette for decks, minus repeated controls (e.g hotcues)
 export type SimpleChannelControlKey =
   'back'
   | 'beat_active'
@@ -85,6 +118,7 @@ export type SimpleChannelControlKey =
   | 'pitch_adjust'
   | 'play'
   | 'play_indicator'
+  | 'play_latched'
   | 'play_stutter'
   | 'playposition'
   | 'pregain'
@@ -115,6 +149,8 @@ export type SimpleChannelControlKey =
   | 'sync_master'
   | 'sync_mode'
   | 'sync_key'
+  | 'track_color'
+  | 'track_loaded'
   | 'track_samplerate'
   | 'track_samples'
   | 'volume'
@@ -134,6 +170,7 @@ export type SimpleChannelControlKey =
   | 'waveform_zoom_down'
   | 'waveform_zoom_set_default'
   | 'wheel'
+
 
 export type SimpleChannelControlDef = {
   [_ in SimpleChannelControlKey]: ControlDef
@@ -191,6 +228,7 @@ const createSimpleChannelControlDef = (type: string, i: number): SimpleChannelCo
   pitch: { group: `[${type}${i}]`, name: 'pitch', type: '-6.0..6.0' },
   pitch_adjust: { group: `[${type}${i}]`, name: 'pitch_adjust', type: '-3.0..3.0' },
   play: { group: `[${type}${i}]`, name: 'play', type: 'binary' },
+  play_latched: { group: `[${type}${i}]`, name: 'play_latched', type: 'binary' },
   play_indicator: { group: `[${type}${i}]`, name: 'play_indicator', type: 'binary' },
   play_stutter: { group: `[${type}${i}]`, name: 'play_stutter', type: 'binary' },
   playposition: { group: `[${type}${i}]`, name: 'playposition', type: 'default' },
@@ -222,6 +260,8 @@ const createSimpleChannelControlDef = (type: string, i: number): SimpleChannelCo
   sync_master: { group: `[${type}${i}]`, name: 'sync_master', type: 'binary' },
   sync_mode: { group: `[${type}${i}]`, name: 'sync_mode', type: 'binary' },
   sync_key: { group: `[${type}${i}]`, name: 'sync_key', type: '?' },
+  track_color: { group: `[${type}${i}]`, name: 'track_color', type: 'number' },
+  track_loaded: { group: `[${type}${i}]`, name: 'track_loaded', type: 'binary' },
   track_samplerate: { group: `[${type}${i}]`, name: 'track_samplerate', type: 'absolute value' },
   track_samples: { group: `[${type}${i}]`, name: 'track_samples', type: 'absolute value' },
   volume: { group: `[${type}${i}]`, name: 'volume', type: 'default' },
@@ -252,6 +292,7 @@ export type BeatloopDef = { [_ in BeatloopKey]: ControlDef }
 export type BeatjumpKey = 'forward' | 'backward'
 export type BeatjumpDef = { [_ in BeatjumpKey]: ControlDef }
 
+// repeated controls
 export type ArrayChannelControlDef = HotcueDef | BeatloopDef | BeatjumpDef
 
 const createArrayChannelControlDefCreators = (type: string, i: number) => ({
@@ -292,7 +333,7 @@ export type ChannelControlDef = SimpleChannelControlDef & {
 }
 
 export const createChannelControlDef = (i: number): ChannelControlDef => {
-  const [name, number] = i < 5 ? ['Channel', i] : ['Sampler', i - 4]
+  const [name, number] = getChannelNameForOrdinal(i) 
   const simpleChannelControlDef = createSimpleChannelControlDef(name, number)
   const arrayChannelControlDefCreators = createArrayChannelControlDefCreators(name, number)
   return Object.assign(simpleChannelControlDef, {
@@ -305,8 +346,7 @@ export const createChannelControlDef = (i: number): ChannelControlDef => {
   })
 }
 
-export const channelControlDefs: ChannelControlDef[] = range(8).map((i: number) => createChannelControlDef(i + 1))
-
+export const channelControlDefs: ChannelControlDef[] = range(8).map((i: number) => createChannelControlDef(i))
 
 export const getValue = (control: ControlDef): number => {
   return engine.getValue(control.group, control.name)

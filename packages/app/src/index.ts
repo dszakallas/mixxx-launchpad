@@ -2,8 +2,7 @@ import config from './config'
 import App from './App'
 
 import { MidiControlDef, MidiDevice, sendShortMsg } from '@mixxx-launchpad/mixxx'
-
-export type RGBColor = [number, number, number]
+import { RGBColor } from './color'
 
 export abstract class LaunchpadDevice extends MidiDevice {
   abstract colors: { [key: string]: number }
@@ -38,6 +37,8 @@ export const useDevice = (device: LaunchpadDevice) => {
   device.addListener('unmount', app.unmount.bind(app))
   return device
 }
+
+export type { RGBColor }
 
 
 

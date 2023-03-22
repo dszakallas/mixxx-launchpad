@@ -4,7 +4,7 @@ import type {
   MidiMessage,
 } from '@mixxx-launchpad/mixxx';
 import { setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeControlTemplate } from '../Control';
+import { Control, MakeDeckControlTemplate } from '../Control';
 
 export type Type = {
   type: 'loopjumpSmall';
@@ -18,7 +18,7 @@ export type Type = {
   state: Record<string, unknown>;
 };
 
-const make: MakeControlTemplate<Type> = ({ amount }, button, deck) => {
+const make: MakeDeckControlTemplate<Type> = ({ amount }, button, deck) => {
   const onAttack =
     (dir: number) =>
     ({ context: { modifier } }: Control<Type>) =>

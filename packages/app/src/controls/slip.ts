@@ -4,7 +4,7 @@ import {
     MidiComponent,
     setValue
 } from '@mixxx-launchpad/mixxx';
-import { Control, MakeControlTemplate } from '../Control';
+import { Control, MakeDeckControlTemplate } from '../Control';
 import { modes, retainAttackMode } from '../ModifierSidebar';
 
 export type Type = {
@@ -17,7 +17,7 @@ export type Type = {
   params: Record<string, unknown>;
 };
 
-const make: MakeControlTemplate<Type> = (_, gridPosition, deck) => {
+const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
   const onMidi = ({ bindings, state, context: { modifier, device } }: Control<Type>) =>
     retainAttackMode(modifier, (mode, { value }) => {
       modes(

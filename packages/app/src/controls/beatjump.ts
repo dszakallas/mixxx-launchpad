@@ -1,6 +1,6 @@
 import { MidiComponent, setValue } from '@mixxx-launchpad/mixxx'
 
-import { Control, MakeControlTemplate } from '../Control';
+import { Control, MakeDeckControlTemplate } from '../Control';
 import { modes, ModifierState, retainAttackMode } from '../ModifierSidebar';
 import { posMod } from '../util';
 
@@ -21,7 +21,7 @@ export type Type = {
 
 const colors = ['green', 'red'] as const;
 
-const make: MakeControlTemplate<Type> = ({ jumps, vertical = false }, gridPosition, deck) => {
+const make: MakeDeckControlTemplate<Type> = ({ jumps, vertical = false }, gridPosition, deck) => {
   const bindings: { [k: string]: any } = {};
   const spec = jumps.flatMap((j) => [
     [j, -1],

@@ -1,6 +1,6 @@
 import type { MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx';
 import { getValue, setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeControlTemplate } from '../Control';
+import { Control, MakeDeckControlTemplate } from '../Control';
 import { modes } from '../ModifierSidebar';
 
 export type Type = {
@@ -15,7 +15,7 @@ export type Type = {
 
 const SMALL_SAMPLES = 125 as const;
 
-const make: MakeControlTemplate<Type> = (_, gridPosition, deck) => {
+const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
   const map = {
     'in': [deck.loop_in, deck.loop_start_position],
     'out': [deck.loop_out, deck.loop_end_position]

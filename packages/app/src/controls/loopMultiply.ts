@@ -1,6 +1,6 @@
 import type { MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx';
 import { setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeControlTemplate } from '../Control';
+import { Control, MakeDeckControlTemplate } from '../Control';
 
 export type Type = {
   type: 'loopMultiply';
@@ -12,7 +12,7 @@ export type Type = {
   params: Record<string, unknown>;
 };
 
-const make: MakeControlTemplate<Type> = (_, gridPosition, deck) => {
+const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
   const onMount =
     (k: 'halve' | 'double') =>
     ({ context: { device }, bindings }: Control<Type>) =>

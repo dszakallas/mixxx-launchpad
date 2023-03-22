@@ -2,7 +2,6 @@ import ModifierSidebar, { modes, retainAttackMode } from './ModifierSidebar';
 
 import type { Modifier } from './ModifierSidebar';
 import {
-  channelControlDefs,
   Component,
   MidiComponent,
   MidiMessage,
@@ -35,8 +34,6 @@ type Block = {
 };
 
 type Diff = [Block[], Block[]];
-
-const initialChannels = [0, 1];
 
 const onMidi = (layout: App, channel: number, modifier: Modifier) =>
   retainAttackMode(modifier, (mode, { value }: MidiMessage) => {
@@ -82,6 +79,7 @@ const buttons = [
 ] as const;
 
 export default class App extends Component {
+  conf: LayoutConf
   bindings: [MidiComponent, Action<MidiMessage>][];
   modifier: ModifierSidebar;
   presets: { [P in PresetSize]: readonly PresetConf[] };
@@ -96,11 +94,11 @@ export default class App extends Component {
   constructor(device: LaunchpadDevice, conf: LayoutConf) {
     super();
 
+    this.conf = conf
+    this.device = device;
     this.modifier = new ModifierSidebar(device);
-
     this.playlistSidebar = new PlaylistSidebar(device);
 
-    this.device = device;
     this.bindings = buttons.map((v, i) => {
       const binding = new MidiComponent(this.device, this.device.controls[v]);
       return [binding, onMidi(this, i, this.modifier)];
@@ -149,7 +147,7 @@ export default class App extends Component {
       const presetTemplate = makePresetTemplate(
         this.presets[block.size][block.index],
         block.offset,
-        channelControlDefs[block.channel]
+        block.channel
       );
 
       const preset = new Preset(ctx, presetTemplate);
@@ -218,7 +216,7 @@ export default class App extends Component {
       binding.on('midi', midi);
     });
 
-    const diff = reorganize([], initialChannels);
+    const diff = reorganize([], this.conf.initialSelection);
     this.updateLayout(diff);
   }
 

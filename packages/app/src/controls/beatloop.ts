@@ -1,6 +1,6 @@
 import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-launchpad/mixxx';
 import { setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeControlTemplate } from '../Control';
+import { Control, MakeDeckControlTemplate } from '../Control';
 import { modes } from '../ModifierSidebar';
 
 export type Type = {
@@ -16,7 +16,7 @@ export type Type = {
   };
 };
 
-const make: MakeControlTemplate<Type> =
+const make: MakeDeckControlTemplate<Type> =
   (params, gridPosition, deck, ) => {
   const { loops, rows } = params;
   const bindings: { [k: string]: any } = {};

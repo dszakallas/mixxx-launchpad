@@ -2,7 +2,7 @@ import type {
     MidiComponent
 } from '@mixxx-launchpad/mixxx';
 import { setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeControlTemplate } from '../Control';
+import { Control, MakeDeckControlTemplate } from '../Control';
 import { posMod } from '../util';
 import { modes, retainAttackMode } from '../ModifierSidebar';
 
@@ -25,7 +25,7 @@ export type Type = {
   };
 };
 
-const make: MakeControlTemplate<Type> = ({ jumps, vertical = false }, gridPosition, deck) => {
+const make: MakeDeckControlTemplate<Type> = ({ jumps, vertical = false }, gridPosition, deck) => {
   const bindings: { [k: number]: any } = {};
   const onMidi =
     (k: number, j: [number, number], d: number) =>

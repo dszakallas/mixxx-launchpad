@@ -5,7 +5,7 @@ import type {
   ControlComponent,
 } from '@mixxx-launchpad/mixxx';
 import { setValue, getValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeControlTemplate } from '../Control';
+import { Control, MakeDeckControlTemplate } from '../Control';
 
 export type Type = {
   type: 'nudge';
@@ -21,7 +21,7 @@ export type Type = {
   params: Record<string, unknown>;
 };
 
-const make: MakeControlTemplate<Type> = (_, gridPosition, deck) => {
+const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
   const rateEpsilon = 1e-3;
 
   const getDirection = (rate: number) => {

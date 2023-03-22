@@ -1,4 +1,4 @@
-import { MakeControlTemplate } from '../Control'
+import { MakeDeckControlTemplate } from '../Control'
 import makeBeatjump, { Type as Beatjump } from './beatjump'
 import makeBeatloop, { Type as Beatloop } from './beatloop'
 import makeCue, { Type as Cue } from './cue'
@@ -16,7 +16,6 @@ import makePfl, { Type as Pfl } from './pfl'
 import makePlay, { Type as Play } from './play'
 import makeQuantize, { Type as Quantize } from './quantize'
 import makeReloop, { Type as Reloop } from './reloop'
-import makeSamplerPad, { Type as SamplerPad } from './samplerPad'
 import makeSlip, { Type as Slip } from './slip'
 import makeSync, { Type as Sync } from './sync'
 import makeTap, { Type as Tap } from './tap'
@@ -39,12 +38,11 @@ export type ControlTypeIndex =
   Play |
   Quantize |
   Reloop |
-  SamplerPad |
   Slip |
   Sync |
   Tap
 
-export type MakeControlTemplateIndex = {[C in ControlTypeIndex as C["type"]]: MakeControlTemplate<C>}
+export type MakeControlTemplateIndex = {[C in ControlTypeIndex as C["type"]]: MakeDeckControlTemplate<C>}
 
 const index: MakeControlTemplateIndex = {
   beatjump: makeBeatjump,
@@ -64,7 +62,6 @@ const index: MakeControlTemplateIndex = {
   play: makePlay,
   quantize: makeQuantize,
   reloop: makeReloop,
-  samplerPad: makeSamplerPad,
   slip: makeSlip,
   sync: makeSync,
   tap: makeTap

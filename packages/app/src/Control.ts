@@ -2,6 +2,7 @@ import type { Modifier } from './ModifierSidebar';
 
 import {
   ChannelControlDef,
+  channelControlDefs,
   Component,
   ControlComponent,
   ControlDef,
@@ -12,6 +13,9 @@ import {
 import { LaunchpadDevice } from '.';
 
 import makeControlTemplateIndex, { ControlTypeIndex } from './controls'
+import { default as makeSamplerPad } from './controls/samplerPad'
+import { range } from './util';
+import { SamplerControlDef, samplerControlDefs } from '@mixxx-launchpad/mixxx/src/Control';
 
 export type ControlContext = {
   modifier: Modifier;
@@ -67,11 +71,15 @@ export type ControlTemplate<C extends ControlType> = {
   state: C['state'];
 };
 
-export type MakeControlTemplate<C extends ControlType> = (
+export type MakeControlTemplate<C extends ControlType, D> = (
   params: C['params'],
   gridPosition: [number, number],
-  deck: ChannelControlDef
+  deck: D
 ) => ControlTemplate<C>;
+
+export type MakeSamplerControlTemplate<C extends ControlType> = MakeControlTemplate<C, SamplerControlDef>;
+
+export type MakeDeckControlTemplate<C extends ControlType> = MakeControlTemplate<C, ChannelControlDef>;
 
 export type Binding = ControlComponent | MidiComponent;
 
@@ -161,9 +169,20 @@ export class Control<C extends ControlType>
   }
 }
 
-export type PresetConf = {
-  grid: readonly { pos: [number, number]; control: ControlConf<ControlTypeIndex> }[];
+
+export type DeckPresetConf = {
+  deck: readonly { pos: [number, number]; control: ControlConf<ControlTypeIndex> }[];
 };
+
+export type SamplerPalettePresetConf = {
+  samplerPalette: { n: number, offset: number, rows: number } 
+}
+
+export const isDeckPresetConf = (p: PresetConf): p is DeckPresetConf => 'deck' in p
+export const isSamplerPalettePresetConf = (p: PresetConf): p is SamplerPalettePresetConf => 'samplerPalette' in p
+
+export type PresetConf = DeckPresetConf | SamplerPalettePresetConf
+
 
 type PresetTemplate = {
   controls: ControlTemplate<any>[];
@@ -198,8 +217,29 @@ export class Preset extends Component implements IPreset {
 
 const tr = (a: number[], b: number[]): [number, number] => [a[0] + b[0], a[1] + b[1]]
 
-export const makePresetTemplate = (conf: PresetConf, gridPosition: [number, number], deck: ChannelControlDef): PresetTemplate => ({
-  controls: conf.grid.map(({pos, control:{type, params}}) =>
+const makeDeckPresetTemplate = (conf: DeckPresetConf, gridPosition: [number, number], deck: ChannelControlDef): PresetTemplate => ({
+  controls: conf.deck.map(({ pos, control: { type, params } }) =>
     makeControlTemplateIndex[type](params as unknown as any, tr(gridPosition, pos), deck)
   )
 })
+
+const makeSamplerPalettePresetTemplate = (
+  {samplerPalette:{n, offset, rows}}: SamplerPalettePresetConf,
+  gridPosition: [number, number],
+  _startingChannel: number
+) => ({
+    controls: range(n).map((i) => {
+      const dy = 7 - ~~(i / rows)
+      const dx = i % rows
+      return makeSamplerPad({}, tr(gridPosition, [dx, dy]), samplerControlDefs[i + offset])
+    })
+})
+
+export const makePresetTemplate = (conf: PresetConf, gridPosition: [number, number], channel: number): PresetTemplate => {
+  if (isDeckPresetConf(conf)) {
+    return makeDeckPresetTemplate(conf, gridPosition, channelControlDefs[channel])
+  } else {
+    return makeSamplerPalettePresetTemplate(conf, gridPosition, channel)
+  }
+}
+
