@@ -49,9 +49,7 @@ const autoscrolled = (binding: Component) => {
     })
   })
 
-  binding.on('unmount', () => {
-    ;(timer as Timer).unmount()
-  })
+  binding.on('unmount', () => (timer as Timer).unmount())
 
   return binding
 }
