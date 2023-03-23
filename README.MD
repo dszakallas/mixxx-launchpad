@@ -49,13 +49,14 @@ samplers to be laid out on the main grid. *D1-D4* are mapped to corresponding
 *decks*, *S1-S4* to *samplers*.
 
 **Library controls** are located on the sidebar to the right. They occupy the
-upper 5 buttons. Their functions from top to bottom:
+upper 6 buttons. Their functions from top to bottom:
 
  - up in the library sidebar
  - down in the library sidebar
  - expand/close selected library sidebar entry
  - up a track
  - down a track
+ - maximize/restore library
 
 > Note: The up/down controls are autoscrolled. If you hold them down for longer,
 the scrolling activates. This comes in handy when navigating lengthy playlists.
@@ -122,11 +123,11 @@ The cycling order is the following:
 
 The presets featured out of the box:
 
-|        | default                                                   |                                                                    |
-|--------|-----------------------------------------------------------|--------------------------------------------------------------------|
-| grande | ![grande]  **GRANDE** is currently the only grande layout.|                                                                    |
-| tall   | ![tall]    **TALL** is the default tall layout.           |![juggler] **JUGGLER** is a tall layout optimized for beat jumping. |
-| short  | ![short]  **SHORT** is the default short layout.          |![sampler]  **SAMPLER** is an all-cue short layout for samplers.    |
+|        | default                                             |                                                                                               |
+|--------|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| grande | ![grande]  **GRANDE** is the default grande layout. | **SAMPLER8X8** is a (8x8) grid of samplers assigned statically from [Sampler1] to [Sampler64] |
+| tall   | ![tall]    **TALL** is the default tall layout.     | ![juggler] **JUGGLER** is a tall layout optimized for beat jumping.                           |
+| short  | ![short]  **SHORT** is the default short layout.    | ![sampler]  **SAMPLER** is an all-cue short layout for samplers.                              |
 
 
 [grande]: docs/lp-mki-grande.png
@@ -293,7 +294,7 @@ Controls
 
 Feedback
 
-- **bright yellow**: hotcue enabled
+- **hotcue assigned color (bright yellow on non-RGB controller)**: hotcue enabled
 - **blank**: hotcue disabled
 
 #### BEATJUMPS
@@ -304,7 +305,6 @@ Controls for jumping backward (lower lane) and forward (upper lane).
 Supports two modes:
  - the **normal mode** is represented with bright color. Jumping works as you would expect.
  - the **rebouncing mode** is shown with dim color. It jumps on attack, then jumps back on release. Jumping legato works and uses the same stealing algorithm as key shifting.
- Modes are switched with the CH MODE control (pressing `ctrl` and `shift` at the same time)
 
 You can change modes by pressing **shift+[any beatjump key]**.
 
@@ -369,9 +369,9 @@ Feedback
 
 ### Build
 
-To build you need to have a make, Node (>=16), bash (>=4.0) and `jq`. Watch tasks require `fswatch`.
+To build you need make, Node (>=16), bash (>=4.0) and `jq`. Watch tasks require `fswatch`.
 
-The multi-project build is managed with npm workspaces. First clone the repo and
+The multi-project build is managed with npm workspaces. Clone the repo and
 install the dependencies:
 
 ```shell
@@ -425,7 +425,7 @@ make watch_install
 
 ### TypeScript
 
-The code is written in TypeScript, transpiled with [babel] and bundled into a single iife module with [rollup]. The interpreter is not fully compatible with ES5 so even some ES3 transforms have to be enabled.
+The code is written in TypeScript, transpiled with [babel] and bundled into a single iife module with [rollup]. There are certain transforms and polyfills which are required to get it working with Mixxx's bundled interpreter.
 
 ### MIDI mapping
 
@@ -435,11 +435,6 @@ The controller mapping is generated from this [template] with [ejs], using metad
 
 #### No Windows build recipes
 I don't use Windows, however I am accepting PRs if you would like to add support.
-
-#### Lingering ES3 future reserved keywords
-
-Due to parser discrepancies, ES3 keywords and future reserved words that have been removed from ES5 can't be used as *identifiers*, *property literals* and *member expression literals*. In ES5 you can use keywords and future reserved words in the last two cases.
-We have [transforms](./babel.config.js) for these two cases, however you still **can't use ES3 keywords and future reserved words as identifiers** (e.g. `public`, `private` or `final`), even if some of the reserved words has been removed from ES5.
 
 [babel]:https://babeljs.io/
 [rollup]:https://rollupjs.org
