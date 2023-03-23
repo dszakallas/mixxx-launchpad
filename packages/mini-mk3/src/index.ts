@@ -17,6 +17,22 @@ const colors = {
   lo_yellow: 15
 }
 
+enum DeviceMode {
+  Live,
+  Programmer
+}
+
+enum LightingType {
+  Static,
+  Flash,
+  Pulse,
+  RGB
+}
+
+const selectMode = (mode: DeviceMode) => {
+  sendSysexMsg([240, 0, 32, 41, 2, 13, 14, mode, 247])
+}
+
 class LaunchpadMiniMK3Device extends LaunchpadDevice {
   supportsRGBColors: boolean
   controls: { [key: string]: MidiControlDef }
@@ -30,14 +46,12 @@ class LaunchpadMiniMK3Device extends LaunchpadDevice {
   }
 
   onMount() {
+    selectMode(DeviceMode.Programmer)
     super.onMount()
-    Object.values(this.controls).forEach((v) => {
-      this.sendRGBColor(v, [255, 255, 255])
-    })
   }
 
   sendRGBColor(control: MidiControlDef, color: RGBColor) {
-    sendSysexMsg([240, 0, 32, 41, 2, 24, 11, control.midino, ...color.map((x) => ~~(x / 4)), 247])
+    sendSysexMsg([240, 0, 32, 41, 2, 13, 3, LightingType.RGB, control.midino, ...color.map((x) => ~~(x / 2)), 247])
   }
 }
 

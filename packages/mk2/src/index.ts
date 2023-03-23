@@ -14,7 +14,10 @@ const colors = {
   hi_orange: 84,
   lo_orange: 61,
   hi_yellow: 13,
-  lo_yellow: 15
+  lo_yellow: 15,
+
+  lo_white: 15,
+  hi_white: 13
 }
 
 class LaunchpadMK2Device extends LaunchpadDevice {
@@ -31,9 +34,6 @@ class LaunchpadMK2Device extends LaunchpadDevice {
 
   onMount() {
     super.onMount()
-    // Object.values(this.controls).forEach((v) => {
-    //   this.sendRGBColor(v, [255, 255, 255])
-    // })
   }
 
   sendRGBColor(control: MidiControlDef, color: RGBColor) {
