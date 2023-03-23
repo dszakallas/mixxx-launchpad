@@ -27,7 +27,6 @@ const conf: LayoutConf = {
             control: {
               type: 'keyshift',
               params: {
-                // should fail
                 shifts: [
                   [1, 1],
                   [2, 2],
