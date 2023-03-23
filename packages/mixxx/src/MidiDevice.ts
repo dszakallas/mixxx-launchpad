@@ -1,14 +1,14 @@
 import Component from './Component'
 
 export type MidiControlDef = {
-  status: number,
-  midino: number,
+  status: number
+  midino: number
   name: string
 }
 
 export type MidiMessage = {
-  value: number,
-  control: MidiControlDef,
+  value: number
+  control: MidiControlDef
 }
 
 export type RawMidiMessageTask = (channel: number, control: number, value: number, status: number) => void
@@ -28,8 +28,7 @@ const leftPad = (str: string, padString: string, length: number) => {
 const hexFormat = (n: number, d: number) => '0x' + leftPad(n.toString(16).toUpperCase(), '0', d)
 
 export abstract class MidiDevice extends Component {
-
-  abstract controls: { [name: string]: MidiControlDef };
+  abstract controls: { [name: string]: MidiControlDef }
 
   init() {
     this.mount()
@@ -42,7 +41,9 @@ export abstract class MidiDevice extends Component {
   onMount() {
     super.onMount()
     Object.values(this.controls).forEach((control) => {
-      (this as unknown as RawMidiMessageTaskRegistry)[`${callbackPrefix}_${hexFormat(control.status, 2)}_${hexFormat(control.midino, 2)}`] = (_channel, _control, value, _status) => {
+      ;(this as unknown as RawMidiMessageTaskRegistry)[
+        `${callbackPrefix}_${hexFormat(control.status, 2)}_${hexFormat(control.midino, 2)}`
+      ] = (_channel, _control, value, _status) => {
         const message: MidiMessage = { value, control }
         this.emit(control.name, message)
       }

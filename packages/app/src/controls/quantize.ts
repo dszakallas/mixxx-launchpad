@@ -1,19 +1,17 @@
-import type {
-    ControlComponent, ControlMessage, MidiComponent, MidiMessage
-} from '@mixxx-launchpad/mixxx';
-import { getValue, setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeDeckControlTemplate } from '../Control';
-import { modes } from '../ModifierSidebar';
+import type { ControlComponent, ControlMessage, MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
+import { getValue, setValue } from '@mixxx-launchpad/mixxx'
+import { Control, MakeDeckControlTemplate } from '../Control'
+import { modes } from '../ModifierSidebar'
 
 export type Type = {
-  type: 'quantize';
-  params: Record<string, unknown>;
-  state: Record<string, unknown>;
+  type: 'quantize'
+  params: Record<string, unknown>
+  state: Record<string, unknown>
   bindings: {
-    quantize: ControlComponent;
-    button: MidiComponent;
-  };
-};
+    quantize: ControlComponent
+    button: MidiComponent
+  }
+}
 
 const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
   state: {},
@@ -35,13 +33,10 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
         ({ bindings, context: { modifier } }: Control<Type>) =>
         (_: MidiMessage) =>
           modes(modifier.getState(), () =>
-            setValue(
-              bindings.quantize.control,
-              Number(!getValue(bindings.quantize.control))
-            )
+            setValue(bindings.quantize.control, Number(!getValue(bindings.quantize.control))),
           ),
     },
   },
-});
+})
 
-export default make;
+export default make

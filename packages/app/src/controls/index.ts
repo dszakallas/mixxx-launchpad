@@ -19,30 +19,30 @@ import makeReloop, { Type as Reloop } from './reloop'
 import makeSlip, { Type as Slip } from './slip'
 import makeSync, { Type as Sync } from './sync'
 import makeTap, { Type as Tap } from './tap'
- 
-export type ControlTypeIndex = 
-  Beatjump |
-  Beatloop |
-  Cue |
-  Grid |
-  Hotcue |
-  Key |
-  Keyshift |
-  Load |
-  LoopIo |
-  LoopMultiply |
-  Loopjump |
-  LoopjumpSmall |
-  Nudge |
-  Pfl |
-  Play |
-  Quantize |
-  Reloop |
-  Slip |
-  Sync |
-  Tap
 
-export type MakeControlTemplateIndex = {[C in ControlTypeIndex as C["type"]]: MakeDeckControlTemplate<C>}
+export type ControlTypeIndex =
+  | Beatjump
+  | Beatloop
+  | Cue
+  | Grid
+  | Hotcue
+  | Key
+  | Keyshift
+  | Load
+  | LoopIo
+  | LoopMultiply
+  | Loopjump
+  | LoopjumpSmall
+  | Nudge
+  | Pfl
+  | Play
+  | Quantize
+  | Reloop
+  | Slip
+  | Sync
+  | Tap
+
+export type MakeControlTemplateIndex = { [C in ControlTypeIndex as C['type']]: MakeDeckControlTemplate<C> }
 
 const index: MakeControlTemplateIndex = {
   beatjump: makeBeatjump,
@@ -64,7 +64,7 @@ const index: MakeControlTemplateIndex = {
   reloop: makeReloop,
   slip: makeSlip,
   sync: makeSync,
-  tap: makeTap
+  tap: makeTap,
 }
 
-export default index 
+export default index

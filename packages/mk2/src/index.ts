@@ -17,7 +17,7 @@ const colors = {
   lo_yellow: 15,
 
   lo_white: 15,
-  hi_white: 13
+  hi_white: 13,
 }
 
 class LaunchpadMK2Device extends LaunchpadDevice {

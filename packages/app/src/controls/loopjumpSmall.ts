@@ -1,30 +1,27 @@
-import { modes } from '../ModifierSidebar';
-import type {
-    MidiComponent,
-  MidiMessage,
-} from '@mixxx-launchpad/mixxx';
-import { setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeDeckControlTemplate } from '../Control';
+import { modes } from '../ModifierSidebar'
+import type { MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
+import { setValue } from '@mixxx-launchpad/mixxx'
+import { Control, MakeDeckControlTemplate } from '../Control'
 
 export type Type = {
-  type: 'loopjumpSmall';
+  type: 'loopjumpSmall'
   bindings: {
-    back: MidiComponent;
-    forth: MidiComponent;
-  };
+    back: MidiComponent
+    forth: MidiComponent
+  }
   params: {
-    amount: number;
-  };
-  state: Record<string, unknown>;
-};
+    amount: number
+  }
+  state: Record<string, unknown>
+}
 
 const make: MakeDeckControlTemplate<Type> = ({ amount }, button, deck) => {
   const onAttack =
     (dir: number) =>
     ({ context: { modifier } }: Control<Type>) =>
     (_: MidiMessage) => {
-      modes(modifier.getState(), () => setValue(deck.loop_move, dir * amount));
-    };
+      modes(modifier.getState(), () => setValue(deck.loop_move, dir * amount))
+    }
   return {
     state: {},
     bindings: {
@@ -35,7 +32,7 @@ const make: MakeDeckControlTemplate<Type> = ({ amount }, button, deck) => {
         mount:
           ({ context: { device }, bindings }: Control<Type>) =>
           () => {
-            device.sendColor(bindings.back.control, device.colors.hi_yellow);
+            device.sendColor(bindings.back.control, device.colors.hi_yellow)
           },
       },
       forth: {
@@ -45,11 +42,11 @@ const make: MakeDeckControlTemplate<Type> = ({ amount }, button, deck) => {
         mount:
           ({ context: { device }, bindings }: Control<Type>) =>
           () => {
-            device.sendColor(bindings.forth.control, device.colors.hi_yellow);
+            device.sendColor(bindings.forth.control, device.colors.hi_yellow)
           },
       },
     },
-  };
-};
+  }
+}
 
-export default make;
+export default make

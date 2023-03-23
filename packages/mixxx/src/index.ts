@@ -1,4 +1,4 @@
-export { default as Component } from './Component';
+export { default as Component } from './Component'
 export {
   channelControlDefs,
   ControlComponent,
@@ -6,13 +6,8 @@ export {
   getValue,
   playListControlDef,
   setValue,
-} from './Control';
-export type {
-  ChannelControlDef,
-  ControlDef,
-  ControlHandle,
-  ControlMessage,
-} from './Control';
-export { MidiComponent, MidiDevice, sendShortMsg, sendSysexMsg } from './MidiDevice';
-export type { MidiControlDef, MidiMessage } from './MidiDevice';
-export { Timer } from './Timer';
+} from './Control'
+export type { ChannelControlDef, ControlDef, ControlHandle, ControlMessage } from './Control'
+export { MidiComponent, MidiDevice, sendShortMsg, sendSysexMsg } from './MidiDevice'
+export type { MidiControlDef, MidiMessage } from './MidiDevice'
+export { Timer } from './Timer'

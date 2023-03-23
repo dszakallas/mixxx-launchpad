@@ -1,4 +1,4 @@
-import type { Modifier } from './ModifierSidebar';
+import type { Modifier } from './ModifierSidebar'
 
 import {
   ChannelControlDef,
@@ -9,173 +9,157 @@ import {
   ControlMessage,
   MidiComponent,
   MidiMessage,
-} from '@mixxx-launchpad/mixxx';
-import { LaunchpadDevice } from '.';
+} from '@mixxx-launchpad/mixxx'
+import { LaunchpadDevice } from '.'
 
 import makeControlTemplateIndex, { ControlTypeIndex } from './controls'
 import { default as makeSamplerPad } from './controls/samplerPad'
-import { range } from './util';
-import { SamplerControlDef, samplerControlDefs } from '@mixxx-launchpad/mixxx/src/Control';
+import { range } from './util'
+import { SamplerControlDef, samplerControlDefs } from '@mixxx-launchpad/mixxx/src/Control'
 
 export type ControlContext = {
-  modifier: Modifier;
-  device: LaunchpadDevice;
-};
+  modifier: Modifier
+  device: LaunchpadDevice
+}
 
 export type ControlType = {
-  type: string;
-  bindings: { [k: string]: Binding };
-  params: Params;
-  state: State;
-};
+  type: string
+  bindings: { [k: string]: Binding }
+  params: Params
+  state: State
+}
 
 export type ControlConf<C extends ControlType> = {
-  type: C['type'];
-  params?: C['params'];
-};
+  type: C['type']
+  params?: C['params']
+}
 
 export type ControlBindingTemplate<C extends ControlType> = {
-  type: 'control';
-  target: ControlDef;
-  update?: (c: Control<C>) => (message: ControlMessage) => void;
-  mount?: (c: Control<C>) => () => void;
-  unmount?: (c: Control<C>) => () => void;
-};
+  type: 'control'
+  target: ControlDef
+  update?: (c: Control<C>) => (message: ControlMessage) => void
+  mount?: (c: Control<C>) => () => void
+  unmount?: (c: Control<C>) => () => void
+}
 
-export type ButtonKey = [number, number];
+export type ButtonKey = [number, number]
 
 export type ButtonBindingTemplate<C extends ControlType> = {
-  type: 'button';
-  target: ButtonKey;
-  midi?: (c: Control<C>) => (message: MidiMessage) => void;
-  attack?: (c: Control<C>) => (message: MidiMessage) => void;
-  release?: (c: Control<C>) => (message: MidiMessage) => void;
-  mount?: (c: Control<C>) => () => void;
-  unmount?: (c: Control<C>) => () => void;
-};
+  type: 'button'
+  target: ButtonKey
+  midi?: (c: Control<C>) => (message: MidiMessage) => void
+  attack?: (c: Control<C>) => (message: MidiMessage) => void
+  release?: (c: Control<C>) => (message: MidiMessage) => void
+  mount?: (c: Control<C>) => () => void
+  unmount?: (c: Control<C>) => () => void
+}
 
-export type BindingTemplate<
-  B extends Binding,
-  C extends ControlType
-> = B extends ControlComponent
+export type BindingTemplate<B extends Binding, C extends ControlType> = B extends ControlComponent
   ? ControlBindingTemplate<C>
-  : ButtonBindingTemplate<C>;
+  : ButtonBindingTemplate<C>
 
-export type State = { [k: string]: any };
-export type Params = { [k: string]: any };
+export type State = { [k: string]: any }
+export type Params = { [k: string]: any }
 
 export type ControlTemplate<C extends ControlType> = {
   bindings: {
-    [Prop in keyof C['bindings']]: BindingTemplate<C['bindings'][Prop], C>;
-  };
-  state: C['state'];
-};
+    [Prop in keyof C['bindings']]: BindingTemplate<C['bindings'][Prop], C>
+  }
+  state: C['state']
+}
 
 export type MakeControlTemplate<C extends ControlType, D> = (
   params: C['params'],
   gridPosition: [number, number],
-  deck: D
-) => ControlTemplate<C>;
+  deck: D,
+) => ControlTemplate<C>
 
-export type MakeSamplerControlTemplate<C extends ControlType> = MakeControlTemplate<C, SamplerControlDef>;
+export type MakeSamplerControlTemplate<C extends ControlType> = MakeControlTemplate<C, SamplerControlDef>
 
-export type MakeDeckControlTemplate<C extends ControlType> = MakeControlTemplate<C, ChannelControlDef>;
+export type MakeDeckControlTemplate<C extends ControlType> = MakeControlTemplate<C, ChannelControlDef>
 
-export type Binding = ControlComponent | MidiComponent;
+export type Binding = ControlComponent | MidiComponent
 
 export type IControl<C extends ControlType> = {
-  bindings: C['bindings'];
-  state: C['state'];
-  context: ControlContext;
-};
+  bindings: C['bindings']
+  state: C['state']
+  context: ControlContext
+}
 
-const controlListeners = ['update', 'mount', 'unmount'] as const;
+const controlListeners = ['update', 'mount', 'unmount'] as const
 
-const midiListeners = [
-  'attack',
-  'release',
-  'midi',
-  'mount',
-  'unmount',
-] as const;
+const midiListeners = ['attack', 'release', 'midi', 'mount', 'unmount'] as const
 
-const nameOf = (x: number, y: number) => `${7 - y},${x}`;
+const nameOf = (x: number, y: number) => `${7 - y},${x}`
 
-export class Control<C extends ControlType>
-  extends Component
-  implements IControl<C>
-{
-  bindings: C['bindings'];
-  bindingTemplates: ControlTemplate<C>['bindings'];
-  state: C['state'];
-  context: ControlContext;
+export class Control<C extends ControlType> extends Component implements IControl<C> {
+  bindings: C['bindings']
+  bindingTemplates: ControlTemplate<C>['bindings']
+  state: C['state']
+  context: ControlContext
 
   constructor(ctx: ControlContext, controlTemplate: ControlTemplate<C>) {
-    super();
+    super()
 
-    const bindings: { [k: string]: any } = {};
+    const bindings: { [k: string]: any } = {}
     for (const k in controlTemplate.bindings) {
-      const bt = controlTemplate.bindings[k];
+      const bt = controlTemplate.bindings[k]
       bindings[k] =
         bt.type == 'control'
           ? new ControlComponent(bt.target)
-          : new MidiComponent(
-              ctx.device,
-              ctx.device.controls[nameOf(...bt.target)]
-            );
+          : new MidiComponent(ctx.device, ctx.device.controls[nameOf(...bt.target)])
     }
-    this.bindingTemplates = controlTemplate.bindings;
-    this.bindings = bindings;
-    this.state = controlTemplate.state;
-    this.context = ctx;
+    this.bindingTemplates = controlTemplate.bindings
+    this.bindings = bindings
+    this.state = controlTemplate.state
+    this.context = ctx
   }
 
   onMount() {
-    super.onMount();
+    super.onMount()
 
     Object.keys(this.bindings).forEach((k) => {
       const b = this.bindings[k]
       if (b instanceof ControlComponent) {
-        const bt = this.bindingTemplates[k] as ControlBindingTemplate<any>;
+        const bt = this.bindingTemplates[k] as ControlBindingTemplate<any>
         controlListeners.forEach((event) => {
-          const listener = bt[event];
+          const listener = bt[event]
           if (listener != null) {
-            b.addListener(event, listener(this));
+            b.addListener(event, listener(this))
           }
-        });
+        })
       } else {
-        const bt = this.bindingTemplates[k] as ButtonBindingTemplate<any>;
+        const bt = this.bindingTemplates[k] as ButtonBindingTemplate<any>
         midiListeners.forEach((event) => {
-          const listener = bt[event];
+          const listener = bt[event]
           if (listener) {
-            b.addListener(event, listener(this));
+            b.addListener(event, listener(this))
           }
-        });
+        })
         // add a default handler to clear the button LED
         b.addListener('unmount', () => {
-          this.context.device.clearColor(b.control);
-        });
+          this.context.device.clearColor(b.control)
+        })
       }
-    });
+    })
 
-    Object.values(this.bindings).forEach((b) => b.mount());
+    Object.values(this.bindings).forEach((b) => b.mount())
   }
 
   onUnmount() {
     const bs = Object.values(this.bindings)
-    bs.forEach((b) => b.unmount());
-    bs.forEach((b) => b.removeAllListeners());
-    super.onUnmount();
+    bs.forEach((b) => b.unmount())
+    bs.forEach((b) => b.removeAllListeners())
+    super.onUnmount()
   }
 }
 
-
 export type DeckPresetConf = {
-  deck: readonly { pos: [number, number]; control: ControlConf<ControlTypeIndex> }[];
-};
+  deck: readonly { pos: [number, number]; control: ControlConf<ControlTypeIndex> }[]
+}
 
 export type SamplerPalettePresetConf = {
-  samplerPalette: { n: number, offset: number, rows: number } 
+  samplerPalette: { n: number; offset: number; rows: number }
 }
 
 export const isDeckPresetConf = (p: PresetConf): p is DeckPresetConf => 'deck' in p
@@ -183,21 +167,20 @@ export const isSamplerPalettePresetConf = (p: PresetConf): p is SamplerPalettePr
 
 export type PresetConf = DeckPresetConf | SamplerPalettePresetConf
 
-
 type PresetTemplate = {
-  controls: ControlTemplate<any>[];
-};
+  controls: ControlTemplate<any>[]
+}
 
 export type IPreset = {
-  controls: IControl<any>[];
-};
+  controls: IControl<any>[]
+}
 
 export class Preset extends Component implements IPreset {
-  controls: Control<any>[];
+  controls: Control<any>[]
 
   constructor(ctx: ControlContext, presetTemplate: PresetTemplate) {
     super()
-    this.controls = presetTemplate.controls.map((c) => new Control(ctx, c));
+    this.controls = presetTemplate.controls.map((c) => new Control(ctx, c))
   }
 
   onMount() {
@@ -217,29 +200,36 @@ export class Preset extends Component implements IPreset {
 
 const tr = (a: number[], b: number[]): [number, number] => [a[0] + b[0], a[1] + b[1]]
 
-const makeDeckPresetTemplate = (conf: DeckPresetConf, gridPosition: [number, number], deck: ChannelControlDef): PresetTemplate => ({
+const makeDeckPresetTemplate = (
+  conf: DeckPresetConf,
+  gridPosition: [number, number],
+  deck: ChannelControlDef,
+): PresetTemplate => ({
   controls: conf.deck.map(({ pos, control: { type, params } }) =>
-    makeControlTemplateIndex[type](params as unknown as any, tr(gridPosition, pos), deck)
-  )
+    makeControlTemplateIndex[type](params as unknown as any, tr(gridPosition, pos), deck),
+  ),
 })
 
 const makeSamplerPalettePresetTemplate = (
-  {samplerPalette:{n, offset, rows}}: SamplerPalettePresetConf,
+  { samplerPalette: { n, offset, rows } }: SamplerPalettePresetConf,
   gridPosition: [number, number],
-  _startingChannel: number
+  _startingChannel: number,
 ) => ({
-    controls: range(n).map((i) => {
-      const dy = 7 - ~~(i / rows)
-      const dx = i % rows
-      return makeSamplerPad({}, tr(gridPosition, [dx, dy]), samplerControlDefs[i + offset])
-    })
+  controls: range(n).map((i) => {
+    const dy = 7 - ~~(i / rows)
+    const dx = i % rows
+    return makeSamplerPad({}, tr(gridPosition, [dx, dy]), samplerControlDefs[i + offset])
+  }),
 })
 
-export const makePresetTemplate = (conf: PresetConf, gridPosition: [number, number], channel: number): PresetTemplate => {
+export const makePresetTemplate = (
+  conf: PresetConf,
+  gridPosition: [number, number],
+  channel: number,
+): PresetTemplate => {
   if (isDeckPresetConf(conf)) {
     return makeDeckPresetTemplate(conf, gridPosition, channelControlDefs[channel])
   } else {
     return makeSamplerPalettePresetTemplate(conf, gridPosition, channel)
   }
 }
-

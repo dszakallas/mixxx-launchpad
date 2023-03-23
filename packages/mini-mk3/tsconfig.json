@@ -20,8 +20,5 @@
       "path": "../app"
     }
   ],
-  "include": [
-    "controller.json",
-    "src"
-  ]
+  "include": ["controller.json", "src"]
 }

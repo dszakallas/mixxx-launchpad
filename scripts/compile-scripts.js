@@ -19,8 +19,11 @@ const [tgt, outFile] = process.argv.slice(-2)
 const [tgtPkg, controller, cache] = await Promise.all([
   readFile(resolve('packages', tgt, 'package.json')).then(JSON.parse),
   readFile(resolve('packages', tgt, 'controller.json')).then(JSON.parse),
-  readFile(`tmp/${tgt}.cache.json`).then((cache) => JSON.parse(cache), (_err) => null),
-  mkdirp(dirname(resolve(outFile)))
+  readFile(`tmp/${tgt}.cache.json`).then(
+    (cache) => JSON.parse(cache),
+    (_err) => null,
+  ),
+  mkdirp(dirname(resolve(outFile))),
 ])
 
 const input = resolve('packages', tgt, tgtPkg.main)
@@ -38,15 +41,13 @@ const bundle = await rollup({
     json(),
     commonjs(),
     babel({
-      exclude: [
-        'node_modules/@babel/runtime/**'
-      ],
+      exclude: ['node_modules/@babel/runtime/**'],
       extensions: ['.ts', '.js'],
-      include: resolve("packages", "**", "*.ts"),
+      include: resolve('packages', '**', '*.ts'),
       configFile: resolve('babel.config.js'),
-      babelHelpers: 'runtime'
-    })
-  ]
+      babelHelpers: 'runtime',
+    }),
+  ],
 })
 await mkdirp('tmp')
 await Promise.all([
@@ -55,5 +56,6 @@ await Promise.all([
     //strict: false, // FIXME: see https://github.com/mixxxdj/mixxx/pull/1795#discussion_r251744258
     format: 'iife',
     name: global,
-    file: resolve(outFile)
-  })])
+    file: resolve(outFile),
+  }),
+])

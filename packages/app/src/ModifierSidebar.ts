@@ -4,29 +4,29 @@ import { Component, MidiComponent } from '@mixxx-launchpad/mixxx'
 import { LaunchpadDevice } from '.'
 
 export type ModifierState = {
-  ctrl: boolean,
+  ctrl: boolean
   shift: boolean
 }
 
 export interface Modifier {
-  getState (): ModifierState
+  getState(): ModifierState
 }
 
 export default class ModifierSidebar extends Component implements Modifier {
   shift: MidiComponent
   ctrl: MidiComponent
-  state: { shift: boolean, ctrl: boolean }
+  state: { shift: boolean; ctrl: boolean }
   shiftListener: (_: MidiMessage) => void
   ctrlListener: (_: MidiMessage) => void
 
-  constructor (device: LaunchpadDevice) {
+  constructor(device: LaunchpadDevice) {
     super()
     this.shift = new MidiComponent(device, device.controls.solo)
     this.ctrl = new MidiComponent(device, device.controls.arm)
 
     this.state = {
       shift: false,
-      ctrl: false
+      ctrl: false,
     }
 
     const makeListener = (button: MidiComponent) => (message: MidiMessage) => {
@@ -48,7 +48,7 @@ export default class ModifierSidebar extends Component implements Modifier {
     this.ctrlListener = makeListener(this.ctrl)
   }
 
-  onMount () {
+  onMount() {
     this.shift.mount()
     this.ctrl.mount()
 
@@ -56,7 +56,7 @@ export default class ModifierSidebar extends Component implements Modifier {
     this.ctrl.on('midi', this.ctrlListener)
   }
 
-  onUnmount () {
+  onUnmount() {
     this.shift.removeListener('midi', this.shiftListener)
     this.ctrl.removeListener('midi', this.ctrlListener)
 
@@ -64,7 +64,7 @@ export default class ModifierSidebar extends Component implements Modifier {
     this.ctrl.unmount()
   }
 
-  getState () {
+  getState() {
     return this.state
   }
 }
@@ -84,7 +84,7 @@ export const modes = (ctx: ModifierState, n?: () => void, c?: () => void, s?: ()
 export const retainAttackMode = (modifier: Modifier, cb: (ms: ModifierState, mm: MidiMessage) => void) => {
   let state = {
     shift: false,
-    ctrl: false
+    ctrl: false,
   }
 
   return function (data: MidiMessage) {

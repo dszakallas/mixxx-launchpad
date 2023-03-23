@@ -1,40 +1,30 @@
-import type {
-  ControlComponent,
-  ControlMessage,
-  MidiComponent,
-  MidiMessage,
-} from '@mixxx-launchpad/mixxx';
-import { getValue, setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeDeckControlTemplate } from '../Control';
-import { LaunchpadDevice } from '../.';
-import { modes } from '../ModifierSidebar';
+import type { ControlComponent, ControlMessage, MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
+import { getValue, setValue } from '@mixxx-launchpad/mixxx'
+import { Control, MakeDeckControlTemplate } from '../Control'
+import { LaunchpadDevice } from '../.'
+import { modes } from '../ModifierSidebar'
 
 export type Type = {
-  type: 'load';
+  type: 'load'
   bindings: {
-    samples: ControlComponent;
-    play: ControlComponent;
-    button: MidiComponent;
-  };
-  params: Record<string, unknown>;
-  state: Record<string, unknown>;
-};
+    samples: ControlComponent
+    play: ControlComponent
+    button: MidiComponent
+  }
+  params: Record<string, unknown>
+  state: Record<string, unknown>
+}
 
 const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
-  const onStateChanged = (
-    loaded: number,
-    playing: number,
-    bindings: Type['bindings'],
-    device: LaunchpadDevice
-  ) => {
+  const onStateChanged = (loaded: number, playing: number, bindings: Type['bindings'], device: LaunchpadDevice) => {
     if (loaded && playing) {
-      device.sendColor(bindings.button.control, device.colors.lo_red);
+      device.sendColor(bindings.button.control, device.colors.lo_red)
     } else if (loaded) {
-      device.sendColor(bindings.button.control, device.colors.lo_yellow);
+      device.sendColor(bindings.button.control, device.colors.lo_yellow)
     } else {
-      device.sendColor(bindings.button.control, device.colors.lo_green);
+      device.sendColor(bindings.button.control, device.colors.lo_green)
     }
-  };
+  }
   return {
     state: {},
     bindings: {
@@ -44,12 +34,7 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
         update:
           ({ bindings, context: { device } }: Control<Type>) =>
           ({ value }: ControlMessage) =>
-            onStateChanged(
-              value,
-              getValue(bindings.play.control),
-              bindings,
-              device
-            ),
+            onStateChanged(value, getValue(bindings.play.control), bindings, device),
       },
       play: {
         type: 'control',
@@ -57,12 +42,7 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
         update:
           ({ bindings, context: { device } }: Control<Type>) =>
           ({ value }: ControlMessage) =>
-            onStateChanged(
-              getValue(bindings.samples.control),
-              value,
-              bindings,
-              device
-            ),
+            onStateChanged(getValue(bindings.samples.control), value, bindings, device),
       },
       button: {
         type: 'button',
@@ -74,16 +54,16 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
               modifier.getState(),
               () => {
                 if (!getValue(bindings.samples.control)) {
-                  setValue(deck.LoadSelectedTrack, 1);
+                  setValue(deck.LoadSelectedTrack, 1)
                 }
               },
               () => setValue(deck.LoadSelectedTrack, 1),
-              () => setValue(deck.eject, 1)
-            );
+              () => setValue(deck.eject, 1),
+            )
           },
       },
     },
-  };
-};
+  }
+}
 
-export default make;
+export default make

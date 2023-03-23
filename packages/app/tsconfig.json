@@ -11,7 +11,5 @@
     "moduleResolution": "Node",
     "outDir": "dist"
   },
-  "references": [
-    { "path": "../mixxx" }
-  ]
+  "references": [{ "path": "../mixxx" }]
 }

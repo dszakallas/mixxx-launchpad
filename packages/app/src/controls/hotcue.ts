@@ -1,29 +1,24 @@
-import type {
-  ControlComponent,
-  ControlMessage,
-  MidiComponent,
-  MidiMessage,
-} from '@mixxx-launchpad/mixxx';
-import { getValue, setValue } from '@mixxx-launchpad/mixxx';
-import { parseRGBColor } from '../color';
-import { Control, MakeDeckControlTemplate } from '../Control';
-import { modes } from '../ModifierSidebar';
+import type { ControlComponent, ControlMessage, MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
+import { getValue, setValue } from '@mixxx-launchpad/mixxx'
+import { parseRGBColor } from '../color'
+import { Control, MakeDeckControlTemplate } from '../Control'
+import { modes } from '../ModifierSidebar'
 import { range } from '../util'
 
 export type Type = {
-  type: 'hotcue';
+  type: 'hotcue'
   params: {
-    cues: number;
-    rows: number;
-    start?: number;
-  };
+    cues: number
+    rows: number
+    start?: number
+  }
   bindings: {
-    [k: `midi.${string}`]: MidiComponent;
-    [k: `cue.${string}`]: ControlComponent;
-    [k: `color.${string}`]: ControlComponent;
-  };
-  state: Record<string, unknown>;
-};
+    [k: `midi.${string}`]: MidiComponent
+    [k: `cue.${string}`]: ControlComponent
+    [k: `color.${string}`]: ControlComponent
+  }
+  state: Record<string, unknown>
+}
 
 const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosition, deck) => {
   const onHotcueMidi =
@@ -34,31 +29,28 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosi
         modifier.getState(),
         () => {
           if (value) {
-            setValue(deck.hotcues[1 + i + start].activate, 1);
+            setValue(deck.hotcues[1 + i + start].activate, 1)
           } else {
-            setValue(deck.hotcues[1 + i + start].activate, 0);
+            setValue(deck.hotcues[1 + i + start].activate, 0)
           }
         },
         () => {
           if (value) {
             if (getValue(bindings[`cue.${i}`].control)) {
-              setValue(deck.hotcues[1 + i + start].clear, 1);
+              setValue(deck.hotcues[1 + i + start].clear, 1)
             } else {
-              setValue(deck.hotcues[1 + i + start].set, 1);
+              setValue(deck.hotcues[1 + i + start].set, 1)
             }
           }
-        }
-      );
-    };
+        },
+      )
+    }
   const onHotcueColorChanged =
-    (i: number) => 
+    (i: number) =>
     ({ context: { device }, bindings }: Control<Type>) =>
     ({ value }: ControlMessage) => {
       if (device.supportsRGBColors) {
-        device.sendRGBColor(
-          bindings[`midi.${i}`].control,
-          parseRGBColor(value)
-        );
+        device.sendRGBColor(bindings[`midi.${i}`].control, parseRGBColor(value))
       }
     }
   const onHotcueEnabled =
@@ -67,42 +59,38 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosi
     ({ value }: ControlMessage) => {
       if (value) {
         if (device.supportsRGBColors) {
-          device.sendRGBColor(
-            bindings[`midi.${i}`].control,
-            parseRGBColor(getValue(deck.hotcues[1 + i + start].color))
-          );
+          device.sendRGBColor(bindings[`midi.${i}`].control, parseRGBColor(getValue(deck.hotcues[1 + i + start].color)))
         } else {
-          device.sendColor(bindings[`midi.${i}`].control, device.colors.lo_yellow);
+          device.sendColor(bindings[`midi.${i}`].control, device.colors.lo_yellow)
         }
       } else {
-        device.clearColor(bindings[`midi.${i}`].control);
+        device.clearColor(bindings[`midi.${i}`].control)
       }
-    };
-  const bindings: { [k: string]: any } = {};
+    }
+  const bindings: { [k: string]: any } = {}
   range(cues).map((i) => {
-    const dx = i % rows;
-    const dy = ~~(i / rows);
+    const dx = i % rows
+    const dy = ~~(i / rows)
     bindings[`midi.${i}`] = {
       type: 'button',
       target: [gridPosition[0] + dx, gridPosition[1] + dy],
       midi: onHotcueMidi(i),
-    };
+    }
     bindings[`cue.${i}`] = {
       type: 'control',
       target: deck.hotcues[1 + i + start].enabled,
       update: onHotcueEnabled(i),
-    };
+    }
     bindings[`color.${i}`] = {
       type: 'control',
       target: deck.hotcues[1 + i + start].color,
       update: onHotcueColorChanged(i),
     }
-  });
+  })
   return {
     bindings,
     state: {},
-  };
-};
+  }
+}
 
-export default make;
-
+export default make

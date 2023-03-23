@@ -1,20 +1,17 @@
-import type {
-    ControlComponent, ControlMessage,
-    MidiComponent
-} from '@mixxx-launchpad/mixxx';
-import { setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeDeckControlTemplate } from '../Control';
-import { modes } from '../ModifierSidebar';
+import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-launchpad/mixxx'
+import { setValue } from '@mixxx-launchpad/mixxx'
+import { Control, MakeDeckControlTemplate } from '../Control'
+import { modes } from '../ModifierSidebar'
 
 export type Type = {
-  type: 'reloop';
+  type: 'reloop'
   bindings: {
-    button: MidiComponent;
-    control: ControlComponent;
-  };
-  state: Record<string, unknown>;
-  params: Record<string, unknown>;
-};
+    button: MidiComponent
+    control: ControlComponent
+  }
+  state: Record<string, unknown>
+  params: Record<string, unknown>
+}
 
 const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
   state: {},
@@ -28,8 +25,8 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
           modes(
             modifier.getState(),
             () => setValue(deck.reloop_exit, 1),
-            () => setValue(deck.reloop_andstop, 1)
-          );
+            () => setValue(deck.reloop_andstop, 1),
+          )
         },
     },
     control: {
@@ -39,13 +36,13 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
         ({ context: { device }, bindings }: Control<Type>) =>
         ({ value }: ControlMessage) => {
           if (value) {
-            device.sendColor(bindings.button.control, device.colors.hi_green);
+            device.sendColor(bindings.button.control, device.colors.hi_green)
           } else {
-            device.sendColor(bindings.button.control, device.colors.lo_green);
+            device.sendColor(bindings.button.control, device.colors.lo_green)
           }
         },
     },
   },
-});
+})
 
-export default make;
+export default make

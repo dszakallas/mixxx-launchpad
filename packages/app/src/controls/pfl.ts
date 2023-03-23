@@ -1,19 +1,17 @@
-import type {
-    ControlComponent, ControlMessage, MidiComponent, MidiMessage
-} from '@mixxx-launchpad/mixxx';
-import { getValue, setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeDeckControlTemplate } from '../Control';
-import { modes } from '../ModifierSidebar';
+import type { ControlComponent, ControlMessage, MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
+import { getValue, setValue } from '@mixxx-launchpad/mixxx'
+import { Control, MakeDeckControlTemplate } from '../Control'
+import { modes } from '../ModifierSidebar'
 
 export type Type = {
-  type: 'pfl';
+  type: 'pfl'
   bindings: {
-    pfl: ControlComponent;
-    button: MidiComponent;
-  };
-  params: Record<string, unknown>;
-  state: Record<string, unknown>;
-};
+    pfl: ControlComponent
+    button: MidiComponent
+  }
+  params: Record<string, unknown>
+  state: Record<string, unknown>
+}
 
 const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
   state: {},
@@ -34,14 +32,9 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
       attack:
         ({ context: { modifier }, bindings }: Control<Type>) =>
         (_: MidiMessage) =>
-          modes(modifier.getState(), () =>
-            setValue(
-              bindings.pfl.control,
-              Number(!getValue(bindings.pfl.control))
-            )
-          ),
+          modes(modifier.getState(), () => setValue(bindings.pfl.control, Number(!getValue(bindings.pfl.control)))),
     },
   },
-});
+})
 
-export default make;
+export default make

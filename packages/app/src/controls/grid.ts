@@ -1,56 +1,48 @@
-import type {
-  ControlDef,
-  MidiComponent,
-  MidiMessage,
-} from '@mixxx-launchpad/mixxx';
-import { setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeDeckControlTemplate } from '../Control';
-import { modes } from '../ModifierSidebar';
+import type { ControlDef, MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
+import { setValue } from '@mixxx-launchpad/mixxx'
+import { Control, MakeDeckControlTemplate } from '../Control'
+import { modes } from '../ModifierSidebar'
 
 export type Type = {
-  type: 'grid';
+  type: 'grid'
   bindings: {
-    back: MidiComponent;
-    forth: MidiComponent;
-  };
+    back: MidiComponent
+    forth: MidiComponent
+  }
   state: {
     back: {
-      normal: ControlDef;
-      ctrl: ControlDef;
-    };
+      normal: ControlDef
+      ctrl: ControlDef
+    }
     forth: {
-      normal: ControlDef;
-      ctrl: ControlDef;
-    };
-  };
-  params: Record<string, unknown>;
-};
+      normal: ControlDef
+      ctrl: ControlDef
+    }
+  }
+  params: Record<string, unknown>
+}
 
 const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
   const onGrid =
     (dir: 'back' | 'forth') =>
-    ({
-      context: { device, modifier },
-      bindings,
-      state,
-    }: Control<Type>) =>
+    ({ context: { device, modifier }, bindings, state }: Control<Type>) =>
     ({ value }: MidiMessage) => {
       if (!value) {
-        device.clearColor(bindings[dir].control);
+        device.clearColor(bindings[dir].control)
       } else {
         modes(
           modifier.getState(),
           () => {
-            device.sendColor(bindings[dir].control, device.colors.hi_yellow);
-            setValue(state[dir].normal, 1);
+            device.sendColor(bindings[dir].control, device.colors.hi_yellow)
+            setValue(state[dir].normal, 1)
           },
           () => {
-            device.sendColor(bindings[dir].control, device.colors.hi_amber);
-            setValue(state[dir].ctrl, 1);
-          }
-        );
+            device.sendColor(bindings[dir].control, device.colors.hi_amber)
+            setValue(state[dir].ctrl, 1)
+          },
+        )
       }
-    };
+    }
   return {
     bindings: {
       back: {
@@ -74,7 +66,7 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
         ctrl: deck.beats_adjust_faster,
       },
     },
-  };
-};
+  }
+}
 
-export default make;
+export default make

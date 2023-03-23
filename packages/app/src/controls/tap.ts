@@ -1,19 +1,16 @@
-import { modes } from '../ModifierSidebar';
-import type {
-  ControlComponent,
-  ControlMessage, MidiComponent,
-} from '@mixxx-launchpad/mixxx';
-import { setValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeDeckControlTemplate } from '../Control';
-import Bpm from '../Bpm';
+import { modes } from '../ModifierSidebar'
+import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-launchpad/mixxx'
+import { setValue } from '@mixxx-launchpad/mixxx'
+import { Control, MakeDeckControlTemplate } from '../Control'
+import Bpm from '../Bpm'
 
 export type Type = {
   type: 'tap'
   bindings: {
-    tap: MidiComponent,
+    tap: MidiComponent
     beat: ControlComponent
-  },
-  params: Record<string, unknown>,
+  }
+  params: Record<string, unknown>
   state: Record<string, unknown>
 }
 
@@ -31,28 +28,29 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
         attack:
           ({ context: { modifier } }: Control<Type>) =>
           () => {
-          modes(modifier.getState(),
-            () => tempoBpm.tap(),
-            () => setValue(deck.bpm_tap, 1),
-            () => setValue(deck.beats_translate_curpos, 1),
-            () => setValue(deck.beats_translate_match_alignment, 1)
-          )
-        }
+            modes(
+              modifier.getState(),
+              () => tempoBpm.tap(),
+              () => setValue(deck.bpm_tap, 1),
+              () => setValue(deck.beats_translate_curpos, 1),
+              () => setValue(deck.beats_translate_match_alignment, 1),
+            )
+          },
       },
       beat: {
         type: 'control',
         target: deck.beat_active,
         update:
-        ({ context: { device }, bindings }: Control<Type>) =>
-        ({ value }: ControlMessage) => {
-          if (value) {
-            device.sendColor(bindings.tap.control, device.colors.hi_red)
-          } else {
-            device.clearColor(bindings.tap.control)
-          }
-        }
-      }
-    }
+          ({ context: { device }, bindings }: Control<Type>) =>
+          ({ value }: ControlMessage) => {
+            if (value) {
+              device.sendColor(bindings.tap.control, device.colors.hi_red)
+            } else {
+              device.clearColor(bindings.tap.control)
+            }
+          },
+      },
+    },
   }
 }
 

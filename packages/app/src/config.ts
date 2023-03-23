@@ -1,4 +1,4 @@
-import { LayoutConf } from "./App";
+import { LayoutConf } from './App'
 
 const conf: LayoutConf = {
   // what channels should be initially selected
@@ -27,7 +27,7 @@ const conf: LayoutConf = {
             control: {
               type: 'keyshift',
               params: {
-                // should fail 
+                // should fail
                 shifts: [
                   [1, 1],
                   [2, 2],
@@ -44,7 +44,7 @@ const conf: LayoutConf = {
           },
           { pos: [0, 3], control: { type: 'load' } },
           { pos: [1, 3], control: { type: 'key' } },
-          { pos: [0, 4], control: { type: 'hotcue', params: {cues: 8, rows:2} } },
+          { pos: [0, 4], control: { type: 'hotcue', params: { cues: 8, rows: 2 } } },
           {
             pos: [2, 6],
             control: {
@@ -57,7 +57,7 @@ const conf: LayoutConf = {
                   [0.75, 8],
                   [1, 16],
                   [2, 32],
-                ]
+                ],
               },
             },
           },
@@ -65,7 +65,7 @@ const conf: LayoutConf = {
             pos: [4, 2],
             control: {
               type: 'beatloop',
-              params: {loops: [0.5, 1, 2, 4, 8, 16, 32, 64], rows: 2},
+              params: { loops: [0.5, 1, 2, 4, 8, 16, 32, 64], rows: 2 },
             },
           },
           {
@@ -79,7 +79,7 @@ const conf: LayoutConf = {
                   [2, 32],
                   [4, 64],
                 ],
-                vertical: true
+                vertical: true,
               },
             },
           },
@@ -94,8 +94,8 @@ const conf: LayoutConf = {
         ],
       },
       {
-        samplerPalette: { n: 64, offset: 4, rows: 8 } 
-      }
+        samplerPalette: { n: 64, offset: 4, rows: 8 },
+      },
     ],
     tall: [
       {
@@ -114,11 +114,11 @@ const conf: LayoutConf = {
           { pos: [1, 3], control: { type: 'key' } },
           { pos: [2, 3], control: { type: 'reloop' } },
           { pos: [3, 3], control: { type: 'slip' } },
-          { pos: [0, 4], control: { type: 'hotcue', params: { cues: 4, rows:2 } } }, //hotcue: hotcue(4, 2)([0, 4]),
-          { pos: [2, 4], control: { type: 'loopMultiply' } }, //loopMultiply: loopMultiply([2, 4]),
+          { pos: [0, 4], control: { type: 'hotcue', params: { cues: 4, rows: 2 } } },
+          { pos: [2, 4], control: { type: 'loopMultiply' } },
           {
             pos: [2, 5],
-            control: { type: 'beatloop', params: { loops: [0.5, 1, 2, 4, 8, 16], rows: 2} },
+            control: { type: 'beatloop', params: { loops: [0.5, 1, 2, 4, 8, 16], rows: 2 } },
           },
           {
             pos: [0, 6],
@@ -129,7 +129,6 @@ const conf: LayoutConf = {
                   [1, 16],
                   [2, 32],
                 ],
-              
               },
             },
           },
@@ -169,10 +168,10 @@ const conf: LayoutConf = {
           },
           { pos: [0, 3], control: { type: 'reloop' } },
           { pos: [0, 4], control: { type: 'loopMultiply' } },
-          { pos: [2, 4], control: { type: 'hotcue', params: {cues: 8, rows: 2} } },
+          { pos: [2, 4], control: { type: 'hotcue', params: { cues: 8, rows: 2 } } },
           {
             pos: [0, 5],
-            control: { type: 'beatloop', params: { loops: [0.5, 1, 2, 4, 8, 16], rows: 2} },
+            control: { type: 'beatloop', params: { loops: [0.5, 1, 2, 4, 8, 16], rows: 2 } },
           },
         ],
       },
@@ -198,12 +197,10 @@ const conf: LayoutConf = {
       },
       {
         // 'Sampler'
-        deck: [
-          { pos: [0, 0], control: { type: 'hotcue', params: { cues: 16, rows: 4} } },
-        ],
+        deck: [{ pos: [0, 0], control: { type: 'hotcue', params: { cues: 16, rows: 4 } } }],
       },
     ],
   },
-};
+}
 
-export default conf;
+export default conf

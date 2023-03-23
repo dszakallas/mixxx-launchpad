@@ -2,7 +2,7 @@
 
 import ejs from 'ejs'
 import { resolve, dirname, join } from 'path'
-import {readFile, writeFile} from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import mkdirp from 'mkdirp'
 
 if (process.argv.length !== 4) {
@@ -12,7 +12,7 @@ if (process.argv.length !== 4) {
 const [tgt, outFile] = process.argv.slice(-2)
 const [pkg, controller] = await Promise.all([
   readFile(resolve('packages', tgt, 'package.json')).then(JSON.parse),
-  readFile(resolve('packages', tgt, 'controller.json')).then(JSON.parse)
+  readFile(resolve('packages', tgt, 'controller.json')).then(JSON.parse),
 ])
 
 const templateFile = join('scripts', 'template.xml.ejs')
@@ -27,8 +27,7 @@ const rendered = ejs.render(template.toString(), {
   manufacturer: controller.manufacturer,
   global: controller.global,
   buttons: Object.values(controller.controls),
-  hexFormat: hexFormat
+  hexFormat: hexFormat,
 })
 await mkdirp(dirname(resolve(outFile)))
 await writeFile(resolve(outFile), rendered)
-

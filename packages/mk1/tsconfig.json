@@ -12,9 +12,6 @@
     "outDir": "dist",
     "resolveJsonModule": true
   },
-  "references": [
-    { "path": "../mixxx" },
-    { "path": "../app" }
-  ],
+  "references": [{ "path": "../mixxx" }, { "path": "../app" }],
   "include": ["controller.json", "src"]
 }

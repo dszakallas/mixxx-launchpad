@@ -1,114 +1,100 @@
-import { modes, retainAttackMode } from '../ModifierSidebar';
-import type {
-  ControlMessage,
-  MidiComponent,
-  ControlComponent,
-} from '@mixxx-launchpad/mixxx';
-import { setValue, getValue } from '@mixxx-launchpad/mixxx';
-import { Control, MakeDeckControlTemplate } from '../Control';
+import { modes, retainAttackMode } from '../ModifierSidebar'
+import type { ControlMessage, MidiComponent, ControlComponent } from '@mixxx-launchpad/mixxx'
+import { setValue, getValue } from '@mixxx-launchpad/mixxx'
+import { Control, MakeDeckControlTemplate } from '../Control'
 
 export type Type = {
-  type: 'nudge';
+  type: 'nudge'
   bindings: {
-    up: MidiComponent;
-    down: MidiComponent;
-    rate: ControlComponent;
-  };
+    up: MidiComponent
+    down: MidiComponent
+    rate: ControlComponent
+  }
   state: {
-    up: boolean;
-    down: boolean;
-  };
-  params: Record<string, unknown>;
-};
+    up: boolean
+    down: boolean
+  }
+  params: Record<string, unknown>
+}
 
 const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
-  const rateEpsilon = 1e-3;
+  const rateEpsilon = 1e-3
 
   const getDirection = (rate: number) => {
     if (rate < -rateEpsilon) {
-      return 'up';
+      return 'up'
     } else if (rate > rateEpsilon) {
-      return 'down';
+      return 'down'
     } else {
-      return '';
+      return ''
     }
-  };
+  }
 
   const onNudgeMidi =
     (dir: 'up' | 'down') =>
-    ({
-      context: { modifier, device },
-      bindings,
-      state,
-    }: Control<Type>) =>
+    ({ context: { modifier, device }, bindings, state }: Control<Type>) =>
       retainAttackMode(modifier, (mode, { value }) => {
         if (value) {
-          state[dir] = true;
+          state[dir] = true
           if (state.down && state.up) {
-            setValue(deck.rate, 0);
+            setValue(deck.rate, 0)
           } else {
             modes(
               mode,
               () => {
-                device.sendColor(
-                  bindings[dir].control,
-                  device.colors.hi_yellow
-                );
-                setValue(deck[`rate_temp_${dir}`], 1);
+                device.sendColor(bindings[dir].control, device.colors.hi_yellow)
+                setValue(deck[`rate_temp_${dir}`], 1)
               },
               () => {
-                device.sendColor(bindings[dir].control, device.colors.hi_red);
-                setValue(deck[`rate_perm_${dir}`], 1);
+                device.sendColor(bindings[dir].control, device.colors.hi_red)
+                setValue(deck[`rate_perm_${dir}`], 1)
               },
               () => {
-                device.sendColor(
-                  bindings[dir].control,
-                  device.colors.lo_yellow
-                );
-                setValue(deck[`rate_temp_${dir}_small`], 1);
+                device.sendColor(bindings[dir].control, device.colors.lo_yellow)
+                setValue(deck[`rate_temp_${dir}_small`], 1)
               },
               () => {
-                device.sendColor(bindings[dir].control, device.colors.lo_red);
-                setValue(deck[`rate_perm_${dir}_small`], 1);
-              }
-            );
+                device.sendColor(bindings[dir].control, device.colors.lo_red)
+                setValue(deck[`rate_perm_${dir}_small`], 1)
+              },
+            )
           }
         } else {
-          state[dir] = false;
+          state[dir] = false
           if (getDirection(getValue(bindings.rate.control)) === dir) {
-            device.sendColor(bindings[dir].control, device.colors.lo_orange);
+            device.sendColor(bindings[dir].control, device.colors.lo_orange)
           } else {
-            device.clearColor(bindings[dir].control);
+            device.clearColor(bindings[dir].control)
           }
           modes(
             mode,
             () => setValue(deck[`rate_temp_${dir}`], 0),
             undefined,
-            () => setValue(deck[`rate_temp_${dir}_small`], 0)
-          );
+            () => setValue(deck[`rate_temp_${dir}_small`], 0),
+          )
         }
-      });
+      })
 
   const onRate =
     ({ context: { device }, bindings, state }: Control<Type>) =>
     ({ value }: ControlMessage) => {
-      let up = device.colors.black;
-      let down = device.colors.black;
-      const rate = getDirection(value);
+      let up = device.colors.black
+      let down = device.colors.black
+      const rate = getDirection(value)
       if (rate === 'down') {
-        down = device.colors.lo_orange;
+        down = device.colors.lo_orange
       } else if (rate === 'up') {
-        up = device.colors.lo_orange;
+        up = device.colors.lo_orange
       }
 
       if (!state.down) {
-        device.sendColor(bindings.down.control, down);
+        device.sendColor(bindings.down.control, down)
       }
 
       if (!state.up) {
-        device.sendColor(bindings.up.control, up);
+        device.sendColor(bindings.up.control, up)
       }
-    };
+    }
 
   return {
     bindings: {
@@ -132,6 +118,6 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
       up: false,
       down: false,
     },
-  };
-};
-export default make;
+  }
+}
+export default make

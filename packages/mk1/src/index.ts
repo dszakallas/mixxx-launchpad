@@ -13,7 +13,7 @@ const colors = {
   hi_orange: 35 + 4,
   lo_orange: 18 + 4,
   hi_yellow: 50 + 4,
-  lo_yellow: 33 + 4
+  lo_yellow: 33 + 4,
 }
 
 class LaunchpadMK1Device extends LaunchpadDevice {
@@ -21,7 +21,7 @@ class LaunchpadMK1Device extends LaunchpadDevice {
   controls: { [key: string]: MidiControlDef }
   colors: { [key: string]: number }
 
-  constructor () {
+  constructor() {
     super()
     this.controls = def.controls
     this.colors = colors

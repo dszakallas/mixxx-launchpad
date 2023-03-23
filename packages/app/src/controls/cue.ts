@@ -1,18 +1,18 @@
-import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-launchpad/mixxx';
-import { setValue } from '@mixxx-launchpad/mixxx';
+import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-launchpad/mixxx'
+import { setValue } from '@mixxx-launchpad/mixxx'
 
-import { Control, MakeDeckControlTemplate } from '../Control';
-import { modes, retainAttackMode } from '../ModifierSidebar';
+import { Control, MakeDeckControlTemplate } from '../Control'
+import { modes, retainAttackMode } from '../ModifierSidebar'
 
 export type Type = {
-  type: 'cue';
+  type: 'cue'
   bindings: {
-    cue: MidiComponent;
-    cueIndicator: ControlComponent;
-  };
-  params: Record<string, unknown>;
-  state: Record<string, unknown>;
-};
+    cue: MidiComponent
+    cueIndicator: ControlComponent
+  }
+  params: Record<string, unknown>
+  state: Record<string, unknown>
+}
 
 const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
   state: {},
@@ -26,13 +26,13 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
             mode,
             () => {
               if (value) {
-                setValue(deck.cue_default, 1);
+                setValue(deck.cue_default, 1)
               } else {
-                setValue(deck.cue_default, 0);
+                setValue(deck.cue_default, 0)
               }
             },
-            () => value && setValue(deck.cue_set, 1)
-          );
+            () => value && setValue(deck.cue_set, 1),
+          )
         }),
     },
     cueIndicator: {
@@ -47,13 +47,13 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
         }: Control<Type>) =>
         ({ value }: ControlMessage) => {
           if (value) {
-            device.sendColor(control, device.colors.hi_red);
+            device.sendColor(control, device.colors.hi_red)
           } else if (!value) {
-            device.clearColor(control);
+            device.clearColor(control)
           }
         },
     },
   },
-});
+})
 
-export default make;
+export default make

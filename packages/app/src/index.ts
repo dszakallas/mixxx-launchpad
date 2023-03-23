@@ -39,6 +39,3 @@ export const useDevice = (device: LaunchpadDevice) => {
 }
 
 export type { RGBColor }
-
-
-

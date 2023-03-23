@@ -1,19 +1,19 @@
 import EventEmitter from 'eventemitter3'
 
 export default class Component extends EventEmitter {
-  mount () {
+  mount() {
     this.onMount()
     this.emit('mount', this)
   }
 
-  unmount () {
+  unmount() {
     this.onUnmount()
     this.emit('unmount', this)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onMount () { }
+  onMount() {}
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onUnmount () { }
+  onUnmount() {}
 }

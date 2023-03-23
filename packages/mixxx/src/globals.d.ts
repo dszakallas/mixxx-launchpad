@@ -6,4 +6,4 @@ declare global {
   const script: any
 }
 
-export { }
+export {}
