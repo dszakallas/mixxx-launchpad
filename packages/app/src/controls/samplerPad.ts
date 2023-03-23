@@ -27,7 +27,7 @@ export const make: MakeSamplerControlTemplate<Type> = (_, gridPosition, sampler)
       device.clearColor(bindings.button.control)
     } else if (!state.playing) {
       if (device.supportsRGBColors) {
-        device.sendRGBColor(bindings.button.control, state.color.map((x) => ~~(x / 2)) as RGBColor)
+        device.sendRGBColor(bindings.button.control, state.color.map((x) => ~~(x / 4)) as RGBColor)
       } else {
         device.sendColor(bindings.button.control, device.colors.lo_red)
       }
