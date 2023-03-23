@@ -16,24 +16,25 @@ export type Type = {
   state: {
     loaded: boolean
     playing: boolean
-    color: RGBColor
+    color: RGBColor | null
   }
   params: Record<string, unknown>
 }
 
-export const make: MakeSamplerControlTemplate<Type> = (_, gridPosition, sampler) => {
+export const make: MakeSamplerControlTemplate<Type> = (_, gridPosition, sampler, theme) => {
   const onStateChanged = (state: Type['state'], device: LaunchpadDevice, bindings: Type['bindings']) => {
+    const color = state.color == null ? theme.fallbackTrackColor : state.color
     if (!state.loaded) {
       device.clearColor(bindings.button.control)
     } else if (!state.playing) {
       if (device.supportsRGBColors) {
-        device.sendRGBColor(bindings.button.control, state.color.map((x) => ~~(x / 4)) as RGBColor)
+        device.sendRGBColor(bindings.button.control, color.map((x) => ~~(x / 4)) as RGBColor)
       } else {
         device.sendColor(bindings.button.control, device.colors.lo_red)
       }
     } else {
       if (device.supportsRGBColors) {
-        device.sendRGBColor(bindings.button.control, state.color)
+        device.sendRGBColor(bindings.button.control, color as RGBColor)
       } else {
         device.sendColor(bindings.button.control, device.colors.hi_red)
       }
@@ -43,7 +44,7 @@ export const make: MakeSamplerControlTemplate<Type> = (_, gridPosition, sampler)
     state: {
       playing: false,
       loaded: false,
-      color: [0, 0, 0],
+      color: null,
     },
     bindings: {
       button: {

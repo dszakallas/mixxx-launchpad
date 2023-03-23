@@ -28,6 +28,7 @@ export type PlayListControlKey = keyof typeof playListControlDef
 
 export const masterControlDef: { [key: string]: ControlDef } = {
   maximize_library: { group: '[Master]', name: 'maximize_library', type: 'binary' },
+  num_samplers: { group: '[Master]', name: 'num_samplers', type: 'number' },
 }
 
 export type MasterControlKey = keyof typeof masterControlDef

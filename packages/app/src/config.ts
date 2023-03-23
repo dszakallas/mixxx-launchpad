@@ -1,6 +1,12 @@
 import { LayoutConf } from './App'
 
 const conf: LayoutConf = {
+  theme: {
+    // color to use when mixxx doesn't report a color for the control
+    // only used for RGB LEDs
+    fallbackHotcueColor: [127, 127, 127],
+    fallbackTrackColor: [127, 127, 127],
+  },
   // what channels should be initially selected
   initialSelection: [0, 1],
   // mapping of sizes to presets

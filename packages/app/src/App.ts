@@ -2,7 +2,7 @@ import ModifierSidebar, { modes, retainAttackMode } from './ModifierSidebar'
 
 import type { Modifier } from './ModifierSidebar'
 import { Component, MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
-import { LaunchpadDevice } from '.'
+import { LaunchpadDevice, RGBColor } from '.'
 import { Action } from '@mixxx-launchpad/mixxx/src/util'
 import { ControlContext, makePresetTemplate, Preset, PresetConf } from './Control'
 import PlaylistSidebar from './PlaylistSidebar'
@@ -10,7 +10,13 @@ import { posMod } from './util'
 
 export type PresetSize = 'short' | 'tall' | 'grande'
 
+export type Theme = {
+  fallbackHotcueColor: RGBColor
+  fallbackTrackColor: RGBColor
+}
+
 export type LayoutConf = {
+  theme: Theme
   initialSelection: number[]
   presets: {
     [P in PresetSize]: readonly PresetConf[]
@@ -119,7 +125,12 @@ export default class App extends Component {
         device: this.device,
       }
 
-      const presetTemplate = makePresetTemplate(this.presets[block.size][block.index], block.offset, block.channel)
+      const presetTemplate = makePresetTemplate(
+        this.presets[block.size][block.index],
+        block.offset,
+        block.channel,
+        this.conf.theme,
+      )
 
       const preset = new Preset(ctx, presetTemplate)
       this.mountedPresets[block.channel] = preset

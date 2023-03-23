@@ -15,7 +15,8 @@ import { LaunchpadDevice } from '.'
 import makeControlTemplateIndex, { ControlTypeIndex } from './controls'
 import { default as makeSamplerPad } from './controls/samplerPad'
 import { range } from './util'
-import { SamplerControlDef, samplerControlDefs } from '@mixxx-launchpad/mixxx/src/Control'
+import { getValue, masterControlDef, SamplerControlDef, samplerControlDefs } from '@mixxx-launchpad/mixxx/src/Control'
+import { Theme } from './App'
 
 export type ControlContext = {
   modifier: Modifier
@@ -72,6 +73,7 @@ export type MakeControlTemplate<C extends ControlType, D> = (
   params: C['params'],
   gridPosition: [number, number],
   deck: D,
+  theme: Theme,
 ) => ControlTemplate<C>
 
 export type MakeSamplerControlTemplate<C extends ControlType> = MakeControlTemplate<C, SamplerControlDef>
@@ -204,9 +206,10 @@ const makeDeckPresetTemplate = (
   conf: DeckPresetConf,
   gridPosition: [number, number],
   deck: ChannelControlDef,
+  theme: Theme,
 ): PresetTemplate => ({
   controls: conf.deck.map(({ pos, control: { type, params } }) =>
-    makeControlTemplateIndex[type](params as unknown as any, tr(gridPosition, pos), deck),
+    makeControlTemplateIndex[type](params as unknown as any, tr(gridPosition, pos), deck, theme),
   ),
 })
 
@@ -214,11 +217,12 @@ const makeSamplerPalettePresetTemplate = (
   { samplerPalette: { n, offset, rows } }: SamplerPalettePresetConf,
   gridPosition: [number, number],
   _startingChannel: number,
+  theme: Theme,
 ) => ({
-  controls: range(n).map((i) => {
+  controls: range(Math.min(n, getValue(masterControlDef.num_samplers))).map((i) => {
     const dy = 7 - ~~(i / rows)
     const dx = i % rows
-    return makeSamplerPad({}, tr(gridPosition, [dx, dy]), samplerControlDefs[i + offset])
+    return makeSamplerPad({}, tr(gridPosition, [dx, dy]), samplerControlDefs[i + offset], theme)
   }),
 })
 
@@ -226,10 +230,11 @@ export const makePresetTemplate = (
   conf: PresetConf,
   gridPosition: [number, number],
   channel: number,
+  theme: Theme,
 ): PresetTemplate => {
   if (isDeckPresetConf(conf)) {
-    return makeDeckPresetTemplate(conf, gridPosition, channelControlDefs[channel])
+    return makeDeckPresetTemplate(conf, gridPosition, channelControlDefs[channel], theme)
   } else {
-    return makeSamplerPalettePresetTemplate(conf, gridPosition, channel)
+    return makeSamplerPalettePresetTemplate(conf, gridPosition, channel, theme)
   }
 }

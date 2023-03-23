@@ -20,7 +20,7 @@ export type Type = {
   state: Record<string, unknown>
 }
 
-const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosition, deck) => {
+const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosition, deck, theme) => {
   const onHotcueMidi =
     (i: number) =>
     ({ context: { modifier }, bindings }: Control<Type>) =>
@@ -49,17 +49,19 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosi
     (i: number) =>
     ({ context: { device }, bindings }: Control<Type>) =>
     ({ value }: ControlMessage) => {
+      const color = parseRGBColor(value)
       if (device.supportsRGBColors) {
-        device.sendRGBColor(bindings[`midi.${i}`].control, parseRGBColor(value))
+        device.sendRGBColor(bindings[`midi.${i}`].control, color == null ? theme.fallbackHotcueColor : color)
       }
     }
   const onHotcueEnabled =
     (i: number) =>
     ({ context: { device }, bindings }: Control<Type>) =>
     ({ value }: ControlMessage) => {
+      const color = parseRGBColor(getValue(deck.hotcues[1 + i + start].color))
       if (value) {
         if (device.supportsRGBColors) {
-          device.sendRGBColor(bindings[`midi.${i}`].control, parseRGBColor(getValue(deck.hotcues[1 + i + start].color)))
+          device.sendRGBColor(bindings[`midi.${i}`].control, color == null ? theme.fallbackHotcueColor : color)
         } else {
           device.sendColor(bindings[`midi.${i}`].control, device.colors.lo_yellow)
         }
