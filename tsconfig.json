@@ -15,6 +15,9 @@
       "path": "./packages/app"
     },
     {
+      "path": "./packages/control-app"
+    },
+    {
       "path": "./packages/mk2"
     },
     {
@@ -22,6 +25,9 @@
     },
     {
       "path": "./packages/mini-mk3"
+    },
+    {
+      "path": "./packages/control-xl-mk2"
     },
     {
       "path": "./packages/mixxx"

@@ -38,16 +38,19 @@
     "typescript": "^4.9.5"
   },
   "workspaces": [
-    "packages/app",
     "packages/mixxx",
+    "packages/app",
+    "packages/control-app",
     "packages/mk1",
     "packages/mk2",
-    "packages/mini-mk3"
+    "packages/mini-mk3",
+    "packages/control-xl-mk2"
   ],
   "controllers": [
     "mk1",
     "mk2",
-    "mini-mk3"
+    "mini-mk3",
+    "control-xl-mk2"
   ],
   "repository": {
     "type": "git",
