@@ -5,5 +5,3 @@ declare global {
   const midi: Midi
   const script: any
 }
-
-export {}
