@@ -89,7 +89,7 @@ export const retainAttackMode = (modifier: Modifier, cb: (ms: ModifierState, mm:
 
   return function (data: MidiMessage) {
     if (data.value) {
-      state = modifier.getState()
+      state = Object.assign(state, modifier.getState())
     }
     return cb(state, data)
   }
