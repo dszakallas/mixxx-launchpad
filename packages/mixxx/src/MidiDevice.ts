@@ -17,15 +17,7 @@ const callbackPrefix = '__midi' as const
 
 type RawMidiMessageTaskRegistry = { [k in `${typeof callbackPrefix}_${string}`]?: RawMidiMessageTask }
 
-const leftPad = (str: string, padString: string, length: number) => {
-  let buf = str
-  while (buf.length < length) {
-    buf = padString + buf
-  }
-  return buf
-}
-
-const hexFormat = (n: number, d: number) => '0x' + leftPad(n.toString(16).toUpperCase(), '0', d)
+const hexFormat = (n: number, d: number) => '0x' + n.toString(16).toUpperCase().padStart(d, '0')
 
 export abstract class MidiDevice extends Component {
   abstract controls: { [name: string]: MidiControlDef }
