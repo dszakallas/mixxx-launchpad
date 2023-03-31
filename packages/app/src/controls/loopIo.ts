@@ -2,6 +2,7 @@ import type { MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
 import { getValue, setValue } from '@mixxx-launchpad/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
 import { modes } from '../ModifierSidebar'
+import { onAttack } from '../util'
 
 export type Type = {
   type: 'loopIo'
@@ -23,29 +24,23 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
   const onMidi =
     (dir: 'in' | 'out') =>
     ({ context: { modifier } }: Control<Type>) =>
-    ({ value }: MidiMessage) => {
+    onAttack((_: MidiMessage) => {
       modes(
         modifier.getState(),
         () => {
-          if (value) {
-            setValue(map[dir][0], 1)
-            setValue(map[dir][0], 0)
-          }
+          setValue(map[dir][0], 1)
+          setValue(map[dir][0], 0)
         },
         () => {
-          if (value) {
-            const ctrl = map[dir][1]
-            setValue(ctrl, getValue(ctrl) - SMALL_SAMPLES)
-          }
+          const ctrl = map[dir][1]
+          setValue(ctrl, getValue(ctrl) - SMALL_SAMPLES)
         },
         () => {
-          if (value) {
-            const ctrl = map[dir][1]
-            setValue(ctrl, getValue(ctrl) + SMALL_SAMPLES)
-          }
+          const ctrl = map[dir][1]
+          setValue(ctrl, getValue(ctrl) + SMALL_SAMPLES)
         },
       )
-    }
+    })
   return {
     state: {},
     bindings: {

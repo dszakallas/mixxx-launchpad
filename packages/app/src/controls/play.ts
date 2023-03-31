@@ -2,6 +2,7 @@ import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-lau
 import { getValue, setValue } from '@mixxx-launchpad/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
 import { modes } from '../ModifierSidebar'
+import { onAttack } from '../util'
 
 export type Type = {
   type: 'play'
@@ -32,16 +33,16 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
     play: {
       type: 'button',
       target: gridPosition,
-      attack:
+      midi:
         ({ context: { modifier } }: Control<Type>) =>
-        () => {
+        onAttack(() => {
           modes(
             modifier.getState(),
             () => setValue(deck.play, Number(!getValue(deck.play))),
             () => setValue(deck.start_play, 1),
             () => setValue(deck.start_stop, 1),
           )
-        },
+        }),
     },
   },
 })

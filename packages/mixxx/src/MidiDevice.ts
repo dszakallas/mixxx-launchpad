@@ -70,11 +70,6 @@ export class MidiComponent extends Component {
     this.control = control
     this._device = device
     this._cb = (data) => {
-      if (data.value) {
-        this.emit('attack', data)
-      } else {
-        this.emit('release', data)
-      }
       this.emit('midi', data)
     }
   }

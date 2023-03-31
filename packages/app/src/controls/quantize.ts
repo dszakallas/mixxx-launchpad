@@ -1,7 +1,8 @@
-import type { ControlComponent, ControlMessage, MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
+import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-launchpad/mixxx'
 import { getValue, setValue } from '@mixxx-launchpad/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
 import { modes } from '../ModifierSidebar'
+import { onAttack } from '../util'
 
 export type Type = {
   type: 'quantize'
@@ -29,12 +30,12 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
     button: {
       type: 'button',
       target: gridPosition,
-      attack:
+      midi:
         ({ bindings, context: { modifier } }: Control<Type>) =>
-        (_: MidiMessage) =>
+        onAttack(() =>
           modes(modifier.getState(), () =>
             setValue(bindings.quantize.control, Number(!getValue(bindings.quantize.control))),
-          ),
+          )),
     },
   },
 })

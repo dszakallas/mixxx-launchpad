@@ -1,7 +1,8 @@
 import { modes } from '../ModifierSidebar'
-import type { MidiMessage, ControlMessage, MidiComponent, ControlComponent } from '@mixxx-launchpad/mixxx'
+import type { ControlMessage, MidiComponent, ControlComponent } from '@mixxx-launchpad/mixxx'
 import { setValue, getValue } from '@mixxx-launchpad/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
+import { onAttack } from '../util'
 
 export type Type = {
   type: 'sync'
@@ -19,9 +20,9 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
     sync: {
       type: 'button',
       target: gridPosition,
-      attack:
+      midi:
         ({ bindings, context: { modifier } }: Control<Type>) =>
-        (_: MidiMessage) => {
+        onAttack(() => {
           modes(
             modifier.getState(),
             () => {
@@ -39,7 +40,7 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
               }
             },
           )
-        },
+        }),
     },
     syncMode: {
       type: 'control',

@@ -2,6 +2,7 @@ import { modes } from '../ModifierSidebar'
 import type { MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
 import { setValue } from '@mixxx-launchpad/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
+import { onAttack } from '../util'
 
 export type Type = {
   type: 'loopjumpSmall'
@@ -16,19 +17,17 @@ export type Type = {
 }
 
 const make: MakeDeckControlTemplate<Type> = ({ amount }, button, deck) => {
-  const onAttack =
+  const onMidi =
     (dir: number) =>
     ({ context: { modifier } }: Control<Type>) =>
-    (_: MidiMessage) => {
-      modes(modifier.getState(), () => setValue(deck.loop_move, dir * amount))
-    }
+    onAttack((_: MidiMessage) => modes(modifier.getState(), () => setValue(deck.loop_move, dir * amount)))
   return {
     state: {},
     bindings: {
       back: {
         type: 'button',
         target: button,
-        attack: onAttack(-1),
+        midi: onMidi(-1),
         mount:
           ({ context: { device }, bindings }: Control<Type>) =>
           () => {
@@ -38,7 +37,7 @@ const make: MakeDeckControlTemplate<Type> = ({ amount }, button, deck) => {
       forth: {
         type: 'button',
         target: [button[0] + 1, button[1]],
-        attack: onAttack(1),
+        midi: onMidi(1),
         mount:
           ({ context: { device }, bindings }: Control<Type>) =>
           () => {

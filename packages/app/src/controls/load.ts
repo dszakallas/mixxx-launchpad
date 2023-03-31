@@ -1,8 +1,9 @@
-import type { ControlComponent, ControlMessage, MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
+import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-launchpad/mixxx'
 import { getValue, setValue } from '@mixxx-launchpad/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
 import { LaunchpadDevice } from '../.'
 import { modes } from '../ModifierSidebar'
+import { onAttack } from '../util'
 
 export type Type = {
   type: 'load'
@@ -47,9 +48,9 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
       button: {
         type: 'button',
         target: gridPosition,
-        attack:
+        midi:
           ({ bindings, context: { modifier } }: Control<Type>) =>
-          (_: MidiMessage) => {
+          onAttack(() => {
             modes(
               modifier.getState(),
               () => {
@@ -60,7 +61,7 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
               () => setValue(deck.LoadSelectedTrack, 1),
               () => setValue(deck.eject, 1),
             )
-          },
+          }),
       },
     },
   }

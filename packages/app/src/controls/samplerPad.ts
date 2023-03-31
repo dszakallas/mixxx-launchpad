@@ -50,26 +50,28 @@ export const make: MakeSamplerControlTemplate<Type> = (_, gridPosition, sampler,
       button: {
         type: 'button',
         target: gridPosition,
-        attack:
+        midi:
           ({ context: { modifier }, state }: Control<Type>) =>
-          (_: MidiMessage) => {
-            modes(
-              modifier.getState(),
-              () => {
-                if (!state.loaded) {
-                  setValue(sampler.LoadSelectedTrack, 1)
-                } else {
-                  setValue(sampler.cue_gotoandplay, 1)
-                }
-              },
-              () => {
-                if (state.playing) {
-                  setValue(sampler.stop, 1)
-                } else if (state.loaded) {
-                  setValue(sampler.eject, 1)
-                }
-              },
-            )
+          ({value}: MidiMessage) => {
+            if (value) {
+              modes(
+                modifier.getState(),
+                () => {
+                  if (!state.loaded) {
+                    setValue(sampler.LoadSelectedTrack, 1)
+                  } else {
+                    setValue(sampler.cue_gotoandplay, 1)
+                  }
+                },
+                () => {
+                  if (state.playing) {
+                    setValue(sampler.stop, 1)
+                  } else if (state.loaded) {
+                    setValue(sampler.eject, 1)
+                  }
+                },
+              )
+            }
           },
       },
 

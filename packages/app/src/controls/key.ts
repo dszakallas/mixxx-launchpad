@@ -1,7 +1,8 @@
-import type { ControlComponent, ControlMessage, MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
+import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-launchpad/mixxx'
 import { getValue, setValue } from '@mixxx-launchpad/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
 import { modes } from '../ModifierSidebar'
+import { onAttack } from '../util'
 
 export type Type = {
   type: 'key'
@@ -19,9 +20,9 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
     button: {
       type: 'button',
       target: gridPosition,
-      attack:
+      midi:
         ({ context: { modifier }, bindings }: Control<Type>) =>
-        (_: MidiMessage) => {
+        onAttack(() => {
           modes(
             modifier.getState(),
             () => {
@@ -37,7 +38,7 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
               setValue(deck.reset_key, 1)
             },
           )
-        },
+        })
     },
     keylock: {
       type: 'control',
