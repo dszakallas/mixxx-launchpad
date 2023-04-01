@@ -1,4 +1,4 @@
-import { LaunchpadDevice, RGBColor, useDevice } from '@mixxx-launchpad/app'
+import { convertControlDef, LaunchpadDevice, RGBColor, useDevice } from '@mixxx-launchpad/app'
 import def from '../controller.json'
 import { MidiControlDef, sendSysexMsg } from '@mixxx-launchpad/mixxx'
 
@@ -40,7 +40,10 @@ class LaunchpadMiniMK3Device extends LaunchpadDevice {
 
   constructor() {
     super()
-    this.controls = def.controls
+    this.controls = Object.fromEntries(
+      Object
+        .entries(def.controls)
+        .map(([k, v]) => [k, convertControlDef(k, v as [number, number])]))
     this.colors = colors
     this.supportsRGBColors = true
   }
