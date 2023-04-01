@@ -2,6 +2,7 @@ import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-lau
 import { setValue } from '@mixxx-launchpad/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
 import { modes } from '../ModifierSidebar'
+import { onAttack } from '../util'
 
 export type Type = {
   type: 'beatloop'
@@ -19,13 +20,13 @@ export type Type = {
 const make: MakeDeckControlTemplate<Type> = (params, gridPosition, deck) => {
   const { loops, rows } = params
   const bindings: { [k: string]: any } = {}
-  const onAttack =
+  const onMidi =
     (loop: number) =>
     ({ context }: Control<Type>) =>
-    () => {
+    onAttack(() => {
       const { modifier } = context
       modes(modifier.getState(), () => setValue(deck.beatloops[loop].toggle, 1))
-    }
+    })
 
   const onUpdate =
     (i: number) =>
@@ -42,7 +43,7 @@ const make: MakeDeckControlTemplate<Type> = (params, gridPosition, deck) => {
     bindings[`b.${i}`] = {
       type: 'button',
       target: [gridPosition[0] + dx, gridPosition[1] + dy],
-      attack: onAttack(loop),
+      midi: onMidi(loop),
     }
     bindings[`c.${loop}`] = {
       type: 'control',

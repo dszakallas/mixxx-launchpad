@@ -3,6 +3,7 @@ import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-lau
 import { setValue } from '@mixxx-launchpad/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
 import Bpm from '../Bpm'
+import { onAttack } from '../util'
 
 export type Type = {
   type: 'tap'
@@ -25,9 +26,9 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
       tap: {
         type: 'button',
         target: gridPosition,
-        attack:
+        midi:
           ({ context: { modifier } }: Control<Type>) =>
-          () => {
+          onAttack(() => {
             modes(
               modifier.getState(),
               () => tempoBpm.tap(),
@@ -35,7 +36,7 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
               () => setValue(deck.beats_translate_curpos, 1),
               () => setValue(deck.beats_translate_match_alignment, 1),
             )
-          },
+          }),
       },
       beat: {
         type: 'control',

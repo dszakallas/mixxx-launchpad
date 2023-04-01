@@ -28,11 +28,7 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosi
       modes(
         modifier.getState(),
         () => {
-          if (value) {
-            setValue(deck.hotcues[1 + i + start].activate, 1)
-          } else {
-            setValue(deck.hotcues[1 + i + start].activate, 0)
-          }
+          setValue(deck.hotcues[1 + i + start].activate, value ? 1 : 0)
         },
         () => {
           if (value) {
@@ -58,9 +54,9 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosi
     (i: number) =>
     ({ context: { device }, bindings }: Control<Type>) =>
     ({ value }: ControlMessage) => {
-      const color = parseRGBColor(getValue(deck.hotcues[1 + i + start].color))
       if (value) {
         if (device.supportsRGBColors) {
+          const color = parseRGBColor(getValue(deck.hotcues[1 + i + start].color))
           device.sendRGBColor(bindings[`midi.${i}`].control, color == null ? theme.fallbackHotcueColor : color)
         } else {
           device.sendColor(bindings[`midi.${i}`].control, device.colors.lo_yellow)

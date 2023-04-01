@@ -2,6 +2,7 @@ import type { ControlComponent, ControlMessage, MidiComponent, MidiMessage } fro
 import { getValue, setValue } from '@mixxx-launchpad/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
 import { modes } from '../ModifierSidebar'
+import { onAttack } from '../util'
 
 export type Type = {
   type: 'pfl'
@@ -29,10 +30,10 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
     button: {
       type: 'button',
       target: gridPosition,
-      attack:
+      midi:
         ({ context: { modifier }, bindings }: Control<Type>) =>
-        (_: MidiMessage) =>
-          modes(modifier.getState(), () => setValue(bindings.pfl.control, Number(!getValue(bindings.pfl.control)))),
+        onAttack((_: MidiMessage) =>
+          modes(modifier.getState(), () => setValue(bindings.pfl.control, Number(!getValue(bindings.pfl.control))))),
     },
   },
 })

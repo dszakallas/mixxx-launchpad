@@ -2,6 +2,7 @@ import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-lau
 import { setValue } from '@mixxx-launchpad/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
 import { modes } from '../ModifierSidebar'
+import { onAttack } from '../util'
 
 export type Type = {
   type: 'reloop'
@@ -19,15 +20,15 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
     button: {
       type: 'button',
       target: gridPosition,
-      attack:
+      midi:
         ({ context: { modifier } }: Control<Type>) =>
-        () => {
+        onAttack(() => {
           modes(
             modifier.getState(),
             () => setValue(deck.reloop_exit, 1),
             () => setValue(deck.reloop_andstop, 1),
           )
-        },
+        }),
     },
     control: {
       type: 'control',

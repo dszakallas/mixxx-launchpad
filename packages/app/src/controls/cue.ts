@@ -25,11 +25,7 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
           modes(
             mode,
             () => {
-              if (value) {
-                setValue(deck.cue_default, 1)
-              } else {
-                setValue(deck.cue_default, 0)
-              }
+              setValue(deck.cue_default, value ? 1 : 0)
             },
             () => value && setValue(deck.cue_set, 1),
           )

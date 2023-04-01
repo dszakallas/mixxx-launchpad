@@ -49,8 +49,6 @@ export type ButtonBindingTemplate<C extends ControlType> = {
   type: 'button'
   target: ButtonKey
   midi?: (c: Control<C>) => (message: MidiMessage) => void
-  attack?: (c: Control<C>) => (message: MidiMessage) => void
-  release?: (c: Control<C>) => (message: MidiMessage) => void
   mount?: (c: Control<C>) => () => void
   unmount?: (c: Control<C>) => () => void
 }
@@ -90,7 +88,7 @@ export type IControl<C extends ControlType> = {
 
 const controlListeners = ['update', 'mount', 'unmount'] as const
 
-const midiListeners = ['attack', 'release', 'midi', 'mount', 'unmount'] as const
+const midiListeners = ['midi', 'mount', 'unmount'] as const
 
 const nameOf = (x: number, y: number) => `${7 - y},${x}`
 
@@ -102,7 +100,6 @@ export class Control<C extends ControlType> extends Component implements IContro
 
   constructor(ctx: ControlContext, controlTemplate: ControlTemplate<C>) {
     super()
-
     const bindings: { [k: string]: any } = {}
     for (const k in controlTemplate.bindings) {
       const bt = controlTemplate.bindings[k]

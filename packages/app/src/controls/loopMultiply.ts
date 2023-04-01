@@ -1,6 +1,7 @@
 import type { MidiComponent, MidiMessage } from '@mixxx-launchpad/mixxx'
 import { setValue } from '@mixxx-launchpad/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
+import { onAttack } from '../util'
 
 export type Type = {
   type: 'loopMultiply'
@@ -19,9 +20,7 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
     () => {
       device.sendColor(bindings[k].control, device.colors.lo_yellow)
     }
-  const onAttack = (k: 'double' | 'halve') => (_: Control<Type>) => (_: MidiMessage) => {
-    setValue(deck[`loop_${k}`], 1)
-  }
+  const onMidi = (k: 'double' | 'halve') => (_: Control<Type>) => onAttack((_: MidiMessage) => setValue(deck[`loop_${k}`], 1))
   return {
     state: {},
     bindings: {
@@ -29,13 +28,13 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
         type: 'button',
         target: gridPosition,
         mount: onMount('halve'),
-        attack: onAttack('halve'),
+        midi: onMidi('halve'),
       },
       double: {
         type: 'button',
         target: [gridPosition[0] + 1, gridPosition[1]],
         mount: onMount('double'),
-        attack: onAttack('double'),
+        midi: onMidi('double'),
       },
     },
   }
