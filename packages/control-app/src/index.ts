@@ -1,7 +1,7 @@
 import { Component, MidiControlDef, MidiDevice } from "@mixxx-launchpad/mixxx"
 
 class App extends Component {
-  
+
 }
 
 export abstract class LaunchControlDevice extends MidiDevice {
@@ -24,6 +24,12 @@ export abstract class LaunchControlDevice extends MidiDevice {
     super.onUnmount()
   }
 }
+
+
+export type ControllerControlDef = [number, number];
+
+export const convertControlDef = (name: string, [status, midino]: ControllerControlDef): MidiControlDef => ({ name, status, midino })
+
 
 export const useDevice = (device: LaunchControlDevice) => {
   const app = new App()

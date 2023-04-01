@@ -1,6 +1,6 @@
 import def from '../controller.json'
-import { MidiControlDef, MidiMessage, sendShortMsg, sendSysexMsg } from '@mixxx-launchpad/mixxx'
-import { useDevice, LaunchControlDevice } from '@mixxx-launchpad/control-app'
+import { MidiControlDef, sendShortMsg, sendSysexMsg } from '@mixxx-launchpad/mixxx'
+import { convertControlDef, useDevice, LaunchControlDevice } from '@mixxx-launchpad/control-app'
 
 const colors = {
   //black: 12,
@@ -29,18 +29,18 @@ class LaunchControlXLMK2Device extends LaunchControlDevice {
 
   constructor() {
     super()
-    this.controls = def.controls
+    this.controls = Object.fromEntries(
+      Object
+        .entries(def.controls)
+        .map(([k, v]) => [k, convertControlDef(k, v as [number, number])]))
     this.colors = colors
   }
 
   onMount() {
     const colorKeys = Object.keys(colors);
-    this.addListener('attack', (mm: MidiMessage) => {
-
-    })
     for(let i = 0; i < 16; ++i) {
       resetTemplate(i)
-      for(let j = 0; j < 2; ++j) {  
+      for(let j = 0; j < 2; ++j) {
         sendColor(i, 24 + j, colors[colorKeys[(i % 5) * 2 + j]]);
       }
       for (let j = 2; j < 18; ++j) {
@@ -51,4 +51,6 @@ class LaunchControlXLMK2Device extends LaunchControlDevice {
   }
 }
 
+
 export default useDevice(new LaunchControlXLMK2Device())
+

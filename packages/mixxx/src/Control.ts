@@ -361,6 +361,27 @@ export const createChannelControlDef = (i: number): ChannelControlDef => {
 
 export const channelControlDefs: ChannelControlDef[] = range(8).map((i: number) => createChannelControlDef(i))
 
+export type RackName = 'EffectRack1' | 'EqualizerRack1' | 'QuickEffectRack1'
+
+export const createEffectRackDef = (rack: RackName) => ({
+  num_effectunits: { group: `[${rack}]`, name: `num_effectunits`, type: 'number' },
+  clear: { group: `[${rack}]`, name: `clear`, type: 'binary' },
+})
+
+export type EffectUnitName = string
+
+export const createEffectDef = (rack: RackName, unit: EffectUnitName) => ({
+
+  chain_selector: { group: `[${rack}_${unit}]`, name: `chain_selector`, type: 'number' },
+  clear: { group: `[${rack}_${unit}]`, name: `clear`, type: 'binary' },
+  enabled: { group: `[${rack}_${unit}]`, name: `enabled`, type: 'binary' },
+  focused_effect: { group: `[${rack}_${unit}]`, name: `focused_effect`, type: 'number' },
+})
+
+export type EffectUnitDef = number
+
+export type EffectDef = number
+
 export const getValue = (control: ControlDef): number => {
   return engine.getValue(control.group, control.name)
 }
