@@ -13,6 +13,7 @@ export type Engine = {
   beginTimer(intervalMs: number, cb: TimerCallback): number
   stopTimer(handle: number): void
   makeConnection(group: string, name: string, callback: ControlCallback): Connection
+  softTakeover(group: string, name: string, value: boolean): void
 }
 
 export type Midi = {

@@ -59,9 +59,12 @@ const createSamplerControlDef = (type: string, i: number): SamplerControlDef => 
   track_loaded: { group: `[${type}${i}]`, name: 'track_loaded', type: 'binary' },
 })
 
-const getChannelNameForOrdinal = (i: number): [string, number] => (i < 4 ? ['Channel', i + 1] : ['Sampler', i - 4 + 1])
+export const numDecks = 4 as const
+export const numSamplers = 64 as const
 
-export const samplerControlDefs: SamplerControlDef[] = range(68).map((i: number) => {
+const getChannelNameForOrdinal = (i: number): [string, number] => (i < numDecks ? ['Channel', i + 1] : ['Sampler', i - 4 + 1])
+
+export const samplerControlDefs: SamplerControlDef[] = range(numDecks + numSamplers).map((i: number) => {
   const [name, number] = getChannelNameForOrdinal(i)
   return createSamplerControlDef(name, number)
 })
@@ -361,26 +364,86 @@ export const createChannelControlDef = (i: number): ChannelControlDef => {
 
 export const channelControlDefs: ChannelControlDef[] = range(8).map((i: number) => createChannelControlDef(i))
 
-export type RackName = 'EffectRack1' | 'EqualizerRack1' | 'QuickEffectRack1'
+export type RackName = `EffectRack${number}` | `EqualizerRack${number}` | `QuickEffectRack${number}`
 
-export const createEffectRackDef = (rack: RackName) => ({
+export type EffectRackKey = 'num_effectunits' | 'clear'
+export type EffectRackDef = { [_ in EffectRackKey]: ControlDef }
+
+export const createEffectRackDef = (rack: RackName): EffectRackDef => ({
   num_effectunits: { group: `[${rack}]`, name: `num_effectunits`, type: 'number' },
   clear: { group: `[${rack}]`, name: `clear`, type: 'binary' },
 })
 
 export type EffectUnitName = string
 
-export const createEffectDef = (rack: RackName, unit: EffectUnitName) => ({
+export type EffectUnitKey = 'chain_selector' | 'clear' | 'enabled' | 'focused_effect' | 'super1'
+export type EffectUnitDef = {[_ in EffectUnitKey]: ControlDef}
 
+export const createEffectUnitDef = (rack: RackName, unit: EffectUnitName): EffectUnitDef => ({
   chain_selector: { group: `[${rack}_${unit}]`, name: `chain_selector`, type: 'number' },
   clear: { group: `[${rack}_${unit}]`, name: `clear`, type: 'binary' },
   enabled: { group: `[${rack}_${unit}]`, name: `enabled`, type: 'binary' },
   focused_effect: { group: `[${rack}_${unit}]`, name: `focused_effect`, type: 'number' },
+  super1: { group: `[${rack}_${unit}]`, name: `super1`, type: 'number' },
 })
 
-export type EffectUnitDef = number
+export type EffectKey = 'clear' | 'effect_selector' | 'enabled' | 'loaded' | 'next_effect' | 'num_parameters' | 'num_parameterslots' |
+  'num_button_parameters' | 'num_button_parameterslots' | 'meta' | 'prev_effect'
+export type EffectDef = { [_ in EffectKey]: ControlDef }
 
-export type EffectDef = number
+export const createEffectDef = (rack: RackName, unit: EffectUnitName, effect: string): EffectDef => ({
+  clear: { group: `[${rack}_${unit}_${effect}]`, name: `clear`, type: 'binary' },
+  effect_selector: { group: `[${rack}_${unit}_${effect}]`, name: `effect_selector`, type: 'number' },
+  enabled: { group: `[${rack}_${unit}_${effect}]`, name: `enabled`, type: 'binary' },
+  loaded: { group: `[${rack}_${unit}_${effect}]`, name: `loaded`, type: 'binary' },
+  next_effect: { group: `[${rack}_${unit}_${effect}]`, name: `next_effect`, type: 'binary' },
+  num_parameters: { group: `[${rack}_${unit}_${effect}]`, name: `num_parameters`, type: 'number' },
+  num_parameterslots: { group: `[${rack}_${unit}_${effect}]`, name: `num_parameterslots`, type: 'number' },
+  num_button_parameters: { group: `[${rack}_${unit}_${effect}]`, name: `num_button_parameters`, type: 'number' },
+  num_button_parameterslots: { group: `[${rack}_${unit}_${effect}]`, name: `num_button_parameterslots`, type: 'number' },
+  meta: { group: `[${rack}_${unit}_${effect}]`, name: `meta`, type: 'number' },
+  prev_effect: { group: `[${rack}_${unit}_${effect}]`, name: `prev_effect`, type: 'binary' },
+})
+
+export type EffectParameterKey = 'value' | 'link_inverse' | 'link_type' | 'loaded' | 'type' | 'button_value' | 'button_loaded' | 'button_type'
+export type EffectParameterDef = { [_ in EffectParameterKey]: ControlDef }
+
+export const createEffectParameterDef = (rack: RackName, unit: EffectUnitName, effect: string, parameter: number): EffectParameterDef => ({
+  value: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}`, type: 'number' },
+  link_inverse: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}_link_inverse`, type: 'binary' },
+  link_type: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}_link_type`, type: 'number' },
+  loaded: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}_loaded`, type: 'binary' },
+  type: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}_type`, type: 'number' },
+  button_value: { group: `[${rack}_${unit}_${effect}]`, name: `button_parameter${parameter}`, type: 'number' },
+  button_loaded: { group: `[${rack}_${unit}_${effect}]`, name: `button_parameter${parameter}_loaded`, type: 'binary' },
+  button_type: { group: `[${rack}_${unit}_${effect}]`, name: `button_parameter${parameter}_type`, type: 'number' },
+})
+
+export const numEqualizerRacks = 1 as const
+export const equalizerRackDefs = range(numEqualizerRacks).map((i: number) => createEffectRackDef(`EqualizerRack${i + 1}`))
+
+export const equalizerUnitDefs = range(numEqualizerRacks).map((i: number) => {
+  return range(numDecks).map((j: number) => createEffectUnitDef(`EqualizerRack${i + 1}`, `[Channel${j + 1}]`))
+})
+
+export const numEqualizerEffects = 1 as const
+export const equalizerEffectDefs = range(numEqualizerRacks).map((i: number) => {
+  return range(numDecks).map((j: number) => {
+    return range(numEqualizerEffects).map((k: number) => {
+      return createEffectDef(`EqualizerRack${i + 1}`, `[Channel${j + 1}]`, `Effect${k + 1}`)
+    })
+  })
+})
+
+export const equalizerParamDefs = range(numEqualizerRacks).map((i: number) => {
+  return range(numDecks).map((j: number) => {
+    return range(numEqualizerEffects).map((k: number) => {
+      return range(3).map((l: number) => {
+        return createEffectParameterDef(`EqualizerRack${i + 1}`, `[Channel${j + 1}]`, `Effect${k + 1}`, l + 1)
+      })
+    })
+  })
+})
 
 export const getValue = (control: ControlDef): number => {
   return engine.getValue(control.group, control.name)
@@ -390,6 +453,9 @@ export const setValue = (control: ControlDef, value: number): void => {
   return engine.setValue(control.group, control.name, value)
 }
 
+export const softTakeover = (control: ControlDef, enable: boolean): void => {
+  return engine.softTakeover(control.group, control.name, enable)
+}
 export type ControlHandle = Connection
 
 export type ControlMessage = {
@@ -413,11 +479,13 @@ const disconnect = (handle: ControlHandle): void => {
 export class ControlComponent extends Component {
   control: ControlDef
   _handle?: any
+  _softTakeover?: boolean
 
-  constructor(control: ControlDef) {
+  constructor(control: ControlDef, softTakeover?: boolean) {
     super()
     this.control = control
     this._handle = null
+    this._softTakeover = softTakeover
   }
 
   onMount() {
@@ -425,6 +493,10 @@ export class ControlComponent extends Component {
       this._handle = connect(this.control, (data: ControlMessage) => {
         this.emit('update', data)
       })
+      if (this._softTakeover != null) {
+        console.log('softTakeover', this.control, this._softTakeover)
+        softTakeover(this.control, this._softTakeover)
+      }
       const initialMessage = {
         control: this.control,
         value: getValue(this.control),
