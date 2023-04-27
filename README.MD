@@ -6,9 +6,10 @@ Flexible and customizable controller mapping for Novation Launchpad family of co
 
 ## Features
 
- - map from 1 up to 4 channels (decks or samplers) on a single Launchpad at the same time
- - utilize presets with multiple sizes and features, change between them with ease
- - ships with 5 presets in 3 sizes created, easily customizable
+ - map up to 4 channels (decks or samplers) on a single Launchpad at the same time
+ - utilize presets of multiple sizes and features, change between them during performance
+ - 6 presets in 3 sizes
+ - create your own presets with ease
  - rich arsenal of controls
    - play, cue, hotcues
    - loop controls, beatloop, beatjump
@@ -365,9 +366,12 @@ Feedback
 - **bright green**: loop on
 - **dim green**: loop off
 
-## For developers
+## Building from source
 
-### Build
+The code is written in TypeScript, transpiled with [babel] and bundled into a single iife module with [rollup]. There are certain transforms and polyfills which are required to get it working with Mixxx's bundled interpreter.
+The controller mapping is generated from this [template] with [ejs], using metadata about the controller placed in [`contoller.json`](./packages/mk2/controller.json).
+
+### Compile
 
 To build you need make, Node (>=16), bash (>=4.0) and `jq`. Watch tasks require `fswatch`.
 
@@ -422,19 +426,6 @@ These two tasks have watch counterparts making them rerun automatically on file 
 make watch
 make watch_install
 ```
-
-### TypeScript
-
-The code is written in TypeScript, transpiled with [babel] and bundled into a single iife module with [rollup]. There are certain transforms and polyfills which are required to get it working with Mixxx's bundled interpreter.
-
-### MIDI mapping
-
-The controller mapping is generated from this [template] with [ejs], using metadata about the controller placed in [`contoller.json`](./packages/mk2/controller.json).
-
-### Known Issues
-
-#### No Windows build recipes
-I don't use Windows, however I am accepting PRs if you would like to add support.
 
 [babel]:https://babeljs.io/
 [rollup]:https://rollupjs.org
