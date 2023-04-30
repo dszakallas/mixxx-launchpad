@@ -20,7 +20,7 @@ Flexible and customizable controller mapping for Novation Launchpad family of co
 
 ## Supported controllers
 
- - Launchpad Mini Mk3 [Setup instructions](#launchpad-mini-mk3)
+ - Launchpad Mini Mk3
  - Launchpad Mk2
  - Launchpad Mk1
  
@@ -34,7 +34,7 @@ Mini Mk3 has to be put in "Programmer" mode to get MIDI access to all 9x9 instea
 
  💾 [Download the latest release](https://github.com/szdavid92/mixxx-launchpad/releases/latest).
 
- 🛠 Alternatively, see [Build](#build) the build it from source.
+ 🛠 Alternatively, see [Building from source](#building-from-source) the build it from source.
 
  📘 Follow the [instructions in the Mixxx User Manual](https://www.mixxx.org/manual/latest/chapters/controlling_mixxx.html#installing-a-preset-from-the-forum) to install the preset.
 
@@ -124,7 +124,7 @@ The cycling order is the following:
 
 The presets featured out of the box:
 
-|        | default                                             |                                                                                               |
+|        | default (0)                                         | (1)                                                                                           |
 |--------|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | grande | ![grande]  **GRANDE** is the default grande layout. | **SAMPLER8X8** is a (8x8) grid of samplers assigned statically from [Sampler1] to [Sampler64] |
 | tall   | ![tall]    **TALL** is the default tall layout.     | ![juggler] **JUGGLER** is a tall layout optimized for beat jumping.                           |
@@ -365,6 +365,14 @@ Feedback
 
 - **bright green**: loop on
 - **dim green**: loop off
+
+## Troubleshooting 
+
+### Launchpad Mini Mk3
+
+Mini Mk3 has to be put in "Programmer" mode to get MIDI access to all 9x9 instead of only inner 8x8 in "Live" mode. Push and hold "Session" for about a second, "LED" screen shows up, then push "Stop Solo Mute" button, "Programmer" shows up.
+
+This is now done automatically during script initialization, so you shouldn't have to worry about it.
 
 ## Building from source
 
