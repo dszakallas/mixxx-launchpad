@@ -31,7 +31,8 @@ export const gain = (deck: number, col: number) => {
 
 const controlIndex = {
   'eq3': (channel: Eq3Channel, deck: number, parameter: 'value' | 'kill' = 'value') => {
-    return parameter === 'value' ? equalizerParamDefs[0][deck][0][channel].value : equalizerParamDefs[0][deck][0][channel].button_value
+    return parameter === 'value' ? equalizerParamDefs[0][deck][0][channel].value :
+      equalizerParamDefs[0][deck][0][channel].button_value
   }
 }
 
@@ -60,8 +61,6 @@ class App extends Component {
         const midiControl = this._device.controls[`0.${midi}`]
 
         const midiComponent = new MidiComponent(this._device, midiControl)
-
-        console.log('midiComponent', midiControl.midino, midiControl.status, midiControl.name)
 
         midiComponent.addListener('midi', ({value}: MidiMessage) => {
           setValue(control, absoluteNonLin(value, 0, 1, 4))
@@ -111,7 +110,6 @@ export const convertControlDef = (name: string, [status, midino]: ControllerCont
 
 export const useDevice = (device: LaunchControlDevice) => {
   const app = new App(device)
-  console.log('app')
   device.addListener('mount', app.mount.bind(app))
   device.addListener('unmount', app.unmount.bind(app))
   return device
