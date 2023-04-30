@@ -373,7 +373,7 @@ The controller mapping is generated from this [template] with [ejs], using metad
 
 ### Compile
 
-To build you need make, Node (>=16), bash (>=4.0) and `jq`. Watch tasks require `fswatch`.
+To build you need make, Node (>=18), bash (>=4.0) and `jq`. Watch tasks require `fswatch`.
 
 The multi-project build is managed with npm workspaces. Clone the repo and
 install the dependencies:
