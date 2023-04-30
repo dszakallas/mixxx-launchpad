@@ -37,17 +37,17 @@ class LaunchControlXLMK2Device extends LaunchControlDevice {
   }
 
   onMount() {
-    const colorKeys = Object.keys(colors);
-    for(let i = 0; i < 16; ++i) {
-      resetTemplate(i)
-      for(let j = 0; j < 2; ++j) {
-        sendColor(i, 24 + j, colors[colorKeys[(i % 5) * 2 + j]]);
-      }
-      for (let j = 2; j < 18; ++j) {
-        sendColor(i, 24 + j, 12);
-      }
-    }
     super.onMount()
+    // const colorKeys = Object.keys(colors);
+    // for(let i = 0; i < 16; ++i) {
+    //   //resetTemplate(i)
+    //   for(let j = 0; j < 2; ++j) {
+    //     sendColor(i, 24 + j, colors[colorKeys[(i % 5) * 2 + j]]);
+    //   }
+    //   for (let j = 2; j < 18; ++j) {
+    //     sendColor(i, 24 + j, 12);
+    //   }
+    // }
   }
 }
 

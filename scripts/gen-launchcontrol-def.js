@@ -5,7 +5,8 @@ const controls = {}
 const range = (n) => [...Array(n).keys()]
 
 const CC = 0xB
-const Note = [0x9, 0x8]
+const NoteOn = 0x9
+const Note = [NoteOn, 0x8]
 
 const Sets = {
   knob: {
@@ -13,6 +14,15 @@ const Sets = {
     n: 8,
     nPerRow: 1,
     type: CC,
+  },
+  // the leds are in a different order than the knobs, also they use NoteOn instead of CC
+  // see https://cycling74.com/forums/how-to-control-leds-on-novation-launch-control-xl-buttons#reply-5ac7c5b288b16e5d73805c55
+  led: {
+    set: [0x0D, 0x1D, 0x2D, 0x3D, 0x4D, 0x5D, 0x6D, 0x7D],
+    n: 3,
+    nPerRow: 1,
+    transpose: true,
+    type: NoteOn,
   },
   fader: {
     set: [0x4D],
@@ -39,11 +49,12 @@ const sidebar = {
   arm: [Note, 0x6c],
 }
 
-const board = Object.fromEntries(Object.entries(Sets).flatMap(([name, {set, n, nPerRow, type}]) =>
+const board = Object.fromEntries(Object.entries(Sets).flatMap(([name, {set, n, nPerRow, type, transpose}]) =>
   range(set.length * n).map((x) => {
     const r = Math.floor(x / (n * nPerRow))
     const c = x % (n * nPerRow)
-    return [`${name}.${r}.${c}`, [type, set[r] + c]]
+    const index = transpose ? `${c}.${r}` : `${r}.${c}`
+    return [`${name}.${index}`, [type, set[r] + c]]
   })
 ))
 
