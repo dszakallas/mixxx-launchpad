@@ -118,7 +118,7 @@ The cycling order is the following:
 
 The presets featured out of the box:
 
-|        | default [0]                                         | [1]                                                                                           |
+|        | default (0)                                         | (1)                                                                                           |
 |--------|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | grande | ![grande]  **GRANDE** is the default grande layout. | **SAMPLER8X8** is a (8x8) grid of samplers assigned statically from [Sampler1] to [Sampler64] |
 | tall   | ![tall]    **TALL** is the default tall layout.     | ![juggler] **JUGGLER** is a tall layout optimized for beat jumping.                           |
