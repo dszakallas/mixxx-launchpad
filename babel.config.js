@@ -1,12 +1,8 @@
-module.exports = {
-  presets: [
-    ['@babel/preset-env', { modules: false }]
-  ],
+export default {
+  targets: 'node 10.0',
+  presets: ['@babel/preset-typescript', ['@babel/preset-env', { modules: false }]],
   plugins: [
-    'transform-es3-member-expression-literals',
-    'transform-es3-property-literals',
-    '@babel/plugin-proposal-class-properties',
-    '@babel/plugin-transform-flow-strip-types',
-    ['@babel/plugin-transform-runtime', { regenerator: false, absoluteRuntime: true, useESModules: true }]
-  ]
+    ['@babel/plugin-transform-arrow-functions'], // FIXME work around Qt bug in arrow functions https://bugreports.qt.io/browse/QTBUG-95677
+    ['@babel/plugin-transform-runtime', { corejs: 3, regenerator: false, absoluteRuntime: true }],
+  ],
 }

@@ -1,7 +1,7 @@
 {
-  "name": "@mixxx-launchpad/mk2",
-  "author": "Midiparse",
-  "description": "Novation Launchpad MK2 mapping for Mixxx",
+  "name": "@mixxx-launchpad/mini-mk3",
+  "author": "Christian Neumann",
+  "description": "Novation Launchpad Mini MK3 mapping for Mixxx",
   "homepage": "https://github.com/dszakallas/mixxx-launchpad",
   "private": true,
   "version": "1.0.0",

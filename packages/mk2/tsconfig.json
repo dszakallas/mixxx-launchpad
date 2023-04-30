@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist"
+  },
+  "references": [
+    {
+      "path": "../mixxx"
+    },
+    {
+      "path": "../app"
+    }
+  ],
+  "include": [
+    "controller.json",
+    "src"
+  ]
+}

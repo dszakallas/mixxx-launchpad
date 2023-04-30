@@ -1,30 +1,34 @@
-# Mixxx mapping for Novation Launchpad 🦄
+# mixxx-launchpad
 
-**Flexible and (soon) customizable controller mapping for Launchpad. Make DJing
-with Mixxx fun on Launchpad!**
+Flexible and customizable controller mapping for Novation Launchpad family of controllers.
 
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dszakallas/mixxx-launchpad)](https://github.com/dszakallas/mixxx-launchpad/releases/latest) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/dszakallas/mixxx-launchpad/Test%20&%20Release) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) ![License](https://img.shields.io/github/license/dszakallas/mixxx-launchpad)
 
-## Features ✨
+## Features
 
- - map from 1 up to 4 channels (decks or samplers) on a single Launchpad at the same time ✨
- - utilize presets with multiple sizes and features, change between them with ease 🦄
- - x5 different deck presets in 3 sizes created for you and ready to use ✨, make it easy for the user to create new presets for their own needs (coming soon!)
- - rich arsenal of controls 🦄
+ - map up to 4 channels (decks or samplers) on a single Launchpad at the same time
+ - utilize presets of multiple sizes and features, change between them during performance
+ - 6 presets in 3 sizes
+ - create your own presets with ease
+ - rich arsenal of controls
    - play, cue, hotcues
    - loop controls, beatloop, beatjump
    - sync/master, tap, pitch shift
    - custom controls like bouncy jumps
-   - and much more...
- - trigger-like controls are favored - no clumsy mixers and faders ✨
- - library navigation 🦄
- - LED lights mimic Mixxx UI ✨
+ - only trigger-like controls supported - no clumsy mixers and faders
+ - library navigation
 
 ## Supported controllers
 
- - Launchpad Pro (Experimental)
+ - Launchpad Mini Mk3 [Setup instructions](#launchpad-mini-mk3)
  - Launchpad Mk2
  - Launchpad Mk1
+ 
+## Controller setup instructions
+
+### Launchpad Mini Mk3
+
+Mini Mk3 has to be put in "Programmer" mode to get MIDI access to all 9x9 instead of only inner 8x8 in "Live" mode. Push and hold "Session" for about a second, "LED" screen shows up, then push "Stop Solo Mute" button, "Programmer" shows up.
 
 ## How to get started
 
@@ -46,13 +50,14 @@ samplers to be laid out on the main grid. *D1-D4* are mapped to corresponding
 *decks*, *S1-S4* to *samplers*.
 
 **Library controls** are located on the sidebar to the right. They occupy the
-upper 5 buttons. Their functions from top to bottom:
+upper 6 buttons. Their functions from top to bottom:
 
  - up in the library sidebar
  - down in the library sidebar
  - expand/close selected library sidebar entry
  - up a track
  - down a track
+ - maximize/restore library
 
 > Note: The up/down controls are autoscrolled. If you hold them down for longer,
 the scrolling activates. This comes in handy when navigating lengthy playlists.
@@ -106,8 +111,6 @@ This means that e.g. if you press down D3-D2-S1 in this chord sequence,
 - D2 will be mapped to block 2 with the default short preset and
 - S1 will be mapped to block 3 with the default short preset.
 
-Now you might ask: "But what if I don't want to use the largest default preset?"
-
 After a channel has been laid out you can cycle between all the presets that can
 fit into its space. This won't reflow the layout, even if you end up using a
 smaller preset. To cycle between presets
@@ -119,14 +122,13 @@ The cycling order is the following:
   - primary: large to small
   - secondary: default then all others in fixed but not specified order.
 
-See, not that complicated after all. Let's see the actual presets that are
-featured out of the box:
+The presets featured out of the box:
 
-|        | default                                                   |                                                                    |
-|--------|-----------------------------------------------------------|--------------------------------------------------------------------|
-| grande | ![grande]  **GRANDE** is currently the only grande layout.|                                                                    |
-| tall   | ![tall]    **TALL** is the default tall layout.           |![juggler] **JUGGLER** is a tall layout optimized for beat jumping. |
-| short  | ![short]  **SHORT** is the default short layout.          |![sampler]  **SAMPLER** is an all-cue short layout for samplers.    |
+|        | default                                             |                                                                                               |
+|--------|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| grande | ![grande]  **GRANDE** is the default grande layout. | **SAMPLER8X8** is a (8x8) grid of samplers assigned statically from [Sampler1] to [Sampler64] |
+| tall   | ![tall]    **TALL** is the default tall layout.     | ![juggler] **JUGGLER** is a tall layout optimized for beat jumping.                           |
+| short  | ![short]  **SHORT** is the default short layout.    | ![sampler]  **SAMPLER** is an all-cue short layout for samplers.                              |
 
 
 [grande]: docs/lp-mki-grande.png
@@ -139,8 +141,7 @@ featured out of the box:
 
 ### Deck controls
 
-Now that you are familiar with the presets, let's check the controls the make
-up these!
+These following controls are supported currently.
 
 #### PLAY
 
@@ -294,20 +295,21 @@ Controls
 
 Feedback
 
-- **bright yellow**: hotcue enabled
+- **hotcue assigned color (bright yellow on non-RGB controller)**: hotcue enabled
 - **blank**: hotcue disabled
 
 #### BEATJUMPS
+
+_Changed in 3.0.0: changing between sets and modes works differently._
 
 Controls for jumping backward (lower lane) and forward (upper lane).
 Supports two modes:
  - the **normal mode** is represented with bright color. Jumping works as you would expect.
  - the **rebouncing mode** is shown with dim color. It jumps on attack, then jumps back on release. Jumping legato works and uses the same stealing algorithm as key shifting.
- Modes are switched with the CH MODE control (pressing `ctrl` and `shift` at the same time)
 
-You can change modes by pressing **ctrl+shift+[any beatjump key]**.
+You can change modes by pressing **shift+[any beatjump key]**.
 
-There are two sets of jumps, switchable with the `ctrl` and `shift` keys, and shown in their corresponding colors. This means that pressing **ctrl+[any beatjump key]** will switch to the first set, while pressing **shift+[any beatjump key]** will switch to the second set.
+There are two sets of jumps, switchable with the `ctrl` key, and shown in different colors.
 
 #### BEATLOOPS
 
@@ -328,11 +330,13 @@ controls
 
 - **normal**: set loop in/out position
 - **ctrl**: move loop in/out position backward by small amount
-- **shift**: movet loop in/out position forward by small amount
+- **shift**: move loop in/out position forward by small amount
 
 Note: you are able to move the whole loop forward/backward by pressing down in and out the same time, while applying the modifier.
 
 #### LOOPJUMPS
+
+_Changed in 3.0.0: changing between sets and modes works differently._
 
 Almost the same as beatjumps, only instead of changing the current play position, they translate the position of the loop markers. As beatjumps, they support two modes and two sets. On how to use these, see [Beatjumps](#beatjumps)
 
@@ -362,23 +366,26 @@ Feedback
 - **bright green**: loop on
 - **dim green**: loop off
 
-## For developers
+## Building from source
 
-### Build
+The code is written in TypeScript, transpiled with [babel] and bundled into a single iife module with [rollup]. There are certain transforms and polyfills which are required to get it working with Mixxx's bundled interpreter.
+The controller mapping is generated from this [template] with [ejs], using metadata about the controller placed in [`contoller.json`](./packages/mk2/controller.json).
 
-To build you need to have a make, Node (>=8), bash (>=4.0) and `jq`. Watch tasks require `fswatch`.
+### Compile
 
-The multi-project build is managed with npm workspaces. First clone the repo and
+To build you need make, Node (>=18), bash (>=4.0) and `jq`. Watch tasks require `fswatch`.
+
+The multi-project build is managed with npm workspaces. Clone the repo and
 install the dependencies:
 
-```
+```shell
 git clone https://github.com/szdavid92/mixxx-launchpad
 cd mixxx-launchpad
 npm install
 ```
 To compile the sources run
 
-```
+```shell
 make -j 4
 ```
 
@@ -387,50 +394,41 @@ make -j 4
 Afterward the `dist` folder will contain the files that need to be
 copied the Mixxx's controller folder.
 
+### Test
+
+We utilize a linter and the TypeScript typechecker to ensure some level of code safety and consistency.
+
+You can run them both with
+
+```shell
+make test
 ```
+
+### Install
+
+To install into the Mixxx resources folder, run
+
+```shell
+make -j 4 install installDir=$MIXXX_SETTINGS_DIR
+```
+
+where `$MIXXX_SETTINGS_DIR` is the [Mixxx settings directory](https://manual.mixxx.org/2.3/en/chapters/appendix/settings_directory.html#location) for your platform. The Makefile providers default values for macOS and Linux, so running 
+
+```shell
 make -j 4 install
 ```
-does this for you on macOS and Linux.
+
+will work on these platforms if you didn't change the Mixxx default installation.
 
 These two tasks have watch counterparts making them rerun automatically on file changes. This is handy during development:
 
-```
+```shell
 make watch
 make watch_install
 ```
 
-### JavaScript
-
-The code is written according to the [ES2015] specification. This is
-incompatible with the runtime running in Mixxx so it has to be transpiled back
-to ES5, which is done with [Babel] using the es2015 preset. Sadly due to the interpreter's only partial compatibility with the standard [even some ES3 transforms have to be enabled](bad-interpreter). The transpiled code
-is then bundled with [browserify] into a so called [standalone] module with the
-name `NovationLaunchpad`. Due to the lack of module loading system in the
-environment, the bundled code is placed on the global object with the above
-name. This works, because the same name is specified in the MIDI mapping XML file, so Mixxx will look for this name, and will call its `init` method upon loading.
-
-### MIDI mapping
-
-The controller mapping is generated from a template like
-[this][mapping-template] with [ejs]. The mapping reuses config from the package
-description and [buttons.js].
-
-### Known Issues
-
-#### No Windows build recipes
-Sorry, but building anything on Windows is pain.
-
-#### Lingering ES3 future reserved keywords
-
-Due to parser discrepancies, ES3 keywords and future reserved words that have been removed from ES5 can't be used as *(1) identifiers*, *(2) property literals* and *(3) member expression literals*. In ES5 you can use keywords and future reserved words in the last two cases.
-We have [transforms](.babelrc) for these two cases, however you still **can't use ES3 keywords and future reserved words as identifiers**, even if some of the latter was removed from ES5, for example `public`, `private` or `final`.
-
-
-[ES2015]:https://github.com/lukehoban/es6features#readme
-[Babel]:https://babeljs.io/
-[browserify]:http://browserify.org/
+[babel]:https://babeljs.io/
+[rollup]:https://rollupjs.org
 [standalone]:https://github.com/substack/node-browserify#usage
-[mapping-template]:src/Launchpad/Launchpad.midi.xml.ejs
+[template]:script/Launchpad.midi.xml.ejs
 [ejs]:http://ejs.co/
-[buttons.js]:src/Launchpad/buttons.js
-[lerna.js]: https://lernajs.io/
