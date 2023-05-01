@@ -3,14 +3,13 @@ import { Action } from './util'
 import Component from './Component'
 
 import type { Connection } from './mixxx'
+import { range } from '@mixxx-launch/common'
 
 export type ControlDef = {
   group: string
   name: string
   type: string
 }
-
-const range = (n: number) => [...Array(n).keys()]
 
 export const playListControlDef: { [key: string]: ControlDef } = {
   LoadSelectedIntoFirstStopped: { group: '[Playlist]', name: 'LoadSelectedIntoFirstStopped', type: 'binary' },

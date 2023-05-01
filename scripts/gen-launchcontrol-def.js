@@ -58,7 +58,7 @@ const board = Object.fromEntries(Object.entries(Sets).flatMap(([name, {set, n, n
   })
 ))
 
-const page = Object.assign({}, sidebar, board)
+const page = Object.assign({}, sidebar, board, { reset: [CC, 0x0] })
 
 const toStatus = (opcode, channel) => opcode * 16 + channel
 
@@ -77,6 +77,7 @@ const def = {
   device: 'LaunchControl XL MK2',
   manufacturer: 'Novation',
   global: 'NLCXL2',
+  sysex: true,
   controls: Object.fromEntries(range(16).flatMap((n) => makePage(n))),
 }
 

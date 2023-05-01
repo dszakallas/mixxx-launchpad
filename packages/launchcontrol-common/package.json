@@ -1,0 +1,11 @@
+{
+  "name": "@mixxx-launch/launchcontrol-common",
+  "author": "Midiparse",
+  "license": "MIT",
+  "private": true,
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@mixxx-launch/mixxx": "~1.0.0"
+  }
+}

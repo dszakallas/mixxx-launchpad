@@ -1,0 +1,13 @@
+{
+  "name": "@mixxx-launch/launchcontrol-xl-mk2",
+  "author": "Midiparse",
+  "description": "Novation LaunchControl XL MK2 mapping",
+  "homepage": "https://github.com/dszakallas/mixxx-launchpad",
+  "private": true,
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@babel/runtime-corejs3": "^7.21.0",
+    "@mixxx-launch/launchcontrol-common": "1.0.0"
+  }
+}

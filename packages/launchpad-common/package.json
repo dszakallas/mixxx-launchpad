@@ -1,12 +1,12 @@
 {
-  "name": "@mixxx-launch/mixxx",
+  "name": "@mixxx-launch/launchpad-common",
   "private": true,
   "version": "1.0.0",
   "main": "src/index.ts",
   "author": "Midiparse",
   "license": "MIT",
   "dependencies": {
-    "@mixxx-launch/common": "~1.0.0",
-    "eventemitter3": "~5.0.0"
+    "eventemitter3": "~5.0.0",
+    "@mixxx-launch/mixxx": "~1.0.0"
   }
 }
