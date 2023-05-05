@@ -11,21 +11,24 @@
             <file functionprefix="<%= global %>" filename="<%= manufacturer %>-<%= device %>-scripts.js"/>
         </scriptfiles>
         <controls>
-            <%  if(sysex) { %><control>
-                <key><%= global %>.__sysex</key>
+<% if(sysex) { -%>
+            <control>
                 <status>0xf0</status>
                 <options>
                     <script-binding/>
                 </options>
-            </control><% } %>
-            <% buttons.forEach(function (button) { %><control>
+            </control>
+<% } -%>
+<% buttons.forEach(function (button) { -%>
+            <control>
                 <key><%= global %>.__midi_<%= hexFormat(button[0], 2) %>_<%= hexFormat(button[1], 2) %></key>
                 <status><%= hexFormat(button[0], 2) %></status>
                 <midino><%= hexFormat(button[1], 2) %></midino>
                 <options>
                     <script-binding/>
                 </options>
-            </control><% }) %>
+            </control>
+<% }) -%>
         </controls>
         <outputs/>
     </controller>

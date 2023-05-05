@@ -1,6 +1,6 @@
-# mixxx-launchpad
+# mixxx-launch
 
-Flexible and customizable controller mapping for Novation Launchpad family of controllers.
+Flexible and customizable controller mapping for Novation Launch[Pad|Control] family of controllers.
 
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dszakallas/mixxx-launchpad)](https://github.com/dszakallas/mixxx-launchpad/releases/latest) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/dszakallas/mixxx-launchpad/Test%20&%20Release) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) ![License](https://img.shields.io/github/license/dszakallas/mixxx-launchpad)
 

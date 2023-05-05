@@ -12,15 +12,23 @@ export type MidiMessage = {
 }
 
 export type RawMidiMessageTask = (channel: number, control: number, value: number, status: number) => void
+export type SysexTask = (data: number[]) => void
 
-const callbackPrefix = '__midi' as const
+const midiCallbackPrefix = '__midi' as const
+const sysexCallbackPrefix = 'incomingData' as const
 
-type RawMidiMessageTaskRegistry = { [k in `${typeof callbackPrefix}_${string}`]?: RawMidiMessageTask }
+type RawMidiMessageTaskRegistry = {
+  [k in `${typeof midiCallbackPrefix}_${string}`]?: RawMidiMessageTask
+} & { [sysexCallbackPrefix]: SysexTask }
+
 
 const hexFormat = (n: number, d: number) => '0x' + n.toString(16).toUpperCase().padStart(d, '0')
 
 export abstract class MidiDevice extends Component {
   abstract controls: { [name: string]: MidiControlDef }
+
+  // whether to listen for sysex messages
+  sysex: boolean = false
 
   init() {
     this.mount()
@@ -32,9 +40,9 @@ export abstract class MidiDevice extends Component {
 
   onMount() {
     super.onMount()
+    const _this = this as unknown as RawMidiMessageTaskRegistry
     Object.values(this.controls).forEach((control) => {
-      const _this = this as unknown as RawMidiMessageTaskRegistry
-      _this[`${callbackPrefix}_${hexFormat(control.status, 2)}_${hexFormat(control.midino, 2)}`] = (
+      _this[`${midiCallbackPrefix}_${hexFormat(control.status, 2)}_${hexFormat(control.midino, 2)}`] = (
         _channel,
         _control,
         value,
@@ -44,6 +52,13 @@ export abstract class MidiDevice extends Component {
         this.emit(control.name, message)
       }
     })
+
+    console.log('handle sysex', this.sysex)
+
+    if (this.sysex) {
+      _this[sysexCallbackPrefix] = (data: number[]) => { this.emit('sysex', data) }
+    }
+
   }
 
   onUnmount() {

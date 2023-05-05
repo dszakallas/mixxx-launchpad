@@ -46,25 +46,12 @@ class LaunchControlXLMK2Device extends LaunchControlDevice {
     sendSysexMsg([...templateChangeSysexPreamble, template, 247])
   }
 
-  inboundSysex(data: number[]) {
-    console.log('inbound sysex', data)
+  handleTemplateChangeSysex(data: number[]): number | undefined {
     if (data.length === 9 && templateChangeSysexPreamble[6] === data[6]) {
-      this.emit('template', data[7])
+      return data[7]
     }
   }
 
-
-  onMount() {
-    super.onMount()
-    range(this.numTemplates).forEach(this.resetTemplate.bind(this))
-    console.log('changing template')
-    this.changeTemplate(0)
-  }
-
-  onUnmount() {
-    range(this.numTemplates).forEach(this.resetTemplate.bind(this))
-    super.onUnmount()
-  }
 }
 
 

@@ -124,11 +124,6 @@ class App extends Component {
       console.log('handle', name, status, midino, value)
     })
 
-    this._device.on('template', (data) => {
-      console.log('teamplate changed to', data)
-    })
-
-
   }
 
   onUnmount() {
@@ -143,6 +138,7 @@ class App extends Component {
 export abstract class LaunchControlDevice extends MidiDevice {
   abstract colors: { [key: string]: number }
   abstract numTemplates: number
+  sysex: boolean = true
 
   constructor() {
     super()
@@ -152,11 +148,27 @@ export abstract class LaunchControlDevice extends MidiDevice {
 
   abstract changeTemplate(template: number): void
 
+  // tries to parse a sysex message and returns the template number if it was a template change message
+  abstract handleTemplateChangeSysex(data: number[]): number | undefined
+
+  handleSysex(data: number[]) {
+    console.log('inbound sysex', data)
+    const template = this.handleTemplateChangeSysex(data)
+    if (template != null) {
+      this.emit('template', template)
+    }
+  }
+
   onMount() {
     super.onMount()
+    range(this.numTemplates).forEach(this.resetTemplate.bind(this))
+    this.addListener('sysex', this.handleSysex.bind(this))
+    this.changeTemplate(0)
   }
 
   onUnmount() {
+    this.removeListener('sysex', this.handleSysex.bind(this));
+    range(this.numTemplates).forEach(this.resetTemplate.bind(this))
     super.onUnmount()
   }
 }
@@ -170,6 +182,9 @@ export const useDevice = (device: LaunchControlDevice) => {
   const app = new App(device)
   device.addListener('mount', app.mount.bind(app))
   device.addListener('unmount', app.unmount.bind(app))
+  device.addListener('template', (template: number) => {
+    console.log('template', template)
+  })
   return device
 }
 

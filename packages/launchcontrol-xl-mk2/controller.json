@@ -2,6 +2,7 @@
   "device": "LaunchControl XL MK2",
   "manufacturer": "Novation",
   "global": "NLCXL2",
+  "sysex": true,
   "controls": {
     "0.up": [
       176,
