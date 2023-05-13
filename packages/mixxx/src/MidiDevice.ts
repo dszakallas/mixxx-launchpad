@@ -1,3 +1,4 @@
+import { hexFormat } from '@mixxx-launch/common'
 import Component from './Component'
 
 export type MidiControlDef = {
@@ -15,14 +16,12 @@ export type RawMidiMessageTask = (channel: number, control: number, value: numbe
 export type SysexTask = (data: number[]) => void
 
 const midiCallbackPrefix = '__midi' as const
+// TODO: mixxx currently doesn't support custom names for sysex callback handlers, see https://github.com/mixxxdj/mixxx/issues/11536
 const sysexCallbackPrefix = 'incomingData' as const
 
 type RawMidiMessageTaskRegistry = {
   [k in `${typeof midiCallbackPrefix}_${string}`]?: RawMidiMessageTask
 } & { [sysexCallbackPrefix]: SysexTask }
-
-
-const hexFormat = (n: number, d: number) => '0x' + n.toString(16).toUpperCase().padStart(d, '0')
 
 export abstract class MidiDevice extends Component {
   abstract controls: { [name: string]: MidiControlDef }

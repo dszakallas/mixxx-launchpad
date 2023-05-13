@@ -7,5 +7,10 @@
   "include": [
     "controller.json",
     "src"
+  ],
+  "references": [
+    {
+      "path": "../launchpad-common"
+    }
   ]
 }

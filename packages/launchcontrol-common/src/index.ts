@@ -1,12 +1,38 @@
-import { range } from '@mixxx-launch/common'
+import { range, array, map, forEach } from '@mixxx-launch/common'
 import { channelControlDefs, setValue, Component, ControlComponent, MidiComponent, MidiControlDef, MidiDevice, MidiMessage, absoluteNonLin, sendShortMsg, sendSysexMsg } from "@mixxx-launch/mixxx"
-import { equalizerParamDefs } from "@mixxx-launch/mixxx/src/Control"
+import { createEffectDef, createEffectParameterDef, createEffectRackDef, createEffectUnitDef, EffectKey, EffectUnitKey, numDecks, numEqualizerRacks } from "@mixxx-launch/mixxx/src/Control"
 
 export enum Eq3Channel {
   Low,
   Mid,
   High,
 }
+
+export const equalizerRackDefs = array(map((i: number) => createEffectRackDef(`EqualizerRack${i + 1}`), range(numEqualizerRacks)))
+
+export const equalizerUnitDefs = array(map((i: number) => {
+  return array(map((j: number) => createEffectUnitDef(`EqualizerRack${i + 1}`, `[Channel${j + 1}]`), range(numDecks)))
+}, range(numEqualizerRacks)))
+
+export const numEqualizerEffects = 1 as const
+export const equalizerEffectDefs = array(map((i: number) => {
+  return array(map((j: number) => {
+    return array(map((k: number) => {
+      return createEffectDef(`EqualizerRack${i + 1}`, `[Channel${j + 1}]`, `Effect${k + 1}`)
+    }, range(numEqualizerEffects)))
+  }, range(numDecks)))
+}, range(numEqualizerRacks)))
+
+export const equalizerParamDefs = array(map((i: number) => {
+  return array(map((j: number) => {
+    return array(map((k: number) => {
+      return array(map((l: number) => {
+        return createEffectParameterDef(`EqualizerRack${i + 1}`, `[Channel${j + 1}]`, `Effect${k + 1}`, l + 1)
+      }, range(3)))
+    }, range(numEqualizerEffects)))
+  }, range(numDecks)))
+}, range(numEqualizerRacks)))
+
 
 export const eq3 = (deck: number, col: number) => {
   return [
@@ -30,6 +56,17 @@ export const gain = (deck: number, col: number) => {
   ] as const
 }
 
+export const effectEssentials = (unit: number, col: number) => {
+  return [
+    [`knob.0.${col}`, { type: "effect_unit", params: { unit, parameter: 'super1', deck: 0 } }],
+    [`knob.1.${col}`, { type: "effect", params: { unit, effect: 0, parameter: 'meta', deck: 0 } }],
+    [`knob.2.${col}`, { type: "effect", params: { unit, effect: 1, parameter: 'meta', deck: 0 } }],
+    [`fader.0.${col}`, { type: "effect_unit", params: { unit, parameter: 'dry_wet', deck: 0 } }],
+    [`pad.0.${col}`, { type: "effect", params: { unit, effect: 0, parameter: 'enabled', deck: 0 } }],
+    [`pad.1.${col}`, { type: "effect", params: { unit, effect: 1, parameter: 'enabled', deck: 0 } }],
+  ] as const
+}
+
 const controlIndex = {
   'eq3': (channel: Eq3Channel, deck: number, parameter: 'value' | 'kill' = 'value') => {
     return parameter === 'value' ? equalizerParamDefs[0][deck][0][channel].value :
@@ -38,6 +75,12 @@ const controlIndex = {
   'gain': (deck: number) => {
     return channelControlDefs[deck].volume
   },
+  // 'effect_unit': (unit: number, parameter: EffectUnitKey) => {
+  //   return channelControlDefs[0].effectUnits[unit][parameter]
+  // },
+  // 'effect': (unit: number, effect: number, parameter: EffectKey) => {
+  //   return channelControlDefs[0].effectUnits[unit].effects[effect][parameter]
+  // }
 }
 
 const sendColor = (template: number, index: number, color: number) => {
@@ -61,7 +104,7 @@ class App extends Component {
       [Eq3Channel.Low]: this._device.colors.lo_green,
     }
 
-    range(4).forEach(col => {
+    forEach((col) => {
       const eqs = eq3(col, col)
       for (const [midi, cd] of eqs) {
 
@@ -106,8 +149,16 @@ class App extends Component {
 
         this.children.push(midiComponent)
       }
+    }, range(4))
 
-    })
+    // range(4).forEach(i => {
+    //   const col = i + 4
+    //   const effect = effectEssentials(i, col)
+
+    //   for (const [midi, cd] of effect) {
+    //     const control = controlIndex[cd.type](cd.params.unit)
+    //   })
+    // })
 
   }
 
@@ -161,14 +212,14 @@ export abstract class LaunchControlDevice extends MidiDevice {
 
   onMount() {
     super.onMount()
-    range(this.numTemplates).forEach(this.resetTemplate.bind(this))
+    forEach(this.resetTemplate.bind(this), range(this.numTemplates))
     this.addListener('sysex', this.handleSysex.bind(this))
     this.changeTemplate(0)
   }
 
   onUnmount() {
     this.removeListener('sysex', this.handleSysex.bind(this));
-    range(this.numTemplates).forEach(this.resetTemplate.bind(this))
+    forEach(this.resetTemplate.bind(this), range(this.numTemplates))
     super.onUnmount()
   }
 }

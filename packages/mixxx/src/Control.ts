@@ -3,7 +3,7 @@ import { Action } from './util'
 import Component from './Component'
 
 import type { Connection } from './mixxx'
-import { range } from '@mixxx-launch/common'
+import { array, map, range } from '@mixxx-launch/common'
 
 export type ControlDef = {
   group: string
@@ -63,10 +63,10 @@ export const numSamplers = 64 as const
 
 const getChannelNameForOrdinal = (i: number): [string, number] => (i < numDecks ? ['Channel', i + 1] : ['Sampler', i - 4 + 1])
 
-export const samplerControlDefs: SamplerControlDef[] = range(numDecks + numSamplers).map((i: number) => {
+export const samplerControlDefs: SamplerControlDef[] = array(map((i: number) => {
   const [name, number] = getChannelNameForOrdinal(i)
   return createSamplerControlDef(name, number)
-})
+}, range(numDecks + numSamplers)))
 
 // the full control palette for decks, minus repeated controls (e.g hotcues)
 export type SimpleChannelControlKey =
@@ -355,13 +355,13 @@ export const createChannelControlDef = (i: number): ChannelControlDef => {
     beatjumps: createArrayChannelControlDef(beatjumps, arrayChannelControlDefCreators.beatjumps),
     beatloops: createArrayChannelControlDef(beatloops, arrayChannelControlDefCreators.beatloops),
     hotcues: createArrayChannelControlDef(
-      range(16).map((x: number) => x + 1),
+      array(map((x: number) => x + 1, range(16))),
       arrayChannelControlDefCreators.hotcues,
     ),
   })
 }
 
-export const channelControlDefs: ChannelControlDef[] = range(8).map((i: number) => createChannelControlDef(i))
+export const channelControlDefs: ChannelControlDef[] = array(map((i: number) => createChannelControlDef(i), range(8)))
 
 export type RackName = `EffectRack${number}` | `EqualizerRack${number}` | `QuickEffectRack${number}`
 
@@ -373,9 +373,11 @@ export const createEffectRackDef = (rack: RackName): EffectRackDef => ({
   clear: { group: `[${rack}]`, name: `clear`, type: 'binary' },
 })
 
+export const numEqualizerRacks = 1 as const
+
 export type EffectUnitName = string
 
-export type EffectUnitKey = 'chain_selector' | 'clear' | 'enabled' | 'focused_effect' | 'super1'
+export type EffectUnitKey = 'chain_selector' | 'clear' | 'enabled' | 'focused_effect' | 'mix' | 'super1'
 export type EffectUnitDef = {[_ in EffectUnitKey]: ControlDef}
 
 export const createEffectUnitDef = (rack: RackName, unit: EffectUnitName): EffectUnitDef => ({
@@ -383,8 +385,10 @@ export const createEffectUnitDef = (rack: RackName, unit: EffectUnitName): Effec
   clear: { group: `[${rack}_${unit}]`, name: `clear`, type: 'binary' },
   enabled: { group: `[${rack}_${unit}]`, name: `enabled`, type: 'binary' },
   focused_effect: { group: `[${rack}_${unit}]`, name: `focused_effect`, type: 'number' },
+  mix: { group: `[${rack}_${unit}]`, name: `mix`, type: 'number' },
   super1: { group: `[${rack}_${unit}]`, name: `super1`, type: 'number' },
 })
+
 
 export type EffectKey = 'clear' | 'effect_selector' | 'enabled' | 'loaded' | 'next_effect' | 'num_parameters' | 'num_parameterslots' |
   'num_button_parameters' | 'num_button_parameterslots' | 'meta' | 'prev_effect'
@@ -404,6 +408,8 @@ export const createEffectDef = (rack: RackName, unit: EffectUnitName, effect: st
   prev_effect: { group: `[${rack}_${unit}_${effect}]`, name: `prev_effect`, type: 'binary' },
 })
 
+export const numEqualizerEffects = 1 as const
+
 export type EffectParameterKey = 'value' | 'link_inverse' | 'link_type' | 'loaded' | 'type' | 'button_value' | 'button_loaded' | 'button_type'
 export type EffectParameterDef = { [_ in EffectParameterKey]: ControlDef }
 
@@ -416,32 +422,6 @@ export const createEffectParameterDef = (rack: RackName, unit: EffectUnitName, e
   button_value: { group: `[${rack}_${unit}_${effect}]`, name: `button_parameter${parameter}`, type: 'number' },
   button_loaded: { group: `[${rack}_${unit}_${effect}]`, name: `button_parameter${parameter}_loaded`, type: 'binary' },
   button_type: { group: `[${rack}_${unit}_${effect}]`, name: `button_parameter${parameter}_type`, type: 'number' },
-})
-
-export const numEqualizerRacks = 1 as const
-export const equalizerRackDefs = range(numEqualizerRacks).map((i: number) => createEffectRackDef(`EqualizerRack${i + 1}`))
-
-export const equalizerUnitDefs = range(numEqualizerRacks).map((i: number) => {
-  return range(numDecks).map((j: number) => createEffectUnitDef(`EqualizerRack${i + 1}`, `[Channel${j + 1}]`))
-})
-
-export const numEqualizerEffects = 1 as const
-export const equalizerEffectDefs = range(numEqualizerRacks).map((i: number) => {
-  return range(numDecks).map((j: number) => {
-    return range(numEqualizerEffects).map((k: number) => {
-      return createEffectDef(`EqualizerRack${i + 1}`, `[Channel${j + 1}]`, `Effect${k + 1}`)
-    })
-  })
-})
-
-export const equalizerParamDefs = range(numEqualizerRacks).map((i: number) => {
-  return range(numDecks).map((j: number) => {
-    return range(numEqualizerEffects).map((k: number) => {
-      return range(3).map((l: number) => {
-        return createEffectParameterDef(`EqualizerRack${i + 1}`, `[Channel${j + 1}]`, `Effect${k + 1}`, l + 1)
-      })
-    })
-  })
 })
 
 export const getValue = (control: ControlDef): number => {

@@ -4,5 +4,10 @@
     "composite": true,
     "outDir": "dist"
   },
-  "include": ["controller.json", "src"]
+  "include": ["controller.json", "src"],
+  "references": [
+    {
+      "path": "../launchpad-common"
+    }
+  ]
 }

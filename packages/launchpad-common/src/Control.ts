@@ -1,6 +1,6 @@
 import type { Modifier } from './ModifierSidebar'
 
-import  { range } from '@mixxx-launch/common'
+import { array, map, range } from '@mixxx-launch/common'
 
 import {
   ChannelControlDef,
@@ -217,11 +217,11 @@ const makeSamplerPalettePresetTemplate = (
   _startingChannel: number,
   theme: Theme,
 ) => ({
-  controls: range(Math.min(n, getValue(masterControlDef.num_samplers))).map((i) => {
+  controls: array(map((i) => {
     const dy = 7 - ~~(i / rows)
     const dx = i % rows
     return makeSamplerPad({}, tr(gridPosition, [dx, dy]), samplerControlDefs[i + offset], theme)
-  }),
+  }, range(Math.min(n, getValue(masterControlDef.num_samplers))))),
 })
 
 export const makePresetTemplate = (

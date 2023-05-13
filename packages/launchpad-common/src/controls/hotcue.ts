@@ -1,4 +1,4 @@
-import { range } from '@mixxx-launch/common'
+import { range, map } from '@mixxx-launch/common'
 import type { ControlComponent, ControlMessage, MidiComponent, MidiMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
 import { parseRGBColor } from '../color'
@@ -66,7 +66,7 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosi
       }
     }
   const bindings: { [k: string]: any } = {}
-  range(cues).map((i) => {
+  map((i) => {
     const dx = i % rows
     const dy = ~~(i / rows)
     bindings[`midi.${i}`] = {
@@ -84,7 +84,7 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosi
       target: deck.hotcues[1 + i + start].color,
       update: onHotcueColorChanged(i),
     }
-  })
+  }, range(cues))
   return {
     bindings,
     state: {},
