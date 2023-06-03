@@ -377,7 +377,7 @@ export const numEqualizerRacks = 1 as const
 
 export type EffectUnitName = string
 
-export type EffectUnitKey = 'chain_selector' | 'clear' | 'enabled' | 'focused_effect' | 'mix' | 'super1'
+export type EffectUnitKey = 'chain_selector' | 'clear' | 'enabled' | 'focused_effect' | 'mix' | 'super1' | 'num_effects' | 'num_effectslots'
 export type EffectUnitDef = {[_ in EffectUnitKey]: ControlDef}
 
 export const createEffectUnitDef = (rack: RackName, unit: EffectUnitName): EffectUnitDef => ({
@@ -387,6 +387,8 @@ export const createEffectUnitDef = (rack: RackName, unit: EffectUnitName): Effec
   focused_effect: { group: `[${rack}_${unit}]`, name: `focused_effect`, type: 'number' },
   mix: { group: `[${rack}_${unit}]`, name: `mix`, type: 'number' },
   super1: { group: `[${rack}_${unit}]`, name: `super1`, type: 'number' },
+  num_effects: { group: `[${rack}_${unit}]`, name: `num_effects`, type: 'number' },
+  num_effectslots: { group: `[${rack}_${unit}]`, name: `num_effectslots`, type: 'number' },
 })
 
 

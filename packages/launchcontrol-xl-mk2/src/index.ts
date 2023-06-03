@@ -3,7 +3,7 @@ import { MidiControlDef, sendShortMsg, sendSysexMsg } from '@mixxx-launch/mixxx'
 import { convertControlDef, useDevice, LaunchControlDevice } from '@mixxx-launch/launchcontrol-common'
 
 const colors = {
-  //black: 12,
+  black: 12,
   lo_red: 13,
   hi_red: 15,
   lo_orange: 30,
