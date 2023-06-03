@@ -51,10 +51,10 @@ const sidebar = {
 
 const board = Object.fromEntries(Object.entries(Sets).flatMap(([name, {set, n, nPerRow, type, transpose}]) =>
   range(set.length * n).map((x) => {
-    const r = Math.floor(x / (n * nPerRow))
+    const r = ~~(x / (n * nPerRow))
     const c = x % (n * nPerRow)
     const index = transpose ? `${c}.${r}` : `${r}.${c}`
-    return [`${name}.${index}`, [type, set[r] + c]]
+    return [`${name}.${index}`, [type, set[~~(x / n)] + x % n]]
   })
 ))
 

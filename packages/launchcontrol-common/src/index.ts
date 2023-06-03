@@ -1,6 +1,6 @@
 import { range, array, map, forEach } from '@mixxx-launch/common'
 import { channelControlDefs, setValue, Component, ControlComponent, MidiComponent, MidiControlDef, MidiDevice, MidiMessage, absoluteNonLin, sendShortMsg, sendSysexMsg } from "@mixxx-launch/mixxx"
-import { ControlMessage, createEffectDef, createEffectParameterDef, createEffectRackDef, createEffectUnitDef, EffectDef, EffectKey, EffectParameterDef, EffectRackKey, EffectUnitKey, formatControlDef, getValue, numDecks as mixxxNumDecks, numEqualizerRacks, RackName } from "@mixxx-launch/mixxx/src/Control"
+import { ControlMessage, createEffectDef, createEffectParameterDef, createEffectRackDef, createEffectUnitChannelDef, createEffectUnitDef, EffectDef, EffectKey, EffectParameterDef, EffectRackKey, EffectUnitKey, formatControlDef, getValue, numDecks as mixxxNumDecks, numEqualizerRacks, RackName } from "@mixxx-launch/mixxx/src/Control"
 
 export enum Eq3Channel {
   Low,
@@ -185,6 +185,37 @@ const makeGain = ({ template, columnOffset, numDecks }: VerticalGroupParams = de
   return children
 }
 
+const makeEffectSelector = (template: number) => (device: LaunchControlDevice): Component[] => {
+  const children: Component[] = []
+
+
+  forEach((i) => {
+    const row = ~~(i / 2)
+    const col = i % 2
+    forEach((j) => {
+      console.log(`${template}.pad.${row}.${(col * 4) + j}.on`)
+      const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
+
+      const midiComponent = new MidiComponent(device, midiControl)
+      const control = createEffectUnitChannelDef(
+        "EffectRack1", `EffectUnit${j+1}`, `Channel${i+1}`,
+      ).enable
+      const controlComponent = new ControlComponent(control)
+      children.push(controlComponent)
+      controlComponent.addListener('update', ({value}: ControlMessage) => {
+        sendShortMsg(midiControl, value ? device.colors.hi_green : device.colors.black)
+      })
+      midiComponent.addListener('midi', ({value}: MidiMessage) => {
+        if (value) {
+          setValue(control, 1 - getValue(control))
+        }
+      })
+      children.push(midiComponent)
+    }, range(4))
+  }, range(4))
+  return children
+}
+
 const toEffectKnobRange = (value: number) => {
   return value / 63.5 - 1
 }
@@ -311,6 +342,8 @@ const makeApp = (device: LaunchControlDevice) => {
         children.push(eqs)
         const gains = makeComponent(makeGain({template, columnOffset: 0, numDecks: mixxxNumDecks}))(device)
         children.push(gains)
+        const effectSelectors = makeComponent(makeEffectSelector(template))(device)
+        children.push(effectSelectors)
         break
       case 1:
         const fxunit = makeComponent(makeEffectUnit(template, 0))(device)

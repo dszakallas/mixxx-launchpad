@@ -391,6 +391,12 @@ export const createEffectUnitDef = (rack: RackName, unit: EffectUnitName): Effec
   num_effectslots: { group: `[${rack}_${unit}]`, name: `num_effectslots`, type: 'number' },
 })
 
+export type ChannelName = `Channel${number}` | `Sampler${number}` | `Master` | `Headphone`
+
+export const createEffectUnitChannelDef = (rack: RackName, unit: EffectUnitName, channel: ChannelName) => ({
+  enable: { group: `[${rack}_${unit}]`, name: `group_[${channel}]_enable`, type: 'binary' },
+})
+
 
 export type EffectKey = 'clear' | 'effect_selector' | 'enabled' | 'loaded' | 'next_effect' | 'num_parameters' | 'num_parameterslots' |
   'num_button_parameters' | 'num_button_parameterslots' | 'meta' | 'prev_effect'
