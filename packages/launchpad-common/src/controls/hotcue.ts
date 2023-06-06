@@ -1,4 +1,4 @@
-import { range, map } from '@mixxx-launch/common'
+import { range, forEach } from '@mixxx-launch/common'
 import type { ControlComponent, ControlMessage, MidiComponent, MidiMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
 import { parseRGBColor } from '../color'
@@ -66,7 +66,7 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosi
       }
     }
   const bindings: { [k: string]: any } = {}
-  map((i) => {
+  forEach((i) => {
     const dx = i % rows
     const dy = ~~(i / rows)
     bindings[`midi.${i}`] = {
