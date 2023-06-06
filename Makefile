@@ -23,7 +23,7 @@ package := ./package.json
 builddir ?= ./dist
 version ?= $(shell jq -r .version package.json)
 
-scriptFiles = $(shell find . -name 'controller.json' -or -name '*.ts' -not -path "*/dist/*" -not -path "*/node_modules/*")
+scriptFiles = $(shell find . -name 'controller.json' -or -name '*.ts' -not -path "*/dist/*" -not -path "*/node_modules/*" | xargs)
 mappingFiles = $(package) packages/$(1)/controller.json scripts/template.xml.ejs
 
 targets := $(shell jq -r '.controllers | join (" ")' package.json)
