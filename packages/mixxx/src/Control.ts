@@ -443,6 +443,11 @@ export const setValue = (control: ControlDef, value: number): void => {
 export const softTakeover = (control: ControlDef, enable: boolean): void => {
   return engine.softTakeover(control.group, control.name, enable)
 }
+
+export const softTakeOverIgnoreNextValue = (control: ControlDef): void => {
+  return engine.softTakeoverIgnoreNextValue(control.group, control.name)
+}
+
 export type ControlHandle = Connection
 
 export type ControlMessage = {
@@ -481,7 +486,6 @@ export class ControlComponent extends Component {
         this.emit('update', data)
       })
       if (this._softTakeover != null) {
-        console.log('softTakeover', this.control, this._softTakeover)
         softTakeover(this.control, this._softTakeover)
       }
       const initialMessage = {
@@ -494,6 +498,9 @@ export class ControlComponent extends Component {
 
   onUnmount() {
     if (this._handle) {
+      if (this._softTakeover != null) {
+        softTakeOverIgnoreNextValue(this.control)
+      }
       disconnect(this._handle)
       this._handle = null
     }
