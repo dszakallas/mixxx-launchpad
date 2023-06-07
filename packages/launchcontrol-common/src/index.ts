@@ -1,6 +1,6 @@
-import { range, array, map, forEach } from '@mixxx-launch/common'
-import { channelControlDefs, setValue, Component, ControlComponent, MidiComponent, MidiControlDef, MidiDevice, MidiMessage, absoluteNonLin, sendShortMsg, sendSysexMsg } from "@mixxx-launch/mixxx"
-import { ControlMessage, createEffectDef, createEffectParameterDef, createEffectRackDef, createEffectUnitChannelDef, createEffectUnitDef, EffectDef, EffectKey, EffectParameterDef, EffectRackKey, EffectUnitKey, formatControlDef, getValue, numDecks as mixxxNumDecks, numEqualizerRacks, RackName } from "@mixxx-launch/mixxx/src/Control"
+import { array, chain, forEach, iota, map, range, zip } from '@mixxx-launch/common'
+import { absoluteNonLin, channelControlDefs, Component, ControlComponent, MidiComponent, MidiControlDef, MidiDevice, MidiMessage, sendShortMsg, sendSysexMsg, setValue } from "@mixxx-launch/mixxx"
+import { ControlMessage, createEffectDef, createEffectParameterDef, createEffectRackDef, createEffectUnitChannelDef, createEffectUnitDef, EffectDef, EffectParameterDef, getValue, numDecks as mixxxNumDecks, numEqualizerRacks, numQuickEffectRacks, RackName } from "@mixxx-launch/mixxx/src/Control"
 
 export enum Eq3Channel {
   Low,
@@ -33,6 +33,28 @@ export const equalizerParamDefs = array(map((i: number) => {
   }, range(mixxxNumDecks)))
 }, range(numEqualizerRacks)))
 
+
+export const quickEffectUnitDefs = array(map((i: number) => {
+  return array(map((j: number) => {
+    return createEffectUnitDef(`QuickEffectRack${i + 1}`, `[Channel${j + 1}]`)
+  }, range(mixxxNumDecks)))
+}, range(numQuickEffectRacks)))
+
+
+export const effectDefs = array(map((i: number) => {
+  return array(map((j: number) => {
+    return array(map((k: number) => {
+      return createEffectDef(`EffectRack${i + 1}`, `[EffectUnit${j + 1}]`, `Effect${k + 1}`)
+    }, range(3)))
+  }, range(4)))
+}, range(numQuickEffectRacks)))
+
+
+export const effectUnitDefs = array(map((i: number) => {
+  return array(map((j: number) => {
+    return createEffectUnitDef(`EffectRack${i + 1}`, `[EffectUnit${j + 1}`)
+  }, range(4)))
+}, range(numQuickEffectRacks)))
 
 export const eq3 = (deck: number, col: number) => {
   return [
@@ -129,90 +151,180 @@ const defaultVerticalGroupParams: VerticalGroupParams = {
 const makeEq3 = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
   const children: Component[] = []
 
-    const colorMap = {
-      [Eq3Channel.High]: device.colors.lo_red,
-      [Eq3Channel.Mid]: device.colors.lo_yellow,
-      [Eq3Channel.Low]: device.colors.lo_green,
+  const colorMap = {
+    [Eq3Channel.High]: device.colors.lo_red,
+    [Eq3Channel.Mid]: device.colors.lo_yellow,
+    [Eq3Channel.Low]: device.colors.lo_green,
+  }
+
+  for (const i of range(numDecks)) {
+    const col = i + columnOffset
+    const eqs = eq3(col, col)
+    for (const [midi, cd] of eqs) {
+      const control = controlIndex[cd.type](cd.params.channel, cd.params.deck, cd.params.parameter)
+      const controlComponent = new ControlComponent(control, true)
+      children.push(controlComponent)
+
+      const midiControl = device.controls[`${template}.${midi}`]
+      const midiControlLed = device.controls[`${template}.${midi.replace('knob', 'led')}`]
+      const midiComponent = new MidiComponent(device, midiControl)
+      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
+        setValue(control, absoluteNonLin(value, 0, 1, 4))
+      })
+      midiComponent.addListener('mount', () => {
+        sendShortMsg(midiControlLed, colorMap[cd.params.channel])
+      })
+      children.push(midiComponent)
     }
+  }
 
-    forEach((i) => {
-      const col = i + columnOffset
-      const eqs = eq3(col, col)
-      for (const [midi, cd] of eqs) {
-        const control = controlIndex[cd.type](cd.params.channel, cd.params.deck, cd.params.parameter)
-        const controlComponent = new ControlComponent(control, true)
-        children.push(controlComponent)
-
-        const midiControl = device.controls[`${template}.${midi}`]
-        const midiControlLed = device.controls[`${template}.${midi.replace('knob', 'led')}`]
-        const midiComponent = new MidiComponent(device, midiControl)
-        midiComponent.addListener('midi', ({value}: MidiMessage) => {
-          setValue(control, absoluteNonLin(value, 0, 1, 4))
-        })
-        midiComponent.addListener('mount', () => {
-          sendShortMsg(midiControlLed, colorMap[cd.params.channel])
-        })
-        children.push(midiComponent)
-      }
-    }, range(4))
   return children
 }
 
 const makeGain = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
   const children: Component[] = []
-    forEach((i) => {
-      const col = i + columnOffset
-      const gains = gain(col, col)
 
-      for (const [midi, cd] of gains) {
-        const control = controlIndex[cd.type](cd.params.deck)
+  for (const i of range(4)) {
+    const col = i + columnOffset
+    const gains = gain(col, col)
 
-        const controlComponent = new ControlComponent(control, true)
+    for (const [midi, cd] of gains) {
+      const control = controlIndex[cd.type](cd.params.deck)
 
-        children.push(controlComponent)
+      const controlComponent = new ControlComponent(control, true)
 
-        const midiControl = device.controls[`${template}.${midi}`]
+      children.push(controlComponent)
 
-        const midiComponent = new MidiComponent(device, midiControl)
+      const midiControl = device.controls[`${template}.${midi}`]
 
-        midiComponent.addListener('midi', ({value}: MidiMessage) => {
-          setValue(control, value / 127)
-        })
+      const midiComponent = new MidiComponent(device, midiControl)
 
-        children.push(midiComponent)
-      }
-    }, range(4))
+      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
+        setValue(control, value / 127)
+      })
+
+      children.push(midiComponent)
+    }
+  }
   return children
 }
 
 const makeEffectSelector = (template: number) => (device: LaunchControlDevice): Component[] => {
   const children: Component[] = []
 
-
-  forEach((i) => {
+  for (const i of range(4)) {
     const row = ~~(i / 2)
     const col = i % 2
-    forEach((j) => {
+    for (const j of range(4)) {
       console.log(`${template}.pad.${row}.${(col * 4) + j}.on`)
       const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
 
       const midiComponent = new MidiComponent(device, midiControl)
       const control = createEffectUnitChannelDef(
-        "EffectRack1", `EffectUnit${j+1}`, `Channel${i+1}`,
+        "EffectRack1", `EffectUnit${j + 1}`, `Channel${i + 1}`,
       ).enable
       const controlComponent = new ControlComponent(control)
       children.push(controlComponent)
-      controlComponent.addListener('update', ({value}: ControlMessage) => {
+      controlComponent.addListener('update', ({ value }: ControlMessage) => {
         sendShortMsg(midiControl, value ? device.colors.hi_green : device.colors.black)
       })
-      midiComponent.addListener('midi', ({value}: MidiMessage) => {
+      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         if (value) {
           setValue(control, 1 - getValue(control))
         }
       })
       children.push(midiComponent)
-    }, range(4))
-  }, range(4))
+    }
+  }
+
+  return children
+}
+
+const makeKillers = (template: number) => (device: LaunchControlDevice): Component[] => {
+  const children: Component[] = []
+
+  for (const i of range(4)) {
+    const row = ~~(i / 2)
+    const col = i % 2
+
+    const controls = chain(
+      map(j => equalizerParamDefs[0][i][0][2 - j].button_value, range(3)),
+      [quickEffectUnitDefs[0][i].enabled],
+    )
+    for (const [i, control] of zip(iota(), controls)) {
+      const controlComponent = new ControlComponent(control)
+      controlComponent.addListener('update', ({ value }: ControlMessage) => {
+        sendShortMsg(midiControl, value ? device.colors.hi_red : device.colors.black)
+      })
+      children.push(controlComponent)
+
+      const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + i}.on`]
+      const midiComponent = new MidiComponent(device, midiControl)
+      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
+        if (value) {
+          setValue(control, 1 - getValue(control))
+        }
+      })
+      children.push(midiComponent)
+    }
+  }
+  return children
+}
+
+const makeEffectSuper = (template: number) => (device: LaunchControlDevice): Component[] => {
+  const children: Component[] = []
+
+
+  const colors = [
+    device.colors.hi_red,
+    device.colors.hi_yellow,
+    device.colors.hi_green,
+    device.colors.hi_amber,
+  ] 
+
+  for (const i of range(4)) {
+    for (const j of range(3)) {
+      const effect = createEffectDef(`EffectRack1`, `EffectUnit${i + 1}`, `Effect${j + 1}`)
+      const meta = new ControlComponent(effect.meta, true)
+      children.push(meta)
+
+      const midiControlLed = device.controls[`${template}.led.${j}.${i}`]
+      const enabled = new ControlComponent(effect.enabled)
+      enabled.addListener('update', ({ value }: ControlMessage) => {
+        sendShortMsg(midiControlLed, value ? colors[i % 4] : device.colors.black)
+      })
+
+      children.push(enabled)
+
+
+      const midiControl = device.controls[`${template}.knob.${j}.${i}`]
+      const midiComponent = new MidiComponent(device, midiControl)
+      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
+        setValue(effect.meta, value / 127)
+      })
+      children.push(midiComponent)
+
+
+
+
+    }
+
+    // FIXME separate
+    const effectUnit = createEffectUnitDef(`EffectRack1`, `EffectUnit${i + 1}`)
+    const mix = new ControlComponent(effectUnit.mix, true)
+    children.push(mix)
+
+    const midiControl = device.controls[`${template}.fader.0.${i}`]
+
+    const midiComponent = new MidiComponent(device, midiControl)
+    midiComponent.addListener('midi', ({ value }: MidiMessage) => {
+      setValue(effectUnit.mix, value / 127)
+    })
+    children.push(midiComponent)
+
+
+  }
+
   return children
 }
 
@@ -302,7 +414,6 @@ class EffectComponent extends Component {
     for (const midiComponent of this.midiComponents) {
       midiComponent.mount()
     }
-
   }
 
   onUnmount() {
@@ -325,7 +436,6 @@ const makeEffectUnit = (template: number, unit: number) => (device: LaunchContro
   }, range(3))
 
   return children
-
 }
 
 const makeApp = (device: LaunchControlDevice) => {
@@ -342,10 +452,16 @@ const makeApp = (device: LaunchControlDevice) => {
         children.push(eqs)
         const gains = makeComponent(makeGain({template, columnOffset: 0, numDecks: mixxxNumDecks}))(device)
         children.push(gains)
+        const killers = makeComponent(makeKillers(template))(device)
+        children.push(killers)
+        break
+      case 1:
+        const effectSuper = makeComponent(makeEffectSuper(template))(device)
+        children.push(effectSuper)
         const effectSelectors = makeComponent(makeEffectSelector(template))(device)
         children.push(effectSelectors)
         break
-      case 1:
+      case 2:
         const fxunit = makeComponent(makeEffectUnit(template, 0))(device)
         children.push(fxunit)
         break

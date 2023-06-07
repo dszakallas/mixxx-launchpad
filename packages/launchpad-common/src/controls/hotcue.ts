@@ -66,7 +66,7 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosi
       }
     }
   const bindings: { [k: string]: any } = {}
-  forEach((i) => {
+  for (const i of range(cues)) {
     const dx = i % rows
     const dy = ~~(i / rows)
     bindings[`midi.${i}`] = {
@@ -84,7 +84,8 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0 }, gridPosi
       target: deck.hotcues[1 + i + start].color,
       update: onHotcueColorChanged(i),
     }
-  }, range(cues))
+  }
+
   return {
     bindings,
     state: {},

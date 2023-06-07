@@ -374,6 +374,7 @@ export const createEffectRackDef = (rack: RackName): EffectRackDef => ({
 })
 
 export const numEqualizerRacks = 1 as const
+export const numQuickEffectRacks = 1 as const
 
 export type EffectUnitName = string
 

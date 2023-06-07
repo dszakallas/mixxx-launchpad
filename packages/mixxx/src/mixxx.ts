@@ -14,6 +14,7 @@ export type Engine = {
   stopTimer(handle: number): void
   makeConnection(group: string, name: string, callback: ControlCallback): Connection
   softTakeover(group: string, name: string, value: boolean): void
+  softTakeOverIgnoreNextValue(group: string, name: string): void
 }
 
 export type Midi = {
