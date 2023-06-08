@@ -44,7 +44,7 @@ export const quickEffectUnitDefs = array(map((i: number) => {
 export const effectDefs = array(map((i: number) => {
   return array(map((j: number) => {
     return array(map((k: number) => {
-      return createEffectDef(`EffectRack${i + 1}`, `[EffectUnit${j + 1}]`, `Effect${k + 1}`)
+      return createEffectDef(`EffectRack${i + 1}`, `EffectUnit${j + 1}`, `Effect${k + 1}`)
     }, range(3)))
   }, range(4)))
 }, range(numQuickEffectRacks)))
@@ -52,7 +52,7 @@ export const effectDefs = array(map((i: number) => {
 
 export const effectUnitDefs = array(map((i: number) => {
   return array(map((j: number) => {
-    return createEffectUnitDef(`EffectRack${i + 1}`, `[EffectUnit${j + 1}`)
+    return createEffectUnitDef(`EffectRack${i + 1}`, `EffectUnit${j + 1}`)
   }, range(4)))
 }, range(numQuickEffectRacks)))
 
@@ -148,14 +148,17 @@ const defaultVerticalGroupParams: VerticalGroupParams = {
 }
 
 
+
+
 const makeEq3 = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
   const children: Component[] = []
 
-  const colorMap = {
-    [Eq3Channel.High]: device.colors.lo_red,
-    [Eq3Channel.Mid]: device.colors.lo_yellow,
-    [Eq3Channel.Low]: device.colors.lo_green,
-  }
+  const channelColorPalette = [
+    device.colors.hi_red,
+    device.colors.hi_yellow,
+    device.colors.hi_green,
+    device.colors.hi_amber,
+  ] 
 
   for (const i of range(numDecks)) {
     const col = i + columnOffset
@@ -172,7 +175,7 @@ const makeEq3 = ({ template, columnOffset, numDecks }: VerticalGroupParams = def
         setValue(control, absoluteNonLin(value, 0, 1, 4))
       })
       midiComponent.addListener('mount', () => {
-        sendShortMsg(midiControlLed, colorMap[cd.params.channel])
+        sendShortMsg(midiControlLed, channelColorPalette[i % 4])
       })
       children.push(midiComponent)
     }
@@ -216,7 +219,6 @@ const makeEffectSelector = (template: number) => (device: LaunchControlDevice): 
     const row = ~~(i / 2)
     const col = i % 2
     for (const j of range(4)) {
-      console.log(`${template}.pad.${row}.${(col * 4) + j}.on`)
       const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
 
       const midiComponent = new MidiComponent(device, midiControl)
@@ -226,7 +228,7 @@ const makeEffectSelector = (template: number) => (device: LaunchControlDevice): 
       const controlComponent = new ControlComponent(control)
       children.push(controlComponent)
       controlComponent.addListener('update', ({ value }: ControlMessage) => {
-        sendShortMsg(midiControl, value ? device.colors.hi_green : device.colors.black)
+        sendShortMsg(midiControl, value ? device.colors.hi_yellow : device.colors.black)
       })
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         if (value) {
@@ -247,82 +249,112 @@ const makeKillers = (template: number) => (device: LaunchControlDevice): Compone
     const row = ~~(i / 2)
     const col = i % 2
 
-    const controls = chain(
-      map(j => equalizerParamDefs[0][i][0][2 - j].button_value, range(3)),
-      [quickEffectUnitDefs[0][i].enabled],
-    )
-    for (const [i, control] of zip(iota(), controls)) {
-      const controlComponent = new ControlComponent(control)
-      controlComponent.addListener('update', ({ value }: ControlMessage) => {
-        sendShortMsg(midiControl, value ? device.colors.hi_red : device.colors.black)
-      })
-      children.push(controlComponent)
+    const controls = [
+      ...map(j => equalizerParamDefs[0][i][0][2 - j].button_value, range(3)),
+      quickEffectUnitDefs[0][i].enabled
+    ]
 
-      const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + i}.on`]
+    controls.forEach((control, j) => {
+      const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
       const midiComponent = new MidiComponent(device, midiControl)
+
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         if (value) {
           setValue(control, 1 - getValue(control))
         }
       })
       children.push(midiComponent)
-    }
+
+      const controlComponent = new ControlComponent(control)
+      
+      controlComponent.addListener('update', ({ value }: ControlMessage) => {
+        sendShortMsg(midiControl, value ? device.colors.hi_red : device.colors.black)
+      })
+      children.push(controlComponent)
+
+    })
   }
   return children
 }
 
-const makeEffectSuper = (template: number) => (device: LaunchControlDevice): Component[] => {
+const makeEnablers = (template: number) => (device: LaunchControlDevice): Component[] => {
   const children: Component[] = []
 
+  // for (const i of range(4)) {
+  //   const row = ~~(i / 2)
+  //   const col = i % 2
+  //   const controls = array(map(j => effectDefs[0][i][j].enabled, range(3)))
+  //   controls.forEach((control, j) => {
+  //     const controlComponent = new ControlComponent(control)
+  //     controlComponent.addListener('update', ({ value }: ControlMessage) => {
+  //       sendShortMsg(midiControl, value ? device.colors.hi_green : device.colors.black)
+  //     })
+  //     children.push(controlComponent)
 
-  const colors = [
+  //     const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + i}.on`]
+  //     const midiComponent = new MidiComponent(device, midiControl)
+  //     midiComponent.addListener('midi', ({ value }: MidiMessage) => {
+  //       if (value) {
+  //         setValue(control, 1 - getValue(control))
+  //       }
+  //     })
+  //     children.push(midiComponent)
+  //   })
+  // }
+  return children
+}
+
+
+const makeEffectSuper = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
+  const children: Component[] = []
+
+  const channelColorPalette = [
     device.colors.hi_red,
     device.colors.hi_yellow,
     device.colors.hi_green,
     device.colors.hi_amber,
   ] 
 
-  for (const i of range(4)) {
+  for (const i of range(numDecks)) {
     for (const j of range(3)) {
       const effect = createEffectDef(`EffectRack1`, `EffectUnit${i + 1}`, `Effect${j + 1}`)
       const meta = new ControlComponent(effect.meta, true)
       children.push(meta)
 
-      const midiControlLed = device.controls[`${template}.led.${j}.${i}`]
+      const midiControlLed = device.controls[`${template}.led.${j}.${i + columnOffset}`]
       const enabled = new ControlComponent(effect.enabled)
       enabled.addListener('update', ({ value }: ControlMessage) => {
-        sendShortMsg(midiControlLed, value ? colors[i % 4] : device.colors.black)
+        sendShortMsg(midiControlLed, value ? channelColorPalette[i % 4] : device.colors.black)
       })
 
       children.push(enabled)
 
-
-      const midiControl = device.controls[`${template}.knob.${j}.${i}`]
+      const midiControl = device.controls[`${template}.knob.${j}.${i + columnOffset}`]
       const midiComponent = new MidiComponent(device, midiControl)
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         setValue(effect.meta, value / 127)
       })
       children.push(midiComponent)
-
-
-
-
     }
+  }
 
-    // FIXME separate
+  return children
+}
+
+const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
+  const children: Component[] = []
+  for (const i of range(numDecks)) {
     const effectUnit = createEffectUnitDef(`EffectRack1`, `EffectUnit${i + 1}`)
     const mix = new ControlComponent(effectUnit.mix, true)
     children.push(mix)
 
-    const midiControl = device.controls[`${template}.fader.0.${i}`]
+    const midiControl = device.controls[`${template}.fader.0.${i + columnOffset}`]
 
     const midiComponent = new MidiComponent(device, midiControl)
     midiComponent.addListener('midi', ({ value }: MidiMessage) => {
       setValue(effectUnit.mix, value / 127)
     })
     children.push(midiComponent)
-
-
   }
 
   return children
@@ -427,6 +459,8 @@ class EffectComponent extends Component {
   
 }
 
+type MakeCompositeComponent = (template: number) => (device: LaunchControlDevice) => Component[]
+
 const makeEffectUnit = (template: number, unit: number) => (device: LaunchControlDevice): Component[] => {
   const children: Component[] = []
 
@@ -438,37 +472,183 @@ const makeEffectUnit = (template: number, unit: number) => (device: LaunchContro
   return children
 }
 
+const makeEqPage = (template: number) => (device: LaunchControlDevice) => {
+  const children: Component[] = []
+  const eqs = makeComponent(makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks }))(device)
+  children.push(eqs)
+  const gains = makeComponent(makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks }))(device)
+  children.push(gains)
+  return children
+}
+
+type MakePage = (template: number) => (device: LaunchControlDevice) => Component[]
+
+const makeKitchenSinkPage = (template: number) => (device: LaunchControlDevice) => {
+  const children: Component[] = []
+  const eqs = makeComponent(makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks }))(device)
+  children.push(eqs)
+  const effectSuper = makeComponent(makeEffectSuper({ template, columnOffset: 4, numDecks: mixxxNumDecks }))(device)
+  children.push(effectSuper)
+  const gains = makeComponent(makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks }))(device)
+  children.push(gains)
+  const effectMixes = makeComponent(makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks }))(device)
+  children.push(effectMixes)
+  const killers = makeComponent(makeKillers(template))(device)
+  children.push(killers)
+  return children
+}
+
+class Pager extends Component {
+  template: number
+  repeat: number
+  page: Component | null
+
+  constructor(device: LaunchControlDevice, pages: MakePage[], repeat: number = 16) {
+    super()
+    this.template = 0
+    this.repeat = repeat
+    this.page = null
+
+    this.addListener('template', (template: number) => {
+      this.template = template
+      if (this.page != null) {
+        this.page.unmount()
+      }
+      this.page = null
+      if ((template % repeat) < pages.length) {
+        this.page = makeComponent(pages[template % repeat](template))(device)
+      }
+      if (this.page != null) {
+        this.page.mount()
+      }
+    })
+  }
+  onMount() {
+    if (this.page != null) {
+      this.page.mount()
+    }
+  }
+  onUnmount() {
+    if (this.page != null) {
+      this.page.unmount()
+    }
+  }
+}
+
+class PadSelector extends Component {
+  template: number
+  selected: number
+  selectedComponent: Component | null
+  buttonPager: Component
+
+  constructor(device: LaunchControlDevice, pages: [MakePage, MakePage, MakePage], selected: number = 0) {
+    super()
+    this.template = 0
+    this.selected = selected
+    this.selectedComponent = makeComponent(pages[this.selected](this.template))(device)
+    this.addListener('template', (template: number) => {
+      this.buttonPager.emit('template', template)
+      this.template = template
+      if (this.selectedComponent != null) {
+        this.selectedComponent.unmount()
+        this.selectedComponent = makeComponent(pages[this.selected](template))(device)
+        this.selectedComponent.mount()
+      }
+    })
+
+    const makeButtonComponents = (template: number) => (device: LaunchControlDevice) => {
+      const children: Component[] = []
+      const btns = ['mute', 'solo', 'arm']
+      const buttonComponents = btns.map((btn) => 
+        new MidiComponent(device, device.controls[`${template}.${btn}.on`])
+      )
+
+      buttonComponents.forEach((btn, i) => {
+        btn.addListener('mount', () => {
+          sendShortMsg(btn.control, i === this.selected ? device.colors.hi_yellow : device.colors.black)
+        })
+        btn.addListener('midi', ({ value }: MidiMessage) => {
+          if (value) {
+            this.selected = i
+            buttonComponents.forEach((btn, j) => {
+              sendShortMsg(btn.control, j === i ? device.colors.hi_yellow : device.colors.black)
+            })
+            if (this.selectedComponent != null) {
+              this.selectedComponent.unmount()
+              this.selectedComponent = makeComponent(pages[this.selected](this.template))(device)
+              this.selectedComponent.mount()
+            }
+          }
+        })
+      })
+      children.push(...buttonComponents)
+      return children
+    }
+    this.buttonPager = new Pager(device, [makeButtonComponents], 1)
+  }
+  onMount() {
+    if (this.selectedComponent != null) {
+      this.selectedComponent.mount()
+    }
+    this.buttonPager.mount()
+  }
+  onUnmount() {
+    if (this.selectedComponent != null) {
+      this.selectedComponent.unmount()
+    }
+    this.buttonPager.unmount()
+  }
+}
+
+
 const makeApp = (device: LaunchControlDevice) => {
   const children: Component[] = []
+  const pager = new Pager(device, [makeKitchenSinkPage, makeEqPage])
+  children.push(pager)
+
+  const padSelector = new PadSelector(device, [makeKillers, makeEffectSelector, makeEnablers])
+
+  children.push(padSelector)
+
   device.addListener('template', (template: number) => {
-    console.log('template', template)
     for (const child of children) {
-      child.unmount()
+      child.emit('template', template)
     }
-    children.length = 0
-    switch (template) {
-      case 0:
-        const eqs = makeComponent(makeEq3({template, columnOffset: 0, numDecks: mixxxNumDecks}))(device)
-        children.push(eqs)
-        const gains = makeComponent(makeGain({template, columnOffset: 0, numDecks: mixxxNumDecks}))(device)
-        children.push(gains)
-        const killers = makeComponent(makeKillers(template))(device)
-        children.push(killers)
-        break
-      case 1:
-        const effectSuper = makeComponent(makeEffectSuper(template))(device)
-        children.push(effectSuper)
-        const effectSelectors = makeComponent(makeEffectSelector(template))(device)
-        children.push(effectSelectors)
-        break
-      case 2:
-        const fxunit = makeComponent(makeEffectUnit(template, 0))(device)
-        children.push(fxunit)
-        break
-    }
-    for (const child of children) {
-      child.mount()
-    }
+    // for (const child of children) {
+    //   child.unmount()
+    // }
+    // children.length = 0
+    // if (template === 0) {
+    //   const eqs = makeComponent(makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks }))(device)
+    //   children.push(eqs)
+    //   const gains = makeComponent(makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks }))(device)
+    //   children.push(gains)
+    //   // const killers = makeComponent(makeKillers(template))(device)
+    //   // children.push(killers)
+    // } else if (template === 1) {
+    //   const effectSuper = makeComponent(makeEffectSuper({ template, columnOffset: 0, numDecks: mixxxNumDecks }))(device)
+    //   children.push(effectSuper)
+    //   // const effectSelectors = makeComponent(makeEffectSelector(template))(device)
+    //   // children.push(effectSelectors)
+    // } else if (template === 2) {
+    //   const fxunit = makeComponent(makeEffectUnit(template, 0))(device)
+    //   children.push(fxunit)
+    // } else if (template === 3) {
+    //   const eqs = makeComponent(makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks }))(device)
+    //   children.push(eqs)
+    //   const effectSuper = makeComponent(makeEffectSuper({ template, columnOffset: 4, numDecks: mixxxNumDecks }))(device)
+    //   children.push(effectSuper)
+    //   const gains = makeComponent(makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks }))(device)
+    //   children.push(gains)
+    //   const effectMixes = makeComponent(makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks }))(device)
+    //   children.push(effectMixes)
+    //   const killers = makeComponent(makeKillers(template))(device)
+    //   children.push(killers)
+    // }
+
+    // for (const child of children) {
+    //   child.mount()
+    // }
   })
   return children
 }
