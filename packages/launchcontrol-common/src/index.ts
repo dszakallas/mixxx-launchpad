@@ -1,6 +1,6 @@
-import { array, chain, forEach, iota, map, range, zip } from '@mixxx-launch/common'
+import { array, forEach, map, range } from '@mixxx-launch/common'
 import { absoluteNonLin, channelControlDefs, Component, ControlComponent, MidiComponent, MidiControlDef, MidiDevice, MidiMessage, sendShortMsg, sendSysexMsg, setValue } from "@mixxx-launch/mixxx"
-import { ControlMessage, createEffectDef, createEffectParameterDef, createEffectRackDef, createEffectUnitChannelDef, createEffectUnitDef, EffectDef, EffectParameterDef, getValue, numDecks as mixxxNumDecks, numEqualizerRacks, numQuickEffectRacks, RackName } from "@mixxx-launch/mixxx/src/Control"
+import { ControlDef, ControlMessage, createEffectDef, createEffectParameterDef, createEffectRackDef, createEffectUnitChannelDef, createEffectUnitDef, EffectDef, EffectParameterDef, getValue, numDecks as mixxxNumDecks, numEqualizerRacks, numQuickEffectRacks, RackName } from "@mixxx-launch/mixxx/src/Control"
 
 export enum Eq3Channel {
   Low,
@@ -105,6 +105,12 @@ const controlIndex = {
   // }
 }
 
+// type Comp2 = {
+//   control: ControlDef,
+//   handlers: ['midi', (message: MidiMessage) => void][]
+// }
+
+
 const makeComponent = <D extends MidiDevice> (ctor: ((device: D) => Component[])) => (device: D) => {
   return new class extends Component {
     children: Component[]
@@ -131,10 +137,6 @@ const makeComponent = <D extends MidiDevice> (ctor: ((device: D) => Component[])
 }
 
 
-const sendColor = (template: number, index: number, color: number) => {
-  sendSysexMsg([240, 0, 32, 41, 2, 17, 120, template, index, color, 247])
-}
-
 type VerticalGroupParams = {
   template: number,
   columnOffset: number,
@@ -146,8 +148,6 @@ const defaultVerticalGroupParams: VerticalGroupParams = {
   columnOffset: 0,
   numDecks: mixxxNumDecks,
 }
-
-
 
 
 const makeEq3 = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
@@ -212,6 +212,39 @@ const makeGain = ({ template, columnOffset, numDecks }: VerticalGroupParams = de
   return children
 }
 
+
+const makeKillers = (template: number) => (device: LaunchControlDevice): Component[] => {
+  const children: Component[] = []
+
+  for (const i of range(4)) {
+    const row = ~~(i / 2)
+    const col = i % 2
+
+    const controls = [...map(j => equalizerParamDefs[0][i][0][2 - j].button_value, range(3)), quickEffectUnitDefs[0][i].enabled]
+    for (const j of range(4)) {
+      const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
+      const midiComponent = new MidiComponent(device, midiControl)
+
+      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
+        if (value) {
+          setValue(controls[j], 1 - getValue(controls[j]))
+        }
+      })
+      children.push(midiComponent)
+
+      const controlComponent = new ControlComponent(controls[j])
+
+      controlComponent.addListener('update', ({ value }: ControlMessage) => {
+        sendShortMsg(midiControl, value ? device.colors.hi_red : device.colors.black)
+      })
+      children.push(controlComponent)
+      
+    }
+  }
+  return children
+}
+
+
 const makeEffectSelector = (template: number) => (device: LaunchControlDevice): Component[] => {
   const children: Component[] = []
 
@@ -222,85 +255,61 @@ const makeEffectSelector = (template: number) => (device: LaunchControlDevice): 
       const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
 
       const midiComponent = new MidiComponent(device, midiControl)
-      const control = createEffectUnitChannelDef(
-        "EffectRack1", `EffectUnit${j + 1}`, `Channel${i + 1}`,
-      ).enable
-      const controlComponent = new ControlComponent(control)
-      children.push(controlComponent)
-      controlComponent.addListener('update', ({ value }: ControlMessage) => {
-        sendShortMsg(midiControl, value ? device.colors.hi_yellow : device.colors.black)
-      })
+
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         if (value) {
           setValue(control, 1 - getValue(control))
         }
       })
       children.push(midiComponent)
+
+      const control = createEffectUnitChannelDef(
+        "EffectRack1", `EffectUnit${j + 1}`, `Channel${i + 1}`,
+      ).enable
+      const controlComponent = new ControlComponent(control)
+      controlComponent.addListener('update', ({ value }: ControlMessage) => {
+        sendShortMsg(midiControl, value ? device.colors.hi_yellow : device.colors.black)
+      })
+      children.push(controlComponent)
     }
   }
 
   return children
 }
 
-const makeKillers = (template: number) => (device: LaunchControlDevice): Component[] => {
+const makeEnablers = (template: number) => (device: LaunchControlDevice): Component[] => {
   const children: Component[] = []
 
   for (const i of range(4)) {
     const row = ~~(i / 2)
     const col = i % 2
-
-    const controls = [
-      ...map(j => equalizerParamDefs[0][i][0][2 - j].button_value, range(3)),
-      quickEffectUnitDefs[0][i].enabled
-    ]
-
+    const controls = [...map(j => effectDefs[0][i][j].enabled, range(3)), null]
     controls.forEach((control, j) => {
       const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
       const midiComponent = new MidiComponent(device, midiControl)
+
+      children.push(midiComponent)
+      if (!control) {
+        sendShortMsg(midiControl, device.colors.black)
+        midiComponent.addListener('mount', () => {
+          sendShortMsg(midiControl, device.colors.black)
+        })
+        return
+      }
 
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         if (value) {
           setValue(control, 1 - getValue(control))
         }
       })
-      children.push(midiComponent)
-
       const controlComponent = new ControlComponent(control)
-      
       controlComponent.addListener('update', ({ value }: ControlMessage) => {
-        sendShortMsg(midiControl, value ? device.colors.hi_red : device.colors.black)
+        sendShortMsg(midiControl, value ? device.colors.hi_green : device.colors.black)
       })
       children.push(controlComponent)
 
     })
   }
-  return children
-}
-
-const makeEnablers = (template: number) => (device: LaunchControlDevice): Component[] => {
-  const children: Component[] = []
-
-  // for (const i of range(4)) {
-  //   const row = ~~(i / 2)
-  //   const col = i % 2
-  //   const controls = array(map(j => effectDefs[0][i][j].enabled, range(3)))
-  //   controls.forEach((control, j) => {
-  //     const controlComponent = new ControlComponent(control)
-  //     controlComponent.addListener('update', ({ value }: ControlMessage) => {
-  //       sendShortMsg(midiControl, value ? device.colors.hi_green : device.colors.black)
-  //     })
-  //     children.push(controlComponent)
-
-  //     const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + i}.on`]
-  //     const midiComponent = new MidiComponent(device, midiControl)
-  //     midiComponent.addListener('midi', ({ value }: MidiMessage) => {
-  //       if (value) {
-  //         setValue(control, 1 - getValue(control))
-  //       }
-  //     })
-  //     children.push(midiComponent)
-  //   })
-  // }
   return children
 }
 
@@ -459,9 +468,7 @@ class EffectComponent extends Component {
   
 }
 
-type MakeCompositeComponent = (template: number) => (device: LaunchControlDevice) => Component[]
-
-const makeEffectUnit = (template: number, unit: number) => (device: LaunchControlDevice): Component[] => {
+const makeEffectUnit = (unit: number) => (template: number) => (device: LaunchControlDevice): Component[] => {
   const children: Component[] = []
 
   forEach((i) => {
@@ -493,42 +500,49 @@ const makeKitchenSinkPage = (template: number) => (device: LaunchControlDevice) 
   children.push(gains)
   const effectMixes = makeComponent(makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks }))(device)
   children.push(effectMixes)
-  const killers = makeComponent(makeKillers(template))(device)
-  children.push(killers)
   return children
 }
 
 class Pager extends Component {
-  template: number
+  pages: MakePage[]
   repeat: number
+
+  template: number
   page: Component | null
+  device: LaunchControlDevice
 
   constructor(device: LaunchControlDevice, pages: MakePage[], repeat: number = 16) {
     super()
+    this.device = device
+    this.pages = pages
     this.template = 0
     this.repeat = repeat
-    this.page = null
-
-    this.addListener('template', (template: number) => {
-      this.template = template
-      if (this.page != null) {
-        this.page.unmount()
-      }
-      this.page = null
-      if ((template % repeat) < pages.length) {
-        this.page = makeComponent(pages[template % repeat](template))(device)
-      }
-      if (this.page != null) {
-        this.page.mount()
-      }
-    })
+    this.page = makeComponent(pages[0](this.template))(device)
   }
-  onMount() {
+
+  onTemplate(template: number) {
+    this.template = template
+    if (this.page != null) {
+      this.page.unmount()
+    }
+    this.page = null
+    if ((template % this.repeat) < this.pages.length) {
+      this.page = makeComponent(this.pages[template % this.repeat](template))(this.device)
+    }
     if (this.page != null) {
       this.page.mount()
     }
   }
+
+  onMount() {
+    if (this.page != null) {
+      this.page.mount()
+    }
+    this.addListener('template', this.onTemplate.bind(this))
+  }
+
   onUnmount() {
+    this.removeListener('template', this.onTemplate.bind(this))
     if (this.page != null) {
       this.page.unmount()
     }
@@ -540,21 +554,16 @@ class PadSelector extends Component {
   selected: number
   selectedComponent: Component | null
   buttonPager: Component
+  pads: MakePage[]
+  device: LaunchControlDevice
 
-  constructor(device: LaunchControlDevice, pages: [MakePage, MakePage, MakePage], selected: number = 0) {
+  constructor(device: LaunchControlDevice, pads: [MakePage, MakePage, MakePage], selected: number = 0) {
     super()
     this.template = 0
+    this.pads = pads
     this.selected = selected
-    this.selectedComponent = makeComponent(pages[this.selected](this.template))(device)
-    this.addListener('template', (template: number) => {
-      this.buttonPager.emit('template', template)
-      this.template = template
-      if (this.selectedComponent != null) {
-        this.selectedComponent.unmount()
-        this.selectedComponent = makeComponent(pages[this.selected](template))(device)
-        this.selectedComponent.mount()
-      }
-    })
+    this.device = device
+    this.selectedComponent = makeComponent(pads[this.selected](this.template))(device)
 
     const makeButtonComponents = (template: number) => (device: LaunchControlDevice) => {
       const children: Component[] = []
@@ -568,14 +577,14 @@ class PadSelector extends Component {
           sendShortMsg(btn.control, i === this.selected ? device.colors.hi_yellow : device.colors.black)
         })
         btn.addListener('midi', ({ value }: MidiMessage) => {
-          if (value) {
+          if (value && i !== this.selected) {
             this.selected = i
             buttonComponents.forEach((btn, j) => {
               sendShortMsg(btn.control, j === i ? device.colors.hi_yellow : device.colors.black)
             })
             if (this.selectedComponent != null) {
               this.selectedComponent.unmount()
-              this.selectedComponent = makeComponent(pages[this.selected](this.template))(device)
+              this.selectedComponent = makeComponent(pads[this.selected](this.template))(device)
               this.selectedComponent.mount()
             }
           }
@@ -586,13 +595,26 @@ class PadSelector extends Component {
     }
     this.buttonPager = new Pager(device, [makeButtonComponents], 1)
   }
+
+  onTemplate(template: number) {
+    this.template = template
+    this.buttonPager.emit('template', template)
+    if (this.selectedComponent != null) {
+      this.selectedComponent.unmount()
+      this.selectedComponent = makeComponent(this.pads[this.selected](this.template))(this.device)
+      this.selectedComponent.mount()
+    }
+  }
+
   onMount() {
     if (this.selectedComponent != null) {
       this.selectedComponent.mount()
     }
     this.buttonPager.mount()
+    this.addListener('template', this.onTemplate.bind(this))
   }
   onUnmount() {
+    this.removeListener('template', this.onTemplate.bind(this))
     if (this.selectedComponent != null) {
       this.selectedComponent.unmount()
     }
@@ -603,10 +625,10 @@ class PadSelector extends Component {
 
 const makeApp = (device: LaunchControlDevice) => {
   const children: Component[] = []
-  const pager = new Pager(device, [makeKitchenSinkPage, makeEqPage])
+  const pager = new Pager(device, [makeKitchenSinkPage, makeEffectUnit(0)])
   children.push(pager)
 
-  const padSelector = new PadSelector(device, [makeKillers, makeEffectSelector, makeEnablers])
+  const padSelector = new PadSelector(device, [makeEffectSelector, makeKillers, makeEnablers])
 
   children.push(padSelector)
 

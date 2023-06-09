@@ -8,12 +8,6 @@ export const range = function * (n: number): Generator<number> {
   }
 }
 
-export const iota = function * (start: number = 0): Generator<number> {
-  for (let i = start;; i++) {
-    yield i
-  }
-}
-
 export const array = <T>(n: Generator<T>): T[] => [...n]
 
 export const map = function* <T, U>(f: (x: T) => U, n: Generator<T>): Generator<U> {
