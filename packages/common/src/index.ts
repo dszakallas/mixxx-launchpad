@@ -42,3 +42,15 @@ export const chain = function* <T>(...ns: (Generator<T> | Iterable<T>)[]): Gener
     }
   }
 }
+
+export type Lazy<T> = () => T
+
+export const memo = <T>(fn: Lazy<T>): Lazy<T> => {
+  let value: T | null = null
+  return () => {
+    if (value == null) {
+      value = fn()
+    }
+    return value
+  }
+}
