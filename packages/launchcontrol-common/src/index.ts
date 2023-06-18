@@ -1,5 +1,5 @@
 import { array, forEach, Lazy, map, lazy, range } from '@mixxx-launch/common'
-import { absoluteNonLin, channelControlDefs, Component, ControlComponent, MidiComponent, MidiControlDef, MidiDevice, MidiMessage, sendShortMsg, setValue } from "@mixxx-launch/mixxx"
+import { absoluteNonLin, channelControlDefs, Component, ControlComponent, MidiComponent, MidiControlDef, MidiDevice, MidiMessage, sendShortMsg, sendSysexMsg, setValue } from "@mixxx-launch/mixxx"
 import { ControlMessage, createEffectUnitChannelDef, EffectDef, EffectParameterDef, getValue, numDecks as mixxxNumDecks, RackName, root } from "@mixxx-launch/mixxx/src/Control"
 import { LaunchControlDevice } from './device'
 import { Pager } from './pager'
@@ -444,33 +444,147 @@ class EffectComponent extends Component {
   }
 }
 
-const makeEffectUnit = (unit: number) => (device: LaunchControlDevice) => (template: number) => {
-  const children: Component[] = []
+// const sendColor = (template: number, index: number, color: number) => {
+//   sendSysexMsg([...colorChangeSysexPreamble, template, index, color, 247])
+// }
 
-  // const effects = []
+class EffectParameterPage extends Component {
+  private _device: LaunchControlDevice
+  private _template: number
+  private _children: Component[]
+  private _effectUnitSelectors: Component[]
+  private _selectedEffectUnit: number
 
-  // const nextEffectUnit = new MidiComponent(device, device.controls[`${template}.down`])
+  constructor(device: LaunchControlDevice, template: number) {
+    super()
+    this._device = device
+    this._template = template
 
-  // nextEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
-  //   if (value) {
-  //     const nextUnit = (unit + 1) % 4
-  //     forEach((i) => {
-  //       const effectUnit = new EffectComponent(device, template, i, 'EffectRack1', `EffectUnit${nextUnit + 1}`, `Effect${i + 1}`)
-  //       effects.push(effectUnit)
-  //     }, range(3))
-  //   }
-  // })
+    this._children = []
+    this._effectUnitSelectors = []
 
-  // const prevEffectUnit = new MidiComponent(device, device.controls[`${template}.up`])
+    const prevEffectUnit = new MidiComponent(device, device.controls[`${this._template}.up`])
+
+    this._selectedEffectUnit = 0
+
+    const drawPrevLed = () => {
+      if (this._selectedEffectUnit > 0) {
+        sendShortMsg(device.controls[`${this._template}.up`], device.colors.hi_red)
+      } else {
+        sendShortMsg(device.controls[`${this._template}.up`], device.colors.black)
+      }
+    }
+
+    const drawNextLed = () => {
+      if (this._selectedEffectUnit < 3) {
+        sendShortMsg(device.controls[`${this._template}.down`], device.colors.hi_red)
+      } else {
+        sendShortMsg(device.controls[`${this._template}.down`], device.colors.black)
+      }
+    }
+
+    prevEffectUnit.addListener('mount', () => {
+      drawPrevLed()
+    })
+
+    prevEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
+      if (value) {
+        if (this._selectedEffectUnit > 0) {
+          this._selectedEffectUnit -= 1
+          drawPrevLed()
+          drawNextLed()
+          this.changeEffectUnit()
+        }
+      }
+    })
+
+    this._effectUnitSelectors.push(prevEffectUnit)
+
+    const nextEffectUnit = new MidiComponent(device, device.controls[`${this._template}.down`])
+
+    nextEffectUnit.addListener('mount', () => {
+      drawNextLed()
+    })
+
+    nextEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
+      if (value) {
+        if (this._selectedEffectUnit < 3) {
+          this._selectedEffectUnit += 1
+          drawPrevLed()
+          drawNextLed()
+          this.changeEffectUnit()
+        }
+      }
+    })
+
+    this._effectUnitSelectors.push(nextEffectUnit)
+
+    const unit = 0
+
+    forEach((i) => {
+      const component = new EffectComponent(device, this._template, i, root.effectRacks[0].effect_units[unit].effects[i])
+      this._children.push(component)
+    }, range(3))
+  }
+
+  changeEffectUnit() {
+    forEach((i) => {
+      this._children[i].unmount()
+      this._children[i] = new EffectComponent(this._device, this._template, i, root.effectRacks[0].effect_units[this._selectedEffectUnit].effects[i])
+      this._children[i].mount()
+    }, range(3))
+  }
+
+  onMount() {
+    super.onMount()
+    this._children.forEach((child) => child.mount())
+    this._effectUnitSelectors.forEach((child) => child.mount())
+  }
+
+  onUnmount() {
+    this._children.forEach((child) => child.unmount())
+    this._effectUnitSelectors.forEach((child) => child.unmount())
+    super.onUnmount()
+  }}
+
+const makeEffectParameterPage = (device: LaunchControlDevice) => (template: number )=> new EffectParameterPage(device, template)
 
 
-  forEach((i) => {
-    const component = new EffectComponent(device, template, i, root.effectRacks[0].effect_units[unit].effects[i])
-    children.push(component)
-  }, range(3))
+// const makeEffectUnit = (device: LaunchControlDevice) => {
+//   const children: Component[] = []
 
-  return container(children)
-}
+//   // const effects = []
+
+//   // const nextEffectUnit = new MidiComponent(device, device.controls[`${template}.down`])
+
+//   // nextEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
+//   //   if (value) {
+//   //     const nextUnit = (unit + 1) % 4
+//   //     forEach((i) => {
+//   //       const effectUnit = new EffectComponent(device, template, i, 'EffectRack1', `EffectUnit${nextUnit + 1}`, `Effect${i + 1}`)
+//   //       effects.push(effectUnit)
+//   //     }, range(3))
+//   //   }
+//   // })
+
+//   // const prevEffectUnit = new MidiComponent(device, device.controls[`${template}.up`])
+
+//   const prevEffectUnit = new MidiComponent(device, device.controls[`${template}.up`])
+
+//   prevEffectUnit.addListener('mount', ({ value }: MidiMessage) => {
+//     sendShortMsg(device.controls[`${template}.up`], device.colors.hi_red)
+//   })
+
+//   children.push(prevEffectUnit)
+
+
+//   forEach((i) => {
+//     const component = new EffectComponent(device, template, i, root.effectRacks[0].effect_units[unit].effects[i])
+//     children.push(component)
+//   }, range(3))
+
+//   return container(children)
+// }
 
 
 // Template-free listens to template changes and rerenders itself if necessary
@@ -573,7 +687,7 @@ class PadSelector extends Component {
 
 const makeApp = (device: LaunchControlDevice) => {
   const children: Component[] = []
-  const mainPager = new Pager(device, [makeKitchenSinkPage(device), makeEffectUnit(0)(device)], 16)
+  const mainPager = new Pager(device, [makeKitchenSinkPage(device), makeEffectParameterPage(device)], 16)
   children.push(mainPager)
 
   const padPager = new Pager(

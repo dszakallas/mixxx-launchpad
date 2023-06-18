@@ -52,8 +52,6 @@ export abstract class MidiDevice extends Component {
       }
     })
 
-    console.log('handle sysex', this.sysex)
-
     if (this.sysex) {
       _this[sysexCallbackPrefix] = (data: number[]) => { this.emit('sysex', data) }
     }
