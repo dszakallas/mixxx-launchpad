@@ -1,6 +1,8 @@
 import { array, forEach, Lazy, map, lazy, range } from '@mixxx-launch/common'
 import { absoluteNonLin, channelControlDefs, Component, ControlComponent, MidiComponent, MidiControlDef, MidiDevice, MidiMessage, sendShortMsg, setValue } from "@mixxx-launch/mixxx"
 import { ControlMessage, createEffectUnitChannelDef, EffectDef, EffectParameterDef, getValue, numDecks as mixxxNumDecks, RackName, root } from "@mixxx-launch/mixxx/src/Control"
+import { LaunchControlDevice } from './device'
+import { Pager } from './pager'
 
 export enum Eq3Channel {
   Low,
@@ -366,9 +368,9 @@ class EffectComponent extends Component {
   enabledComponent: ControlComponent
   midiComponents: MidiComponent[]
 
-  _device: LaunchControlDevice
-  _params: EffectParameterDef[]
-  _buttonParams: EffectParameterDef[]
+  private _device: LaunchControlDevice
+  private _params: EffectParameterDef[]
+  private _buttonParams: EffectParameterDef[]
  
   constructor(device: LaunchControlDevice, template: number, row: number, effectDef: EffectDef) { 
     super()
@@ -470,8 +472,6 @@ const makeEffectUnit = (unit: number) => (device: LaunchControlDevice) => (templ
   return container(children)
 }
 
-// For a single template
-type MakePage = (template: number) => Component
 
 // Template-free listens to template changes and rerenders itself if necessary
 type MakeTemplateFree = (device: LaunchControlDevice) => Component
@@ -496,52 +496,6 @@ const makeKitchenSinkPage = (device: LaunchControlDevice) => (template: number) 
   const effectMixes = container(makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device))
   children.push(effectMixes)
   return container(children)
-}
-
-class Pager extends Component {
-  pages: Lazy<Component>[]
-  repeat: number
-
-  _selected: number | null
-  _device: LaunchControlDevice
-
-  constructor(device: LaunchControlDevice, pages: MakePage[], repeat: number | null = null) {
-    super()
-    this._device = device
-    this._selected = 0
-    this.repeat = repeat || pages.length 
-    this.pages = pages.map((page, i) => lazy(() => page(i)))
-  }
-
-  onTemplate(template: number) {
-    const newSelected = template % this.repeat < this.pages.length ? template % this.repeat : null
-    if (newSelected !== this._selected) {
-      if (this.mounted && this._selected != null) {
-        this.pages[this._selected].value.unmount()
-      }
-      this._selected = newSelected
-      if (this.mounted && this._selected != null) {
-         this.pages[this._selected].value.mount()
-      }
-    }
-  }
-
-  onMount() {
-    super.onMount()
-    this.onTemplate(this._device.template)
-    if (this._selected != null) {
-      this.pages[this._selected].value.mount()
-    }
-    this._device.addListener('template', this.onTemplate.bind(this))
-  }
-
-  onUnmount() {
-    this._device.removeListener('template', this.onTemplate.bind(this))
-    if (this._selected != null) {
-      this.pages[this._selected].value.unmount()
-    }
-    super.onUnmount()
-  }
 }
 
 class PadSelector extends Component {
@@ -632,45 +586,6 @@ const makeApp = (device: LaunchControlDevice) => {
   return children
 }
 
-export abstract class LaunchControlDevice extends MidiDevice {
-  abstract colors: { [key: string]: number }
-  abstract numTemplates: number
-  sysex: boolean = true
-  template: number = 0
-
-  constructor() {
-    super()
-  }
-
-  abstract resetTemplate(template: number): void
-
-  abstract changeTemplate(template: number): void
-
-  // tries to parse a sysex message and returns the template number if it was a template change message
-  abstract handleTemplateChangeSysex(data: number[]): number | undefined
-
-  handleSysex(data: number[]) {
-    console.log('inbound sysex', data)
-    const template = this.handleTemplateChangeSysex(data)
-    if (template != null) {
-      this.template = template
-      this.emit('template', template)
-    }
-  }
-
-  onMount() {
-    super.onMount()
-    forEach(this.resetTemplate.bind(this), range(this.numTemplates))
-    this.addListener('sysex', this.handleSysex.bind(this))
-    this.changeTemplate(0)
-  }
-
-  onUnmount() {
-    this.removeListener('sysex', this.handleSysex.bind(this));
-    forEach(this.resetTemplate.bind(this), range(this.numTemplates))
-    super.onUnmount()
-  }
-}
 
 export type ControllerControlDef = [number, number];
 
@@ -682,4 +597,6 @@ export const useDevice = (device: LaunchControlDevice) => {
   device.addListener('unmount', app.unmount.bind(app))
   return device
 }
+
+export { LaunchControlDevice }
 

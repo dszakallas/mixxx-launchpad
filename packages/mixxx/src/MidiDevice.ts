@@ -68,8 +68,8 @@ export abstract class MidiDevice extends Component {
 export class MidiComponent extends Component {
   control: MidiControlDef
 
-  _cb: (data: MidiMessage) => void
-  _device: MidiDevice
+  private _cb: (data: MidiMessage) => void
+  private _device: MidiDevice
 
   constructor(device: MidiDevice, control: MidiControlDef) {
     super()
