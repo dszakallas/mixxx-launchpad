@@ -1,60 +1,12 @@
-import { array, forEach, Lazy, map, memo, range } from '@mixxx-launch/common'
-import { absoluteNonLin, channelControlDefs, Component, ControlComponent, MidiComponent, MidiControlDef, MidiDevice, MidiMessage, sendShortMsg, sendSysexMsg, setValue } from "@mixxx-launch/mixxx"
-import { ControlDef, ControlMessage, createEffectDef, createEffectParameterDef, createEffectRackDef, createEffectUnitChannelDef, createEffectUnitDef, EffectDef, EffectParameterDef, getValue, numDecks as mixxxNumDecks, numEqualizerRacks, numQuickEffectRacks, RackName } from "@mixxx-launch/mixxx/src/Control"
+import { array, forEach, Lazy, map, lazy, range } from '@mixxx-launch/common'
+import { absoluteNonLin, channelControlDefs, Component, ControlComponent, MidiComponent, MidiControlDef, MidiDevice, MidiMessage, sendShortMsg, setValue } from "@mixxx-launch/mixxx"
+import { ControlMessage, createEffectUnitChannelDef, EffectDef, EffectParameterDef, getValue, numDecks as mixxxNumDecks, RackName, root } from "@mixxx-launch/mixxx/src/Control"
 
 export enum Eq3Channel {
   Low,
   Mid,
   High,
 }
-
-export const equalizerRackDefs = array(map((i: number) => createEffectRackDef(`EqualizerRack${i + 1}`), range(numEqualizerRacks)))
-
-export const equalizerUnitDefs = array(map((i: number) => {
-  return array(map((j: number) => createEffectUnitDef(`EqualizerRack${i + 1}`, `[Channel${j + 1}]`), range(mixxxNumDecks)))
-}, range(numEqualizerRacks)))
-
-export const numEqualizerEffects = 1 as const
-export const equalizerEffectDefs = array(map((i: number) => {
-  return array(map((j: number) => {
-    return array(map((k: number) => {
-      return createEffectDef(`EqualizerRack${i + 1}`, `[Channel${j + 1}]`, `Effect${k + 1}`)
-    }, range(numEqualizerEffects)))
-  }, range(mixxxNumDecks)))
-}, range(numEqualizerRacks)))
-
-export const equalizerParamDefs = array(map((i: number) => {
-  return array(map((j: number) => {
-    return array(map((k: number) => {
-      return array(map((l: number) => {
-        return createEffectParameterDef(`EqualizerRack${i + 1}`, `[Channel${j + 1}]`, `Effect${k + 1}`, l + 1)
-      }, range(3)))
-    }, range(numEqualizerEffects)))
-  }, range(mixxxNumDecks)))
-}, range(numEqualizerRacks)))
-
-
-export const quickEffectUnitDefs = array(map((i: number) => {
-  return array(map((j: number) => {
-    return createEffectUnitDef(`QuickEffectRack${i + 1}`, `[Channel${j + 1}]`)
-  }, range(mixxxNumDecks)))
-}, range(numQuickEffectRacks)))
-
-
-export const effectDefs = array(map((i: number) => {
-  return array(map((j: number) => {
-    return array(map((k: number) => {
-      return createEffectDef(`EffectRack${i + 1}`, `EffectUnit${j + 1}`, `Effect${k + 1}`)
-    }, range(3)))
-  }, range(4)))
-}, range(numQuickEffectRacks)))
-
-
-export const effectUnitDefs = array(map((i: number) => {
-  return array(map((j: number) => {
-    return createEffectUnitDef(`EffectRack${i + 1}`, `EffectUnit${j + 1}`)
-  }, range(4)))
-}, range(numQuickEffectRacks)))
 
 export const eq3 = (deck: number, col: number) => {
   return [
@@ -91,8 +43,8 @@ export const effectEssentials = (unit: number, col: number) => {
 
 const controlIndex = {
   'eq3': (channel: Eq3Channel, deck: number, parameter: 'value' | 'kill' = 'value') => {
-    return parameter === 'value' ? equalizerParamDefs[0][deck][0][channel].value :
-      equalizerParamDefs[0][deck][0][channel].button_value
+    return parameter === 'value' ? root.equalizerRacks[0].effect_units[deck].effects[0].parameters[channel].value :
+      root.equalizerRacks[0].effect_units[deck].effects[0].parameters[channel].button_value
   },
   'gain': (deck: number) => {
     return channelControlDefs[deck].volume
@@ -220,7 +172,7 @@ const makeKillers = (device: LaunchControlDevice) => (template: number) => {
     const row = ~~(i / 2)
     const col = i % 2
 
-    const controls = [...map(j => equalizerParamDefs[0][i][0][2 - j].button_value, range(3)), quickEffectUnitDefs[0][i].enabled]
+    const controls = [...map(j => root.equalizerRacks[0].effect_units[i].effects[0].parameters[2 - j].button_value, range(3)), root.quickEffectRacks[0].effect_units[i].enabled]
     for (const j of range(4)) {
       const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
       const midiComponent = new MidiComponent(device, midiControl)
@@ -319,7 +271,7 @@ const makeEnablers = (device: LaunchControlDevice) => (template: number) => {
   for (const i of range(4)) {
     const row = ~~(i / 2)
     const col = i % 2
-    const controls = [...map(j => effectDefs[0][i][j].enabled, range(3)), null]
+    const controls = [...map(j => root.effectRacks[0].effect_units[i].effects[j].enabled, range(3)), null]
     controls.forEach((control, j) => {
       const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
       const midiComponent = new MidiComponent(device, midiControl)
@@ -361,7 +313,7 @@ const makeEffectSuper = ({ template, columnOffset, numDecks }: VerticalGroupPara
 
   for (const i of range(numDecks)) {
     for (const j of range(3)) {
-      const effect = createEffectDef(`EffectRack1`, `EffectUnit${i + 1}`, `Effect${j + 1}`)
+      const effect = root.effectRacks[0].effect_units[i].effects[j]
       const meta = new ControlComponent(effect.meta, true)
       children.push(meta)
 
@@ -387,7 +339,7 @@ const makeEffectSuper = ({ template, columnOffset, numDecks }: VerticalGroupPara
 const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
   const children: Component[] = []
   for (const i of range(numDecks)) {
-    const effectUnit = createEffectUnitDef(`EffectRack1`, `EffectUnit${i + 1}`)
+    const effectUnit = root.effectRacks[0].effect_units[i]
     const mix = new ControlComponent(effectUnit.mix, true)
     children.push(mix)
 
@@ -408,10 +360,6 @@ const toEffectKnobRange = (value: number) => {
 }
 
 class EffectComponent extends Component {
-  rack: RackName
-  unit: string
-  effect: string
-
   effectDef: EffectDef
 
   loadedComponent: ControlComponent
@@ -422,12 +370,9 @@ class EffectComponent extends Component {
   _params: EffectParameterDef[]
   _buttonParams: EffectParameterDef[]
  
-  constructor(device: LaunchControlDevice, template: number, row: number, rack: RackName, unit: string, effect: string) { 
+  constructor(device: LaunchControlDevice, template: number, row: number, effectDef: EffectDef) { 
     super()
-    this.rack = rack
-    this.unit = unit
-    this.effect = effect
-    this.effectDef = createEffectDef(rack, unit, effect)
+    this.effectDef = effectDef
 
     this._device = device
     this._params = []
@@ -459,12 +404,8 @@ class EffectComponent extends Component {
   onChange() {
     const numParams = getValue(this.effectDef.num_parameters)
     const numButtonParams = getValue(this.effectDef.num_button_parameters)
-    this._params = array(map((i) => {
-      return createEffectParameterDef(this.rack, this.unit, this.effect, i + 1)
-    }, range(numParams)))
-    this._buttonParams = array(map((i) => {
-      return createEffectParameterDef(this.rack, this.unit, this.effect, i + 1)
-    }, range(numButtonParams)))
+    this._params = array(map((i) => this.effectDef.parameters[i], range(numParams)))
+    this._buttonParams = array(map((i) => this.effectDef.parameters[i], range(numButtonParams)))
 
     forEach((i) => {
       const ledName = this.midiComponents[i].control.name.replace('knob', 'led')
@@ -522,7 +463,7 @@ const makeEffectUnit = (unit: number) => (device: LaunchControlDevice) => (templ
 
 
   forEach((i) => {
-    const component = new EffectComponent(device, template, i, 'EffectRack1', `EffectUnit${unit + 1}`, `Effect${i + 1}`)
+    const component = new EffectComponent(device, template, i, root.effectRacks[0].effect_units[unit].effects[i])
     children.push(component)
   }, range(3))
 
@@ -569,18 +510,18 @@ class Pager extends Component {
     this._device = device
     this._selected = 0
     this.repeat = repeat || pages.length 
-    this.pages = pages.map((page, i) => memo(() => page(i)))
+    this.pages = pages.map((page, i) => lazy(() => page(i)))
   }
 
   onTemplate(template: number) {
     const newSelected = template % this.repeat < this.pages.length ? template % this.repeat : null
     if (newSelected !== this._selected) {
       if (this.mounted && this._selected != null) {
-        this.pages[this._selected]().unmount()
+        this.pages[this._selected].value.unmount()
       }
       this._selected = newSelected
       if (this.mounted && this._selected != null) {
-         this.pages[this._selected]().mount()
+         this.pages[this._selected].value.mount()
       }
     }
   }
@@ -589,7 +530,7 @@ class Pager extends Component {
     super.onMount()
     this.onTemplate(this._device.template)
     if (this._selected != null) {
-      this.pages[this._selected]().mount()
+      this.pages[this._selected].value.mount()
     }
     this._device.addListener('template', this.onTemplate.bind(this))
   }
@@ -597,7 +538,7 @@ class Pager extends Component {
   onUnmount() {
     this._device.removeListener('template', this.onTemplate.bind(this))
     if (this._selected != null) {
-      this.pages[this._selected]().unmount()
+      this.pages[this._selected].value.unmount()
     }
     super.onUnmount()
   }
@@ -614,7 +555,7 @@ class PadSelector extends Component {
     super()
     this._selected = selected
     this._device = device
-    this.pads = pads.map((page) => memo(() => page(device)))
+    this.pads = pads.map((page) => lazy(() => page(device)))
     this._buttonComponents = []
   }
 
@@ -633,9 +574,9 @@ class PadSelector extends Component {
           buttonComponents.forEach((btn, j) => {
             sendShortMsg(btn.control, j === i ? this._device.colors.hi_yellow : this._device.colors.black)
           })
-          this.pads[this._selected]().unmount()
+          this.pads[this._selected].value.unmount()
           this._selected = i
-          this.pads[this._selected]().mount()
+          this.pads[this._selected].value.mount()
         }
       })
     })
@@ -659,7 +600,7 @@ class PadSelector extends Component {
   onMount() {
     super.onMount()
     this.onTemplate(this._device.template)
-    this.pads[this._selected]().mount()
+    this.pads[this._selected].value.mount()
     for (const buttonComponent of this._buttonComponents) {
       buttonComponent.mount()
     }
@@ -671,7 +612,7 @@ class PadSelector extends Component {
     for (const buttonComponent of this._buttonComponents) {
       buttonComponent.unmount()
     }
-    this.pads[this._selected]().unmount()
+    this.pads[this._selected].value.unmount()
     super.onUnmount()
   }
 }

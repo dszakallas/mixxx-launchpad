@@ -4,7 +4,6 @@ import { array, map, range } from '@mixxx-launch/common'
 
 import {
   ChannelControlDef,
-  channelControlDefs,
   Component,
   ControlComponent,
   ControlDef,
@@ -16,7 +15,7 @@ import { LaunchpadDevice } from '.'
 
 import makeControlTemplateIndex, { ControlTypeIndex } from './controls'
 import { default as makeSamplerPad } from './controls/samplerPad'
-import { getValue, masterControlDef, SamplerControlDef, samplerControlDefs } from '@mixxx-launch/mixxx/src/Control'
+import { getValue, root, SamplerControlDef } from '@mixxx-launch/mixxx/src/Control'
 import { Theme } from './App'
 
 export type ControlContext = {
@@ -218,10 +217,11 @@ const makeSamplerPalettePresetTemplate = (
   theme: Theme,
 ) => ({
   controls: array(map((i) => {
+    console.log(root.master.num_samplers)
     const dy = 7 - ~~(i / rows)
     const dx = i % rows
-    return makeSamplerPad({}, tr(gridPosition, [dx, dy]), samplerControlDefs[i + offset], theme)
-  }, range(Math.min(n, getValue(masterControlDef.num_samplers))))),
+    return makeSamplerPad({}, tr(gridPosition, [dx, dy]), root.samplers[i + offset], theme)
+  }, range(Math.min(n, getValue(root.master.num_samplers))))),
 })
 
 export const makePresetTemplate = (
@@ -231,7 +231,7 @@ export const makePresetTemplate = (
   theme: Theme,
 ): PresetTemplate => {
   if (isDeckPresetConf(conf)) {
-    return makeDeckPresetTemplate(conf, gridPosition, channelControlDefs[channel], theme)
+    return makeDeckPresetTemplate(conf, gridPosition, root.channels[channel], theme)
   } else {
     return makeSamplerPalettePresetTemplate(conf, gridPosition, channel, theme)
   }
