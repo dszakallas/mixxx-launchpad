@@ -3,21 +3,23 @@ import { Component } from "@mixxx-launch/mixxx"
 import { LaunchControlDevice } from "./device"
 
 // For a single template
-export type MakePage = (template: number) => Component
+export type MakePage = (template: number) => (device: LaunchControlDevice) => Component
+
+export const makePager = (pages: MakePage[], repeat: number | null = null) => (device: LaunchControlDevice) => new Pager(device, pages, repeat)
 
 export class Pager extends Component {
   pages: Lazy<Component>[]
   repeat: number
 
-  _selected: number | null
-  _device: LaunchControlDevice
+  private _selected: number | null
+  private _device: LaunchControlDevice
 
   constructor(device: LaunchControlDevice, pages: MakePage[], repeat: number | null = null) {
     super()
     this._device = device
     this._selected = 0
     this.repeat = repeat || pages.length 
-    this.pages = pages.map((page, i) => lazy(() => page(i)))
+    this.pages = pages.map((page, i) => lazy(() => page(i)(this._device)))
   }
 
   onTemplate(template: number) {

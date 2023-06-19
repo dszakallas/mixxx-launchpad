@@ -16,6 +16,17 @@ export const map = function* <T, U>(f: (x: T) => U, n: Generator<T>): Generator<
   }
 }
 
+export const flatMap = function* <T, U>(f: (x: T) => Generator<U>, n: Generator<T>): Generator<U> {
+  for (const x of n) {
+    console.log(typeof f)
+    console.log(x)
+    console.log(f(x))
+    for (const y of f(x)) {
+      yield y
+    }
+  }
+}
+
 export const forEach = <T>(f: (x: T) => void, n: Generator<T>): void => {
   for (const x of n) {
     f(x)

@@ -1,8 +1,12 @@
-import { array, forEach, Lazy, map, lazy, range } from '@mixxx-launch/common'
-import { absoluteNonLin, channelControlDefs, Component, ControlComponent, MidiComponent, MidiControlDef, MidiDevice, MidiMessage, sendShortMsg, sendSysexMsg, setValue } from "@mixxx-launch/mixxx"
-import { ControlMessage, createEffectUnitChannelDef, EffectDef, EffectParameterDef, getValue, numDecks as mixxxNumDecks, RackName, root } from "@mixxx-launch/mixxx/src/Control"
+import { map, range } from '@mixxx-launch/common'
+import { absoluteNonLin, channelControlDefs, Component, ControlComponent, MidiComponent, MidiControlDef, MidiMessage, sendShortMsg, setValue } from "@mixxx-launch/mixxx"
+import { ControlMessage, createEffectUnitChannelDef, getValue, numDecks as mixxxNumDecks, root } from "@mixxx-launch/mixxx/src/Control"
 import { LaunchControlDevice } from './device'
-import { Pager } from './pager'
+import { makeEffectParameterPage } from './effectParameter'
+import { makePadSelector } from './padSelector'
+import { MakePage, makePager } from './pager'
+
+export type MakeComponent = (device: LaunchControlDevice) => Component
 
 export enum Eq3Channel {
   Low,
@@ -166,8 +170,7 @@ const makeGain = ({ template, columnOffset, numDecks }: VerticalGroupParams = de
   return children
 }
 
-
-const makeKillers = (device: LaunchControlDevice) => (template: number) => {
+const makeKillers = (template: number) => (device: LaunchControlDevice) => {
   const children: Component[] = []
 
   for (const i of range(4)) {
@@ -199,8 +202,9 @@ const makeKillers = (device: LaunchControlDevice) => (template: number) => {
 }
 
 
-// TODO kind of a mess
-const dummyTemplateFree = (makeContainer: (template: number) => Component) => (device: LaunchControlDevice): Component => {
+// given a MakePage, creates a MakeComponent, which rerenders the page when the template changes
+// by simply reinitializing the page with the new template
+const statelessFreePage = (makePage: MakePage): MakeComponent => (device: LaunchControlDevice): Component => {
   return new class extends Component {
     _device: LaunchControlDevice
     _inner: Component | null
@@ -213,13 +217,13 @@ const dummyTemplateFree = (makeContainer: (template: number) => Component) => (d
     onTemplate(template: number) {
       if (this._inner) {
         this._inner.unmount()
-        this._inner = makeContainer(template)
+        this._inner = makePage(template)(this._device)
         this._inner.mount()
       }
     }
     onMount() {
       super.onMount()
-      this._inner = makeContainer(this._device.template)
+      this._inner = makePage(this._device.template)(this._device)
       this._inner.mount()
       this._device.addListener('template', this.onTemplate.bind(this))
     }
@@ -235,7 +239,7 @@ const dummyTemplateFree = (makeContainer: (template: number) => Component) => (d
   }(device)
 }
 
-const makeEffectSelector = (device: LaunchControlDevice) => (template: number) => {
+const makeEffectSelector = (template: number) => (device: LaunchControlDevice) => {
   const children: Component[] = []
 
   for (const i of range(4)) {
@@ -267,7 +271,7 @@ const makeEffectSelector = (device: LaunchControlDevice) => (template: number) =
   return container(children)
 }
 
-const makeEnablers = (device: LaunchControlDevice) => (template: number) => {
+const makeEnablers = (template: number) => (device: LaunchControlDevice) => {
   const children: Component[] = []
 
   for (const i of range(4)) {
@@ -357,197 +361,6 @@ const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams
   return children
 }
 
-const toEffectKnobRange = (value: number) => {
-  return value / 63.5 - 1
-}
-
-class EffectComponent extends Component {
-  effectDef: EffectDef
-
-  loadedComponent: ControlComponent
-  enabledComponent: ControlComponent
-  midiComponents: MidiComponent[]
-
-  private _device: LaunchControlDevice
-  private _params: EffectParameterDef[]
-  private _buttonParams: EffectParameterDef[]
- 
-  constructor(device: LaunchControlDevice, template: number, row: number, effectDef: EffectDef) { 
-    super()
-    this.effectDef = effectDef
-
-    this._device = device
-    this._params = []
-    this._buttonParams = []
-
-    this.loadedComponent = new ControlComponent(this.effectDef.loaded)
-    this.loadedComponent.addListener('update', this.onChange.bind(this))
-
-    this.enabledComponent = new ControlComponent(this.effectDef.enabled)
-    this.enabledComponent.addListener('update', this.onChange.bind(this))
-
-    this.midiComponents = []
-
-    forEach((i) => {
-      const midiControl = device.controls[`${template}.knob.${row}.${7-i}`]
-      const midiComponent = new MidiComponent(device, midiControl)
-      midiComponent.addListener('midi', ({value}: MidiMessage) => {
-        if (i < this._params.length) {
-          setValue(this._params[i].value, toEffectKnobRange(value))
-        } else if (i < this._params.length + this._buttonParams.length) {
-          setValue(this._buttonParams[i - this._params.length].button_value, Math.round(value - 127))
-        }
-      })
-      this.midiComponents.push(midiComponent)
-    }, range(8))
-    
-  }
-
-  onChange() {
-    const numParams = getValue(this.effectDef.num_parameters)
-    const numButtonParams = getValue(this.effectDef.num_button_parameters)
-    this._params = array(map((i) => this.effectDef.parameters[i], range(numParams)))
-    this._buttonParams = array(map((i) => this.effectDef.parameters[i], range(numButtonParams)))
-
-    forEach((i) => {
-      const ledName = this.midiComponents[i].control.name.replace('knob', 'led')
-      console.log(ledName)
-      const ledControl = this._device.controls[ledName]
-      console.log(ledControl.status, ledControl.midino)
-      console.log(this._device.colors.lo_green)
-      if (i < this._params.length) {
-        sendShortMsg(ledControl, this._device.colors.lo_green)
-      } else if (i < this._params.length + this._buttonParams.length) {
-        sendShortMsg(ledControl, this._device.colors.lo_red)
-      } else {
-        sendShortMsg(ledControl, this._device.colors.black)
-      }
-    }, range(8))
-  }
-
-  onMount() {
-    super.onMount()
-    this.loadedComponent.mount()
-    this.enabledComponent.mount()
-    for (const midiComponent of this.midiComponents) {
-      midiComponent.mount()
-    }
-  }
-
-  onUnmount() {
-    for (const midiComponent of this.midiComponents) {
-      midiComponent.unmount()
-    }
-    this.enabledComponent.unmount()
-    this.loadedComponent.unmount()
-    super.onUnmount()
-  }
-}
-
-// const sendColor = (template: number, index: number, color: number) => {
-//   sendSysexMsg([...colorChangeSysexPreamble, template, index, color, 247])
-// }
-
-class EffectParameterPage extends Component {
-  private _device: LaunchControlDevice
-  private _template: number
-  private _children: Component[]
-  private _effectUnitSelectors: Component[]
-  private _selectedEffectUnit: number
-
-  constructor(device: LaunchControlDevice, template: number) {
-    super()
-    this._device = device
-    this._template = template
-
-    this._children = []
-    this._effectUnitSelectors = []
-
-    const prevEffectUnit = new MidiComponent(device, device.controls[`${this._template}.up`])
-
-    this._selectedEffectUnit = 0
-
-    const drawPrevLed = () => {
-      if (this._selectedEffectUnit > 0) {
-        sendShortMsg(device.controls[`${this._template}.up`], device.colors.hi_red)
-      } else {
-        sendShortMsg(device.controls[`${this._template}.up`], device.colors.black)
-      }
-    }
-
-    const drawNextLed = () => {
-      if (this._selectedEffectUnit < 3) {
-        sendShortMsg(device.controls[`${this._template}.down`], device.colors.hi_red)
-      } else {
-        sendShortMsg(device.controls[`${this._template}.down`], device.colors.black)
-      }
-    }
-
-    prevEffectUnit.addListener('mount', () => {
-      drawPrevLed()
-    })
-
-    prevEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
-      if (value) {
-        if (this._selectedEffectUnit > 0) {
-          this._selectedEffectUnit -= 1
-          drawPrevLed()
-          drawNextLed()
-          this.changeEffectUnit()
-        }
-      }
-    })
-
-    this._effectUnitSelectors.push(prevEffectUnit)
-
-    const nextEffectUnit = new MidiComponent(device, device.controls[`${this._template}.down`])
-
-    nextEffectUnit.addListener('mount', () => {
-      drawNextLed()
-    })
-
-    nextEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
-      if (value) {
-        if (this._selectedEffectUnit < 3) {
-          this._selectedEffectUnit += 1
-          drawPrevLed()
-          drawNextLed()
-          this.changeEffectUnit()
-        }
-      }
-    })
-
-    this._effectUnitSelectors.push(nextEffectUnit)
-
-    const unit = 0
-
-    forEach((i) => {
-      const component = new EffectComponent(device, this._template, i, root.effectRacks[0].effect_units[unit].effects[i])
-      this._children.push(component)
-    }, range(3))
-  }
-
-  changeEffectUnit() {
-    forEach((i) => {
-      this._children[i].unmount()
-      this._children[i] = new EffectComponent(this._device, this._template, i, root.effectRacks[0].effect_units[this._selectedEffectUnit].effects[i])
-      this._children[i].mount()
-    }, range(3))
-  }
-
-  onMount() {
-    super.onMount()
-    this._children.forEach((child) => child.mount())
-    this._effectUnitSelectors.forEach((child) => child.mount())
-  }
-
-  onUnmount() {
-    this._children.forEach((child) => child.unmount())
-    this._effectUnitSelectors.forEach((child) => child.unmount())
-    super.onUnmount()
-  }}
-
-const makeEffectParameterPage = (device: LaunchControlDevice) => (template: number )=> new EffectParameterPage(device, template)
 
 
 // const makeEffectUnit = (device: LaunchControlDevice) => {
@@ -586,127 +399,39 @@ const makeEffectParameterPage = (device: LaunchControlDevice) => (template: numb
 //   return container(children)
 // }
 
+// const makeEqPage = (template: number) => (device: LaunchControlDevice) => {
+//   const children: Component[] = []
+//   const eqs = container(makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device))
+//   children.push(eqs)
+//   const gains = container(makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device))
+//   children.push(gains)
+//   return container(children)
+// }
 
-// Template-free listens to template changes and rerenders itself if necessary
-type MakeTemplateFree = (device: LaunchControlDevice) => Component
+const makeKitchenSinkPage = (template: number) => (device: LaunchControlDevice) => container([
+  ...makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
+  ...makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
+  ...makeEffectSuper({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
+  ...makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
+])
 
-const makeEqPage = (device: LaunchControlDevice) => (template: number) => {
-  const children: Component[] = []
-  const eqs = container(makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device))
-  children.push(eqs)
-  const gains = container(makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device))
-  children.push(gains)
-  return container(children)
-}
-
-const makeKitchenSinkPage = (device: LaunchControlDevice) => (template: number) => {
-  const children: Component[] = []
-  const eqs = container(makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device))
-  children.push(eqs)
-  const effectSuper = container(makeEffectSuper({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device))
-  children.push(effectSuper)
-  const gains = container(makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device))
-  children.push(gains)
-  const effectMixes = container(makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device))
-  children.push(effectMixes)
-  return container(children)
-}
-
-class PadSelector extends Component {
-  pads: Lazy<Component>[]
-
-  _device: LaunchControlDevice
-  _selected: number
-  _buttonComponents: Component[]
-
-  constructor(device: LaunchControlDevice, pads: [MakeTemplateFree, MakeTemplateFree, MakeTemplateFree], selected: number = 0) {
-    super()
-    this._selected = selected
-    this._device = device
-    this.pads = pads.map((page) => lazy(() => page(device)))
-    this._buttonComponents = []
-  }
-
-  assignButtonComponents(template: number) {
-    const btns = ['mute', 'solo', 'arm']
-    const buttonComponents = btns.map((btn) =>
-      new MidiComponent(this._device, this._device.controls[`${template}.${btn}.on`])
-    )
-
-    buttonComponents.forEach((btn, i) => {
-      btn.addListener('mount', () => {
-        sendShortMsg(btn.control, i === this._selected ? this._device.colors.hi_yellow : this._device.colors.black)
-      })
-      btn.addListener('midi', ({ value }: MidiMessage) => {
-        if (value && i !== this._selected) {
-          buttonComponents.forEach((btn, j) => {
-            sendShortMsg(btn.control, j === i ? this._device.colors.hi_yellow : this._device.colors.black)
-          })
-          this.pads[this._selected].value.unmount()
-          this._selected = i
-          this.pads[this._selected].value.mount()
-        }
-      })
-    })
-    this._buttonComponents = buttonComponents
-  }
-
-  onTemplate(template: number) {
-    if (this.mounted) {
-      for (const buttonComponent of this._buttonComponents) {
-        buttonComponent.unmount()
-      }
-    }
-    this.assignButtonComponents(template)
-    if (this.mounted) {
-      for (const buttonComponent of this._buttonComponents) {
-        buttonComponent.mount()
-      }
-    }
-  }
-
-  onMount() {
-    super.onMount()
-    this.onTemplate(this._device.template)
-    this.pads[this._selected].value.mount()
-    for (const buttonComponent of this._buttonComponents) {
-      buttonComponent.mount()
-    }
-    this._device.addListener('template', this.onTemplate.bind(this))
-  }
-
-  onUnmount() {
-    this._device.removeListener('template', this.onTemplate.bind(this))
-    for (const buttonComponent of this._buttonComponents) {
-      buttonComponent.unmount()
-    }
-    this.pads[this._selected].value.unmount()
-    super.onUnmount()
-  }
-}
-
-const makeApp = (device: LaunchControlDevice) => {
-  const children: Component[] = []
-  const mainPager = new Pager(device, [makeKitchenSinkPage(device), makeEffectParameterPage(device)], 16)
-  children.push(mainPager)
-
-  const padPager = new Pager(
-    device,
-    [() => new PadSelector(device, ([makeEffectSelector(device), makeKillers(device), makeEnablers(device)] as const).map(fn => dummyTemplateFree(fn)))],
-  )
-
-  children.push(padPager)
-
-  return children
-}
-
+const makeApp = (device: LaunchControlDevice) => container([
+  makePager([makeKitchenSinkPage, makeEffectParameterPage], 16)(device),
+  makePager(
+    [() => makePadSelector([
+      statelessFreePage(makeEffectSelector),
+      statelessFreePage(makeKillers),
+      statelessFreePage(makeEnablers),
+    ])]
+  )(device),
+])
 
 export type ControllerControlDef = [number, number];
 
 export const convertControlDef = (name: string, [status, midino]: ControllerControlDef): MidiControlDef => ({ name, status, midino })
 
 export const useDevice = (device: LaunchControlDevice) => {
-  const app = container(makeApp(device))
+  const app = makeApp(device)
   device.addListener('mount', app.mount.bind(app))
   device.addListener('unmount', app.unmount.bind(app))
   return device
