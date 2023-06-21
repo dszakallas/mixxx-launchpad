@@ -1,7 +1,8 @@
 import { modes, retainAttackMode } from '../ModifierSidebar'
-import type { ControlMessage, MidiComponent, ControlComponent } from '@mixxx-launch/mixxx'
+import type { ControlMessage, ControlComponent } from '@mixxx-launch/mixxx'
 import { setValue, getValue } from '@mixxx-launch/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
+import { MidiComponent } from '../device'
 
 export type Type = {
   type: 'nudge'

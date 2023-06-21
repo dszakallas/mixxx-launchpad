@@ -1,7 +1,7 @@
-import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-launch/mixxx'
+import type { ControlComponent, ControlMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
-import { LaunchpadDevice } from '../.'
+import { LaunchpadDevice, MidiComponent } from '../device'
 import { modes } from '../ModifierSidebar'
 import { onAttack } from '../util'
 

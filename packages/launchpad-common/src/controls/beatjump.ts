@@ -1,7 +1,8 @@
 import { posMod } from '@mixxx-launch/common'
-import { MidiComponent, setValue } from '@mixxx-launch/mixxx'
+import { setValue } from '@mixxx-launch/mixxx'
 
 import { Control, MakeDeckControlTemplate } from '../Control'
+import { MidiComponent } from '../device'
 import { modes, ModifierState, retainAttackMode } from '../ModifierSidebar'
 
 export type Type = {

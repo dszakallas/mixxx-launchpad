@@ -1,6 +1,6 @@
 import { posMod } from '@mixxx-launch/common'
-import { getValue, MidiComponent, setValue } from '@mixxx-launch/mixxx'
-import { LaunchpadDevice } from '../.'
+import { getValue, setValue } from '@mixxx-launch/mixxx'
+import { LaunchpadDevice, MidiComponent } from '../device'
 import { Control, MakeDeckControlTemplate } from '../Control'
 import { modes, retainAttackMode } from '../ModifierSidebar'
 

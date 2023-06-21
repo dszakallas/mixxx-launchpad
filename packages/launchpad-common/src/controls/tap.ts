@@ -1,9 +1,10 @@
 import { modes } from '../ModifierSidebar'
-import type { ControlComponent, ControlMessage, MidiComponent } from '@mixxx-launch/mixxx'
+import type { ControlComponent, ControlMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
 import Bpm from '../Bpm'
 import { onAttack } from '../util'
+import { MidiComponent } from '../device'
 
 export type Type = {
   type: 'tap'

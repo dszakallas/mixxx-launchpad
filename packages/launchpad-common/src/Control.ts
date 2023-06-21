@@ -8,10 +8,9 @@ import {
   ControlComponent,
   ControlDef,
   ControlMessage,
-  MidiComponent,
   MidiMessage,
 } from '@mixxx-launch/mixxx'
-import { LaunchpadDevice } from '.'
+import { LaunchpadDevice, MidiComponent } from '.'
 
 import makeControlTemplateIndex, { ControlTypeIndex } from './controls'
 import { default as makeSamplerPad } from './controls/samplerPad'
@@ -217,7 +216,6 @@ const makeSamplerPalettePresetTemplate = (
   theme: Theme,
 ) => ({
   controls: array(map((i) => {
-    console.log(root.master.num_samplers)
     const dy = 7 - ~~(i / rows)
     const dx = i % rows
     return makeSamplerPad({}, tr(gridPosition, [dx, dy]), root.samplers[i + offset], theme)

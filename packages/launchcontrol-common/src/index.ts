@@ -63,12 +63,6 @@ const controlIndex = {
   // }
 }
 
-// type Comp2 = {
-//   control: ControlDef,
-//   handlers: ['midi', (message: MidiMessage) => void][]
-// }
-
-
 const container = (children: Component[]) => {
   return new class extends Component {
     children: Component[]

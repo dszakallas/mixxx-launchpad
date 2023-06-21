@@ -1,6 +1,6 @@
-import { playListControlDef, Timer, setValue, Component, MidiComponent } from '@mixxx-launch/mixxx'
+import { playListControlDef, Timer, setValue, Component } from '@mixxx-launch/mixxx'
 import type { MidiMessage, ControlDef } from '@mixxx-launch/mixxx'
-import { LaunchpadDevice } from '.'
+import { LaunchpadDevice, MidiComponent } from '.'
 import { ControlComponent, ControlMessage, getValue, masterControlDef } from '@mixxx-launch/mixxx/src/Control'
 
 const longInterval = 240 as const

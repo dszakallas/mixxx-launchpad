@@ -1,28 +1,37 @@
-import { forEach, range } from "@mixxx-launch/common"
+import { range } from "@mixxx-launch/common"
 import { MidiComponent, MidiDevice } from "@mixxx-launch/mixxx"
 
 export abstract class LaunchControlDevice extends MidiDevice {
   abstract colors: { [key: string]: number }
   abstract numTemplates: number
-  abstract leds: { [key: string]: number }
+
+  // LaunchControl control names follow the pattern "${template}.${controlKey}[.(on|off)]" where the note
+  // part is only used for note on/off controls. LED indexes here only use the controlKey part.
+  // Note that not every control has a LED.
+  abstract leds: { [controlKey: string]: number }
+
   sysex: boolean = true
+
   template: number = 0
 
   constructor() {
     super()
   }
 
+  // Reset the template to the default state, i.e turn off all LEDs.
   abstract resetTemplate(template: number): void
 
+  // Change the current template.
   abstract changeTemplate(template: number): void
 
-  // It is advised to use this method instead of sendShortMsg to send color messages
-  // as it will work regardless of the current template, whereas with sendShortMsg,
-  // messages not matching the current template would be ignored.
+  // This method is intended to send SysEx messages to the light up LEDs,
+  // which should be preferred over sendShortMsg
+  // as it will work regardless of the current template, whereas,
+  // short messages not matching the current template are ignored by the device.
   // This is important especially e.g when turning off a LEDs on a template change.
   abstract sendColor(template: number, ledIndex: number, color: number): void
 
-  // tries to parse a sysex message and returns the template number if it was a template change message
+  // Try to parse a SysEx message and return the template number if it was a template change message
   abstract handleTemplateChangeSysex(data: number[]): number | undefined
 
   handleSysex(data: number[]) {
@@ -35,14 +44,18 @@ export abstract class LaunchControlDevice extends MidiDevice {
 
   onMount() {
     super.onMount()
-    forEach(this.resetTemplate.bind(this), range(this.numTemplates))
+    for (const i of range(this.numTemplates)) {
+      this.resetTemplate(i)
+    }
     this.addListener('sysex', this.handleSysex.bind(this))
     this.changeTemplate(0)
   }
 
   onUnmount() {
-    this.removeListener('sysex', this.handleSysex.bind(this));
-    forEach(this.resetTemplate.bind(this), range(this.numTemplates))
+    this.removeListener('sysex', this.handleSysex.bind(this))
+    for (const i of range(this.numTemplates)) {
+      this.resetTemplate(i)
+    }
     super.onUnmount()
   }
 }

@@ -1,6 +1,7 @@
-import type { MidiComponent, MidiMessage } from '@mixxx-launch/mixxx'
+import type { MidiMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
+import { MidiComponent } from '../device'
 import { modes } from '../ModifierSidebar'
 
 export type Type = {

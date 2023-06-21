@@ -1,8 +1,9 @@
 import { modes } from '../ModifierSidebar'
-import type { MidiComponent, MidiMessage } from '@mixxx-launch/mixxx'
+import type { MidiMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { Control, MakeDeckControlTemplate } from '../Control'
 import { onAttack } from '../util'
+import { MidiComponent } from '../device'
 
 export type Type = {
   type: 'loopjumpSmall'
