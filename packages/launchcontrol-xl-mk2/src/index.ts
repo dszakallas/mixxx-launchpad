@@ -22,9 +22,20 @@ const colors = {
 
 const leds = Object.assign(
   {},
-  // Buggy runtime again :(
-  //Object.fromEntries(array(flatMap((r) => map((c) => [`knob.${c}.${r}`, r * 8 + c], range(8)), range(3)))),
-  //Object.fromEntries(array(flatMap((r) => map((c) => [`button.${c}.${r}`, r * 8 + c + 24], range(8)), range(3)))),
+  Object.fromEntries([...function* () {
+    for (const r of range(3)) {
+      for (const c of range(8)) {
+        yield [`knob.${r}.${c}`, r * 8 + c]
+      }
+    }
+  }()]),
+  Object.fromEntries([...function* () {
+    for (const r of range(3)) {
+      for (const c of range(8)) {
+        yield [`pad.${r}.${c}`, r * 8 + c + 24]
+      }
+    }
+  }()]),
   {
     device: 0x28,
     mute: 0x29,

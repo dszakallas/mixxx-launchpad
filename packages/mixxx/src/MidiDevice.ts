@@ -63,13 +63,13 @@ export abstract class MidiDevice extends Component {
   }
 }
 
-export class MidiComponent extends Component {
+export class MidiComponent<D extends MidiDevice> extends Component {
   control: MidiControlDef
 
   private _cb: (data: MidiMessage) => void
-  private _device: MidiDevice
+  protected _device: D
 
-  constructor(device: MidiDevice, control: MidiControlDef) {
+  constructor(device: D, control: MidiControlDef) {
     super()
     this.control = control
     this._device = device

@@ -1,7 +1,7 @@
 import { lazy, Lazy } from "@mixxx-launch/common"
-import { Component, MidiComponent, MidiMessage, sendShortMsg } from "@mixxx-launch/mixxx"
+import { Component, MidiMessage } from "@mixxx-launch/mixxx"
 import { MakeComponent } from "."
-import { LaunchControlDevice } from "./device"
+import { LaunchControlDevice, LCMidiComponent } from "./device"
 
 export const makePadSelector = (pads: [MakeComponent, MakeComponent, MakeComponent], initialSelection: number = 0) => (device: LaunchControlDevice) => new PadSelector(device, pads, initialSelection)
 
@@ -26,23 +26,27 @@ export default class PadSelector extends Component {
   assignButtonComponents(template: number) {
     const btns = ['mute', 'solo', 'arm']
     const buttonComponents = btns.map((btn) =>
-      new MidiComponent(this._device, this._device.controls[`${template}.${btn}.on`])
+      new LCMidiComponent(this._device, template, btn, 'on')
     )
 
     buttonComponents.forEach((btn, i) => {
       btn.addListener('mount', () => {
-        this._device.sendColor(template, this._device.leds[btns[i]], i === this._selected ? this._device.colors.hi_yellow : this._device.colors.black)
+        this._device.sendColor(template, btn.led, i === this._selected ? this._device.colors.hi_yellow : this._device.colors.black)
       })
       btn.addListener('midi', ({ value }: MidiMessage) => {
         if (value && i !== this._selected) {
           buttonComponents.forEach((btn, j) => {
-            this._device.sendColor(template,  this._device.leds[btns[j]], j === i ? this._device.colors.hi_yellow : this._device.colors.black)
+            this._device.sendColor(template, btn.led, j === i ? this._device.colors.hi_yellow : this._device.colors.black)
           })
           this._pads[this._selected].value.unmount()
           this._selected = i
           this._pads[this._selected].value.mount()
         }
       })
+      // btn.addListener('unmount', () => {
+      //   this._device.sendColor(template, btn.led, this._device.colors.black)
+      // })
+
     })
     this._selectors = buttonComponents
   }

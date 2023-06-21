@@ -1,7 +1,7 @@
 import { array, map, range } from "@mixxx-launch/common"
-import { Component, MidiComponent, MidiMessage, sendShortMsg } from "@mixxx-launch/mixxx"
+import { Component, MidiMessage, sendShortMsg } from "@mixxx-launch/mixxx"
 import { ControlComponent, EffectDef, EffectParameterDef, getValue, root, setValue } from "@mixxx-launch/mixxx/src/Control"
-import { LaunchControlDevice } from "./device"
+import { LaunchControlDevice, LCMidiComponent } from "./device"
 
 const toEffectKnobRange = (value: number) => {
   return value / 63.5 - 1
@@ -12,7 +12,7 @@ class EffectComponent extends Component {
 
   private _loadedComponent: ControlComponent
   private _enabledComponent: ControlComponent
-  private _midiComponents: MidiComponent[]
+  private _midiComponents: LCMidiComponent[]
 
   private _device: LaunchControlDevice
   private _params: EffectParameterDef[]
@@ -35,8 +35,7 @@ class EffectComponent extends Component {
     this._midiComponents = []
 
     for (const i of range(8)) {
-      const midiControl = device.controls[`${template}.knob.${row}.${7 - i}`]
-      const midiComponent = new MidiComponent(device, midiControl)
+      const midiComponent = new LCMidiComponent(device, template, `knob.${row}.${7 - i}`) 
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         if (i < this._params.length) {
           setValue(this._params[i].value, toEffectKnobRange(value))
@@ -100,7 +99,7 @@ export class EffectParameterPage extends Component {
     this._children = []
     this._selectors = []
 
-    const prevEffectUnit = new MidiComponent(device, device.controls[`${this._template}.up`])
+    const prevEffectUnit = new LCMidiComponent(device, this._template, 'up')
 
     this._selectedEffectUnit = 0
 
@@ -137,7 +136,7 @@ export class EffectParameterPage extends Component {
 
     this._selectors.push(prevEffectUnit)
 
-    const nextEffectUnit = new MidiComponent(device, device.controls[`${this._template}.down`])
+    const nextEffectUnit = new LCMidiComponent(device, this._template, 'down')
 
     nextEffectUnit.addListener('mount', () => {
       drawNextLed()

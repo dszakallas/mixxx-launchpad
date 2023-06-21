@@ -1,5 +1,5 @@
 import { forEach, range } from "@mixxx-launch/common"
-import { MidiDevice } from "@mixxx-launch/mixxx"
+import { MidiComponent, MidiDevice } from "@mixxx-launch/mixxx"
 
 export abstract class LaunchControlDevice extends MidiDevice {
   abstract colors: { [key: string]: number }
@@ -45,4 +45,34 @@ export abstract class LaunchControlDevice extends MidiDevice {
     forEach(this.resetTemplate.bind(this), range(this.numTemplates))
     super.onUnmount()
   }
+}
+
+
+// LCMidiComponent stands for LaunchControlMidiComponent and augments MidiComponent with
+// the LaunchControl specific property of having a separate identifier for the LED when targeting with SysEx.
+// The LaunchControl programmer manual suggests sending SysEx messages for lighting LEDs
+// and they have a different MIDI control than their button/knob counterparts.
+// Lighting LEDs with SysEx messages avoids the problem of the LaunchControl ignoring
+// MIDI messages that don't match the current template.
+export class LCMidiComponent extends MidiComponent<LaunchControlDevice> {
+  template: number
+  led: number
+
+
+  // Use the note parameter to listen to note on/off events instead of control change events. This is required for
+  // certain controls like the mute/solo/arm buttons or channel controls. For reference, see the LaunchControl
+  // programmer manual or controller.json.
+  constructor(device: LaunchControlDevice, template: number, controlKey: string, note: "on" | "off" | null = null) {
+    const controlName = note ? `${template}.${controlKey}.${note}` : `${template}.${controlKey}`
+    super(device, device.controls[controlName])
+    this.template = template
+    this.led = device.leds[controlKey]
+  }
+
+  onUnmount() {
+    // This prevents flickering of LEDs when switching templates.
+    this._device.sendColor(this.template, this.led, this._device.colors.black)
+    super.onUnmount()
+  }
+
 }

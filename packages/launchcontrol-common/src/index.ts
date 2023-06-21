@@ -1,7 +1,7 @@
 import { map, range } from '@mixxx-launch/common'
-import { absoluteNonLin, channelControlDefs, Component, ControlComponent, MidiComponent, MidiControlDef, MidiMessage, sendShortMsg, setValue } from "@mixxx-launch/mixxx"
+import { absoluteNonLin, channelControlDefs, Component, ControlComponent, MidiControlDef, MidiMessage, sendShortMsg, setValue } from "@mixxx-launch/mixxx"
 import { ControlMessage, createEffectUnitChannelDef, getValue, numDecks as mixxxNumDecks, root } from "@mixxx-launch/mixxx/src/Control"
-import { LaunchControlDevice } from './device'
+import { LaunchControlDevice, LCMidiComponent } from './device'
 import { makeEffectParameterPage } from './effectParameter'
 import { makePadSelector } from './padSelector'
 import { MakePage, makePager } from './pager'
@@ -126,14 +126,13 @@ const makeEq3 = ({ template, columnOffset, numDecks }: VerticalGroupParams = def
       const controlComponent = new ControlComponent(control, true)
       children.push(controlComponent)
 
-      const midiControl = device.controls[`${template}.${midi}`]
-      const midiControlLed = device.controls[`${template}.${midi.replace('knob', 'led')}`]
-      const midiComponent = new MidiComponent(device, midiControl)
+
+      const midiComponent = new LCMidiComponent(device, template, midi)
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         setValue(control, absoluteNonLin(value, 0, 1, 4))
       })
       midiComponent.addListener('mount', () => {
-        sendShortMsg(midiControlLed, channelColorPalette[i % 4])
+        device.sendColor(template, midiComponent.led, channelColorPalette[i % 4])
       })
       children.push(midiComponent)
     }
@@ -156,9 +155,7 @@ const makeGain = ({ template, columnOffset, numDecks }: VerticalGroupParams = de
 
       children.push(controlComponent)
 
-      const midiControl = device.controls[`${template}.${midi}`]
-
-      const midiComponent = new MidiComponent(device, midiControl)
+      const midiComponent = new LCMidiComponent(device, template, midi)
 
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         setValue(control, value / 127)
@@ -179,8 +176,7 @@ const makeKillers = (template: number) => (device: LaunchControlDevice) => {
 
     const controls = [...map(j => root.equalizerRacks[0].effect_units[i].effects[0].parameters[2 - j].button_value, range(3)), root.quickEffectRacks[0].effect_units[i].enabled]
     for (const j of range(4)) {
-      const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
-      const midiComponent = new MidiComponent(device, midiControl)
+      const midiComponent = new LCMidiComponent(device, template, `pad.${row}.${(col * 4) + j}`, 'on')
 
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         if (value) {
@@ -192,7 +188,7 @@ const makeKillers = (template: number) => (device: LaunchControlDevice) => {
       const controlComponent = new ControlComponent(controls[j])
 
       controlComponent.addListener('update', ({ value }: ControlMessage) => {
-        sendShortMsg(midiControl, value ? device.colors.hi_red : device.colors.black)
+        device.sendColor(template, midiComponent.led, value ? device.colors.hi_red : device.colors.black)
       })
       children.push(controlComponent)
       
@@ -246,9 +242,8 @@ const makeEffectSelector = (template: number) => (device: LaunchControlDevice) =
     const row = ~~(i / 2)
     const col = i % 2
     for (const j of range(4)) {
-      const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
 
-      const midiComponent = new MidiComponent(device, midiControl)
+      const midiComponent = new LCMidiComponent(device, template, `pad.${row}.${(col * 4) + j}`, 'on') 
 
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         if (value) {
@@ -262,7 +257,7 @@ const makeEffectSelector = (template: number) => (device: LaunchControlDevice) =
       ).enable
       const controlComponent = new ControlComponent(control)
       controlComponent.addListener('update', ({ value }: ControlMessage) => {
-        sendShortMsg(midiControl, value ? device.colors.hi_yellow : device.colors.black)
+        device.sendColor(template, midiComponent.led, value ? device.colors.hi_yellow : device.colors.black)
       })
       children.push(controlComponent)
     }
@@ -280,13 +275,13 @@ const makeEnablers = (template: number) => (device: LaunchControlDevice) => {
     const controls = [...map(j => root.effectRacks[0].effect_units[i].effects[j].enabled, range(3)), null]
     controls.forEach((control, j) => {
       const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
-      const midiComponent = new MidiComponent(device, midiControl)
+      const midiComponent = new LCMidiComponent(device, template, `pad.${row}.${(col * 4) + j}`, 'on')
 
       children.push(midiComponent)
       if (!control) {
         sendShortMsg(midiControl, device.colors.black)
         midiComponent.addListener('mount', () => {
-          sendShortMsg(midiControl, device.colors.black)
+          device.sendColor(template, midiComponent.led, device.colors.black)
         })
         return
       }
@@ -298,7 +293,7 @@ const makeEnablers = (template: number) => (device: LaunchControlDevice) => {
       })
       const controlComponent = new ControlComponent(control)
       controlComponent.addListener('update', ({ value }: ControlMessage) => {
-        sendShortMsg(midiControl, value ? device.colors.hi_green : device.colors.black)
+        device.sendColor(template, midiComponent.led, value ? device.colors.hi_green : device.colors.black)
       })
       children.push(controlComponent)
 
@@ -323,20 +318,19 @@ const makeEffectSuper = ({ template, columnOffset, numDecks }: VerticalGroupPara
       const meta = new ControlComponent(effect.meta, true)
       children.push(meta)
 
-      const midiControlLed = device.controls[`${template}.led.${j}.${i + columnOffset}`]
-      const enabled = new ControlComponent(effect.enabled)
-      enabled.addListener('update', ({ value }: ControlMessage) => {
-        sendShortMsg(midiControlLed, value ? channelColorPalette[i % 4] : device.colors.black)
-      })
-
-      children.push(enabled)
-
-      const midiControl = device.controls[`${template}.knob.${j}.${i + columnOffset}`]
-      const midiComponent = new MidiComponent(device, midiControl)
+      const midiComponent = new LCMidiComponent(device, template, `knob.${j}.${i + columnOffset}`)
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         setValue(effect.meta, value / 127)
       })
       children.push(midiComponent)
+
+      const enabled = new ControlComponent(effect.enabled)
+      enabled.addListener('update', ({ value }: ControlMessage) => {
+        device.sendColor(template, midiComponent.led, value ? channelColorPalette[i % 4] : device.colors.black)
+      })
+
+      children.push(enabled)
+
     }
   }
   return children
@@ -349,9 +343,7 @@ const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams
     const mix = new ControlComponent(effectUnit.mix, true)
     children.push(mix)
 
-    const midiControl = device.controls[`${template}.fader.0.${i + columnOffset}`]
-
-    const midiComponent = new MidiComponent(device, midiControl)
+    const midiComponent = new LCMidiComponent(device, template, `fader.0.${ i + columnOffset }`)
     midiComponent.addListener('midi', ({ value }: MidiMessage) => {
       setValue(effectUnit.mix, value / 127)
     })
@@ -368,7 +360,7 @@ const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams
 
 //   // const effects = []
 
-//   // const nextEffectUnit = new MidiComponent(device, device.controls[`${template}.down`])
+//   // const nextEffectUnit = new LCMidiComponent(device, device.controls[`${template}.down`])
 
 //   // nextEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
 //   //   if (value) {
@@ -380,9 +372,9 @@ const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams
 //   //   }
 //   // })
 
-//   // const prevEffectUnit = new MidiComponent(device, device.controls[`${template}.up`])
+//   // const prevEffectUnit = new LCMidiComponent(device, device.controls[`${template}.up`])
 
-//   const prevEffectUnit = new MidiComponent(device, device.controls[`${template}.up`])
+//   const prevEffectUnit = new LCMidiComponent(device, device.controls[`${template}.up`])
 
 //   prevEffectUnit.addListener('mount', ({ value }: MidiMessage) => {
 //     sendShortMsg(device.controls[`${template}.up`], device.colors.hi_red)
