@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-const controls = {}
-
 const range = (n) => [...Array(n).keys()]
 
 const CC = 0xB

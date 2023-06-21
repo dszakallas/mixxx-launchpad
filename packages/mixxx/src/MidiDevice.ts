@@ -16,7 +16,7 @@ export type RawMidiMessageTask = (channel: number, control: number, value: numbe
 export type SysexTask = (data: number[]) => void
 
 const midiCallbackPrefix = '__midi' as const
-// TODO: mixxx currently doesn't support custom names for sysex callback handlers, see https://github.com/mixxxdj/mixxx/issues/11536
+// mixxx currently doesn't support custom names for sysex callback handlers, see https://github.com/mixxxdj/mixxx/issues/11536
 const sysexCallbackPrefix = 'incomingData' as const
 
 type RawMidiMessageTaskRegistry = {

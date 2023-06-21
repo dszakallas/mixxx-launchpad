@@ -138,7 +138,7 @@ const makeEq3 = ({ template, columnOffset, numDecks }: VerticalGroupParams = def
 const makeGain = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
   const children: Component[] = []
 
-  for (const i of range(4)) {
+  for (const i of range(numDecks)) {
     const col = i + columnOffset
     const gains = gain(col, col)
 

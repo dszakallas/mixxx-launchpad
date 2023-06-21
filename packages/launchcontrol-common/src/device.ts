@@ -10,9 +10,9 @@ export abstract class LaunchControlDevice extends MidiDevice {
   // Note that not every control has a LED.
   abstract leds: { [controlKey: string]: number }
 
-  sysex: boolean = true
+  sysex = true
 
-  template: number = 0
+  template = 0
 
   constructor() {
     super()
