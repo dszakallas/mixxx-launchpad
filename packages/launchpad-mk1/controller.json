@@ -1,7 +1,7 @@
 {
   "device": "Launchpad",
   "manufacturer": "Novation",
-  "global": "NL",
+  "global": "NLMK1",
   "controls": {
     "up": [176, 104],
     "down": [176, 105],
