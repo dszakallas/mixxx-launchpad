@@ -12,16 +12,25 @@
   "include": [],
   "references": [
     {
-      "path": "./packages/app"
+      "path": "./packages/common"
     },
     {
-      "path": "./packages/mk2"
+      "path": "./packages/launchcontrol-common"
     },
     {
-      "path": "./packages/mk1"
+      "path": "./packages/launchcontrol-xl-mk2"
     },
     {
-      "path": "./packages/mini-mk3"
+      "path": "./packages/launchpad-common"
+    },
+    {
+      "path": "./packages/launchpad-mk2"
+    },
+    {
+      "path": "./packages/launchpad-mk1"
+    },
+    {
+      "path": "./packages/launchpad-mini-mk3"
     },
     {
       "path": "./packages/mixxx"

@@ -1,6 +1,6 @@
-# mixxx-launchpad
+# mixxx-launch
 
-Flexible and customizable controller mapping for Novation Launchpad family of controllers.
+Flexible and customizable controller mapping for Novation Launch[Pad|Control] family of controllers.
 
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/dszakallas/mixxx-launchpad)](https://github.com/dszakallas/mixxx-launchpad/releases/latest) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/dszakallas/mixxx-launchpad/Test%20&%20Release) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) ![License](https://img.shields.io/github/license/dszakallas/mixxx-launchpad)
 
@@ -23,6 +23,18 @@ Flexible and customizable controller mapping for Novation Launchpad family of co
  - Launchpad Mini Mk3
  - Launchpad Mk2
  - Launchpad Mk1
+ - LaunchControl XL MK2 (experimental)
+ 
+## Controller setup instructions
+
+### Launchpad Mini Mk3
+
+Mini Mk3 has to be put in "Programmer" mode to get MIDI access to all 9x9 instead of only inner 8x8 in "Live" mode. Push and hold "Session" for about a second, "LED" screen shows up, then push "Stop Solo Mute" button, "Programmer" shows up.
+
+### LaunchControl XL MK2
+
+Support is experimental, under active development and any existing mapping may change in future versions. Feedback
+and PRs are welcome.
 
 ## How to get started
 

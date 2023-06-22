@@ -11,3 +11,5 @@ export type { ChannelControlDef, ControlDef, ControlHandle, ControlMessage } fro
 export { MidiComponent, MidiDevice, sendShortMsg, sendSysexMsg } from './MidiDevice'
 export type { MidiControlDef, MidiMessage } from './MidiDevice'
 export { Timer } from './Timer'
+
+export { absoluteNonLin } from './util'

@@ -7,3 +7,4 @@ plugins:
 rules:
   '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }]
   no-warning-comments: warn
+  '@typescript-eslint/no-inferrable-types': 'off'

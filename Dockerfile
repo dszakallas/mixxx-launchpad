@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.4
 ARG WORKDIR=/mixxx-launchpad
 ARG UID=65532
 
@@ -11,11 +12,9 @@ COPY <<-EOF $WORKDIR/.npmrc
   cache=$WORKDIR/.npm
 EOF
 COPY package.json package-lock.json .
-COPY packages/mixxx/package.json packages/mixxx/package.json
-COPY packages/app/package.json packages/app/package.json
-COPY packages/mk1/package.json packages/mk1/package.json
-COPY packages/mk2/package.json packages/mk2/package.json
-COPY packages/mini-mk3/package.json packages/mini-mk3/package.json
+RUN --mount=type=bind,target=/docker-context \
+    cd /docker-context/; \
+    find . -name "package.json" -mindepth 3 -maxdepth 3 -exec cp --parents "{}" $WORKDIR/ \;
 RUN --mount=type=cache,target=$WORKDIR/.npm,uid=$UID npm ci
 
 FROM deps as build

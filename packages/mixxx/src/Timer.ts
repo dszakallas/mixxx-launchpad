@@ -8,7 +8,7 @@ type TimerState = {
 
 export class Timer extends Component {
   task: Action<void>
-  _state: TimerState | null
+  private _state: TimerState | null
 
   constructor(task: Action<void>) {
     super()

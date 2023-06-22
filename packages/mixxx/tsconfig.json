@@ -4,5 +4,12 @@
     "composite": true,
     "outDir": "dist"
   },
-  "include": ["src"],
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "../common"
+    }
+  ]
 }

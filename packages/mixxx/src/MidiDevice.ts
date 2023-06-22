@@ -1,3 +1,4 @@
+import { hexFormat } from '@mixxx-launch/common'
 import Component from './Component'
 
 export type MidiControlDef = {
@@ -12,15 +13,21 @@ export type MidiMessage = {
 }
 
 export type RawMidiMessageTask = (channel: number, control: number, value: number, status: number) => void
+export type SysexTask = (data: number[]) => void
 
-const callbackPrefix = '__midi' as const
+const midiCallbackPrefix = '__midi' as const
+// mixxx currently doesn't support custom names for sysex callback handlers, see https://github.com/mixxxdj/mixxx/issues/11536
+const sysexCallbackPrefix = 'incomingData' as const
 
-type RawMidiMessageTaskRegistry = { [k in `${typeof callbackPrefix}_${string}`]?: RawMidiMessageTask }
-
-const hexFormat = (n: number, d: number) => '0x' + n.toString(16).toUpperCase().padStart(d, '0')
+type RawMidiMessageTaskRegistry = {
+  [k in `${typeof midiCallbackPrefix}_${string}`]?: RawMidiMessageTask
+} & { [sysexCallbackPrefix]: SysexTask }
 
 export abstract class MidiDevice extends Component {
   abstract controls: { [name: string]: MidiControlDef }
+
+  // whether to listen for sysex messages
+  sysex: boolean = false
 
   init() {
     this.mount()
@@ -32,9 +39,9 @@ export abstract class MidiDevice extends Component {
 
   onMount() {
     super.onMount()
+    const _this = this as unknown as RawMidiMessageTaskRegistry
     Object.values(this.controls).forEach((control) => {
-      const _this = this as unknown as RawMidiMessageTaskRegistry
-      _this[`${callbackPrefix}_${hexFormat(control.status, 2)}_${hexFormat(control.midino, 2)}`] = (
+      _this[`${midiCallbackPrefix}_${hexFormat(control.status, 2)}_${hexFormat(control.midino, 2)}`] = (
         _channel,
         _control,
         value,
@@ -44,6 +51,11 @@ export abstract class MidiDevice extends Component {
         this.emit(control.name, message)
       }
     })
+
+    if (this.sysex) {
+      _this[sysexCallbackPrefix] = (data: number[]) => { this.emit('sysex', data) }
+    }
+
   }
 
   onUnmount() {
@@ -51,13 +63,13 @@ export abstract class MidiDevice extends Component {
   }
 }
 
-export class MidiComponent extends Component {
+export class MidiComponent<D extends MidiDevice> extends Component {
   control: MidiControlDef
 
-  _cb: (data: MidiMessage) => void
-  _device: MidiDevice
+  private _cb: (data: MidiMessage) => void
+  protected _device: D
 
-  constructor(device: MidiDevice, control: MidiControlDef) {
+  constructor(device: D, control: MidiControlDef) {
     super()
     this.control = control
     this._device = device

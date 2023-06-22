@@ -3,14 +3,13 @@ import { Action } from './util'
 import Component from './Component'
 
 import type { Connection } from './mixxx'
+import { array, lazy, lazyArray, map, range } from '@mixxx-launch/common'
 
 export type ControlDef = {
   group: string
   name: string
   type: string
 }
-
-const range = (n: number) => [...Array(n).keys()]
 
 export const playListControlDef: { [key: string]: ControlDef } = {
   LoadSelectedIntoFirstStopped: { group: '[Playlist]', name: 'LoadSelectedIntoFirstStopped', type: 'binary' },
@@ -24,14 +23,16 @@ export const playListControlDef: { [key: string]: ControlDef } = {
   AutoDjAddTop: { group: '[Playlist]', name: 'AutoDjAddTop', type: 'binary' },
 }
 
-export type PlayListControlKey = keyof typeof playListControlDef
+export type PlayListControlDef = typeof playListControlDef
+export type PlayListControlKey = keyof PlayListControlDef
 
 export const masterControlDef: { [key: string]: ControlDef } = {
   maximize_library: { group: '[Master]', name: 'maximize_library', type: 'binary' },
   num_samplers: { group: '[Master]', name: 'num_samplers', type: 'number' },
 }
 
-export type MasterControlKey = keyof typeof masterControlDef
+export type MasterControlDef = typeof masterControlDef
+export type MasterControlKey = keyof MasterControlDef
 
 // just enough for samplers
 export type SamplerControlKey =
@@ -48,23 +49,26 @@ export type SamplerControlDef = {
   [_ in SamplerControlKey]: ControlDef
 }
 
-const createSamplerControlDef = (type: string, i: number): SamplerControlDef => ({
-  LoadSelectedTrack: { group: `[${type}${i}]`, name: 'LoadSelectedTrack', type: 'binary' },
-  cue_gotoandplay: { group: `[${type}${i}]`, name: 'cue_gotoandplay', type: 'binary' },
-  eject: { group: `[${type}${i}]`, name: 'eject', type: 'binary' },
-  play: { group: `[${type}${i}]`, name: 'play', type: 'binary' },
-  play_latched: { group: `[${type}${i}]`, name: 'play_latched', type: 'binary' },
-  stop: { group: `[${type}${i}]`, name: 'stop', type: 'binary' },
-  track_color: { group: `[${type}${i}]`, name: 'track_color', type: 'number' },
-  track_loaded: { group: `[${type}${i}]`, name: 'track_loaded', type: 'binary' },
-})
+const createSamplerControlDef = (i: number): SamplerControlDef => {
+  const [type, number] = getChannelNameForOrdinal(i)
+  return {
+    LoadSelectedTrack: { group: `[${type}${number}]`, name: 'LoadSelectedTrack', type: 'binary' },
+    cue_gotoandplay: { group: `[${type}${number}]`, name: 'cue_gotoandplay', type: 'binary' },
+    eject: { group: `[${type}${number}]`, name: 'eject', type: 'binary' },
+    play: { group: `[${type}${number}]`, name: 'play', type: 'binary' },
+    play_latched: { group: `[${type}${number}]`, name: 'play_latched', type: 'binary' },
+    stop: { group: `[${type}${number}]`, name: 'stop', type: 'binary' },
+    track_color: { group: `[${type}${number}]`, name: 'track_color', type: 'number' },
+    track_loaded: { group: `[${type}${number}]`, name: 'track_loaded', type: 'binary' },
+ }
+}
 
-const getChannelNameForOrdinal = (i: number): [string, number] => (i < 4 ? ['Channel', i + 1] : ['Sampler', i - 4 + 1])
+export const numDecks = 4 as const
+export const numSamplers = 64 as const
 
-export const samplerControlDefs: SamplerControlDef[] = range(68).map((i: number) => {
-  const [name, number] = getChannelNameForOrdinal(i)
-  return createSamplerControlDef(name, number)
-})
+const getChannelNameForOrdinal = (i: number): [string, number] => (i < numDecks ? ['Channel', i + 1] : ['Sampler', i - 4 + 1])
+
+export const samplerControlDefs: SamplerControlDef[] = array(map(createSamplerControlDef, range(numDecks + numSamplers)))
 
 // the full control palette for decks, minus repeated controls (e.g hotcues)
 export type SimpleChannelControlKey =
@@ -353,13 +357,120 @@ export const createChannelControlDef = (i: number): ChannelControlDef => {
     beatjumps: createArrayChannelControlDef(beatjumps, arrayChannelControlDefCreators.beatjumps),
     beatloops: createArrayChannelControlDef(beatloops, arrayChannelControlDefCreators.beatloops),
     hotcues: createArrayChannelControlDef(
-      range(16).map((x: number) => x + 1),
+      array(map((x: number) => x + 1, range(16))),
       arrayChannelControlDefCreators.hotcues,
     ),
   })
 }
 
-export const channelControlDefs: ChannelControlDef[] = range(8).map((i: number) => createChannelControlDef(i))
+export const channelControlDefs: ChannelControlDef[] = array(map((i: number) => createChannelControlDef(i), range(8)))
+
+// effect parameters
+export const numEffectParameters = 8 as const
+export type EffectParameterKey = 'value' | 'link_inverse' | 'link_type' | 'loaded' | 'type' | 'button_value' | 'button_loaded' | 'button_type'
+export type EffectParameterDef = { [_ in EffectParameterKey]: ControlDef }
+export const createEffectParameterDef = (rack: RackName, unit: EffectUnitName, effect: string, parameter: number): EffectParameterDef => ({
+  value: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}`, type: 'number' },
+  link_inverse: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}_link_inverse`, type: 'binary' },
+  link_type: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}_link_type`, type: 'number' },
+  loaded: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}_loaded`, type: 'binary' },
+  type: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}_type`, type: 'number' },
+  button_value: { group: `[${rack}_${unit}_${effect}]`, name: `button_parameter${parameter}`, type: 'number' },
+  button_loaded: { group: `[${rack}_${unit}_${effect}]`, name: `button_parameter${parameter}_loaded`, type: 'binary' },
+  button_type: { group: `[${rack}_${unit}_${effect}]`, name: `button_parameter${parameter}_type`, type: 'number' },
+})
+
+// effects
+export const numEqualizerEffects = 1 as const
+export const numEffects = 3 as const
+export type EffectKey = 'clear' | 'effect_selector' | 'enabled' | 'loaded' | 'next_effect' | 'num_parameters' | 'num_parameterslots' |
+  'num_button_parameters' | 'num_button_parameterslots' | 'meta' | 'prev_effect'
+export type EffectDef = { [_ in EffectKey]: ControlDef } & { parameters: EffectParameterDef[] }
+export const createEffectDef = (rack: RackName, unit: EffectUnitName, effect: string): EffectDef => ({
+  clear: { group: `[${rack}_${unit}_${effect}]`, name: `clear`, type: 'binary' },
+  effect_selector: { group: `[${rack}_${unit}_${effect}]`, name: `effect_selector`, type: 'number' },
+  enabled: { group: `[${rack}_${unit}_${effect}]`, name: `enabled`, type: 'binary' },
+  loaded: { group: `[${rack}_${unit}_${effect}]`, name: `loaded`, type: 'binary' },
+  next_effect: { group: `[${rack}_${unit}_${effect}]`, name: `next_effect`, type: 'binary' },
+  num_parameters: { group: `[${rack}_${unit}_${effect}]`, name: `num_parameters`, type: 'number' },
+  num_parameterslots: { group: `[${rack}_${unit}_${effect}]`, name: `num_parameterslots`, type: 'number' },
+  num_button_parameters: { group: `[${rack}_${unit}_${effect}]`, name: `num_button_parameters`, type: 'number' },
+  num_button_parameterslots: { group: `[${rack}_${unit}_${effect}]`, name: `num_button_parameterslots`, type: 'number' },
+  meta: { group: `[${rack}_${unit}_${effect}]`, name: `meta`, type: 'number' },
+  prev_effect: { group: `[${rack}_${unit}_${effect}]`, name: `prev_effect`, type: 'binary' },
+  parameters: lazyArray(array(map(
+    (i: number) => lazy(() => createEffectParameterDef(rack, unit, effect, i + 1)),
+    range(numEffectParameters)
+  ))),
+})
+
+// effect units
+export const numEffectUnits = 4 as const
+export type EffectUnitName = string
+export type EffectUnitKey = 'chain_selector' | 'clear' | 'enabled' | 'focused_effect' | 'mix' | 'super1' | 'num_effects' | 'num_effectslots'
+export type EffectUnitDef = { [_ in EffectUnitKey]: ControlDef } & { effects: EffectDef[] }
+export const createEffectUnitDef = (rack: RackName, unit: EffectUnitName): EffectUnitDef => ({
+  chain_selector: { group: `[${rack}_${unit}]`, name: `chain_selector`, type: 'number' },
+  clear: { group: `[${rack}_${unit}]`, name: `clear`, type: 'binary' },
+  enabled: { group: `[${rack}_${unit}]`, name: `enabled`, type: 'binary' },
+  focused_effect: { group: `[${rack}_${unit}]`, name: `focused_effect`, type: 'number' },
+  mix: { group: `[${rack}_${unit}]`, name: `mix`, type: 'number' },
+  super1: { group: `[${rack}_${unit}]`, name: `super1`, type: 'number' },
+  num_effects: { group: `[${rack}_${unit}]`, name: `num_effects`, type: 'number' },
+  num_effectslots: { group: `[${rack}_${unit}]`, name: `num_effectslots`, type: 'number' },
+  effects: lazyArray(array(map(
+    (i: number) => lazy(() => createEffectDef(rack, unit, `Effect${i + 1}`)),
+    range(numEffects)
+  ))),
+})
+
+// effect racks
+export type RackName = `EffectRack${number}` | `EqualizerRack${number}` | `QuickEffectRack${number}`
+export type EffectRackKey = 'num_effectunits' | 'clear'
+export type EffectRackDef = { [_ in EffectRackKey]: ControlDef } & { effect_units: EffectUnitDef[] }
+export const createEffectRackDef = (rack: RackName): EffectRackDef => {
+  const units = rack.startsWith('EqualizerRack') || rack.startsWith('QuickEffectRack') ?
+    map((i) => `[Channel${i+1}]`, range(numDecks)) :
+    map((i) => `EffectUnit${i+1}`, range(numEffectUnits))
+
+  return {
+    num_effectunits: { group: `[${rack}]`, name: `num_effectunits`, type: 'number' },
+    clear: { group: `[${rack}]`, name: `clear`, type: 'binary' },
+    effect_units: lazyArray(array(map(
+      (unit: string) => lazy(() => createEffectUnitDef(rack, unit)),
+      units
+    )))
+  }
+}
+
+export const numEqualizerRacks = 1 as const
+export const numQuickEffectRacks = 1 as const
+
+export type ChannelName = `Channel${number}` | `Sampler${number}` | `Master` | `Headphone`
+
+export const createEffectUnitChannelDef = (rack: RackName, unit: EffectUnitName, channel: ChannelName) => ({
+  enable: { group: `[${rack}_${unit}]`, name: `group_[${channel}]_enable`, type: 'binary' },
+})
+
+export type RootControlDef = {
+  master: MasterControlDef,
+  playList: PlayListControlDef,
+  samplers: SamplerControlDef[],
+  channels: ChannelControlDef[],
+  effectRacks: EffectRackDef[],
+  quickEffectRacks: EffectRackDef[],
+  equalizerRacks: EffectRackDef[]
+}
+  
+export const root: RootControlDef = {
+  master: masterControlDef,
+  playList: playListControlDef,
+  samplers: lazyArray(array(map((i) => lazy(() => createSamplerControlDef(i)), range(numDecks + numSamplers)))),
+  channels: lazyArray(array(map((i) => lazy(() => createChannelControlDef(i)), range(numDecks + numSamplers)))),
+  effectRacks: array(map((i) => createEffectRackDef(`EffectRack${i + 1}`), range(numEqualizerRacks))),
+  quickEffectRacks: array(map((i) => createEffectRackDef(`QuickEffectRack${i + 1}`), range(numEqualizerRacks))),
+  equalizerRacks: array(map((i) => createEffectRackDef(`EqualizerRack${i + 1}`), range(numEqualizerRacks))),
+}
 
 export const getValue = (control: ControlDef): number => {
   return engine.getValue(control.group, control.name)
@@ -367,6 +478,14 @@ export const getValue = (control: ControlDef): number => {
 
 export const setValue = (control: ControlDef, value: number): void => {
   return engine.setValue(control.group, control.name, value)
+}
+
+export const softTakeover = (control: ControlDef, enable: boolean): void => {
+  return engine.softTakeover(control.group, control.name, enable)
+}
+
+export const softTakeOverIgnoreNextValue = (control: ControlDef): void => {
+  return engine.softTakeoverIgnoreNextValue(control.group, control.name)
 }
 
 export type ControlHandle = Connection
@@ -391,12 +510,14 @@ const disconnect = (handle: ControlHandle): void => {
 
 export class ControlComponent extends Component {
   control: ControlDef
-  _handle?: any
+  private _handle?: any
+  private _softTakeover?: boolean
 
-  constructor(control: ControlDef) {
+  constructor(control: ControlDef, softTakeover?: boolean) {
     super()
     this.control = control
     this._handle = null
+    this._softTakeover = softTakeover
   }
 
   onMount() {
@@ -404,6 +525,9 @@ export class ControlComponent extends Component {
       this._handle = connect(this.control, (data: ControlMessage) => {
         this.emit('update', data)
       })
+      if (this._softTakeover != null) {
+        softTakeover(this.control, this._softTakeover)
+      }
       const initialMessage = {
         control: this.control,
         value: getValue(this.control),
@@ -414,6 +538,9 @@ export class ControlComponent extends Component {
 
   onUnmount() {
     if (this._handle) {
+      if (this._softTakeover != null) {
+        softTakeOverIgnoreNextValue(this.control)
+      }
       disconnect(this._handle)
       this._handle = null
     }

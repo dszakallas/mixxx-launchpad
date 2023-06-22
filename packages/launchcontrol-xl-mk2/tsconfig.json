@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist"
+  },
+  "include": [
+    "controller.json",
+    "src"
+  ],
+  "references": [
+    { "path": "../launchcontrol-common" }
+  ]
+}

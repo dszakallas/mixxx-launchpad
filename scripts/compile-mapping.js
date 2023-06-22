@@ -28,6 +28,7 @@ const rendered = ejs.render(template.toString(), {
   global: controller.global,
   buttons: Object.values(controller.controls),
   hexFormat: hexFormat,
+  sysex: controller.sysex,
 })
 await mkdirp(dirname(resolve(outFile)))
 await writeFile(resolve(outFile), rendered)
