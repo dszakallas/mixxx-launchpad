@@ -10,7 +10,7 @@ import {
   ControlMessage,
   MidiMessage,
 } from '@mixxx-launch/mixxx'
-import { LaunchpadDevice, MidiComponent } from '.'
+import { LaunchpadDevice, MidiComponent } from './device'
 
 import makeControlTemplateIndex, { ControlTypeIndex } from './controls'
 import { default as makeSamplerPad } from './controls/samplerPad'

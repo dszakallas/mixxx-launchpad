@@ -1,34 +1,14 @@
 import { map, range } from '@mixxx-launch/common'
-import { absoluteNonLin, channelControlDefs, Component, ControlComponent, MidiControlDef, MidiMessage, sendShortMsg, setValue } from "@mixxx-launch/mixxx"
+import { channelControlDefs, Component, ControlComponent, MidiControlDef, MidiMessage, sendShortMsg, setValue } from "@mixxx-launch/mixxx"
 import { ControlMessage, createEffectUnitChannelDef, getValue, numDecks as mixxxNumDecks, root } from "@mixxx-launch/mixxx/src/Control"
 import { LaunchControlDevice, LCMidiComponent } from './device'
 import { makeEffectParameterPage } from './effectParameter'
+import { makeEq3 } from './eq'
 import { makePadSelector } from './padSelector'
 import { MakePage, makePager } from './pager'
+import { defaultVerticalGroupParams, VerticalGroupParams } from './util'
 
 export type MakeComponent = (device: LaunchControlDevice) => Component
-
-export enum Eq3Channel {
-  Low,
-  Mid,
-  High,
-}
-
-export const eq3 = (deck: number, col: number) => {
-  return [
-    [`knob.0.${col}`, { type: "eq3", params: { channel: Eq3Channel.High, deck: deck, parameter: 'value' } }],
-    [`knob.1.${col}`, { type: "eq3", params: { channel: Eq3Channel.Mid, deck: deck, parameter: 'value' } }],
-    [`knob.2.${col}`, { type: "eq3", params: { channel: Eq3Channel.Low, deck: deck, parameter: 'value' } }],
-  ] as const
-}
-
-
-export const eq2kill = (deck: number, col: number) => {
-  return [
-    [`pad.0.${col}`, { type: "eq", params: { channel: Eq3Channel.High, parameter: 'kill', deck: deck } }],
-    [`pad.1.${col}`, { type: "eq", params: { channel: Eq3Channel.Low, parameter: 'kill', deck: deck } }],
-  ] as const
-}
 
 export const gain = (deck: number, col: number) => {
   return [
@@ -48,10 +28,10 @@ export const effectEssentials = (unit: number, col: number) => {
 }
 
 const controlIndex = {
-  'eq3': (channel: Eq3Channel, deck: number, parameter: 'value' | 'kill' = 'value') => {
-    return parameter === 'value' ? root.equalizerRacks[0].effect_units[deck].effects[0].parameters[channel].value :
-      root.equalizerRacks[0].effect_units[deck].effects[0].parameters[channel].button_value
-  },
+  // 'eq3': (channel: Eq3Channel, deck: number, parameter: 'value' | 'kill' = 'value') => {
+  //   return parameter === 'value' ? root.equalizerRacks[0].effect_units[deck].effects[0].parameters[channel].value :
+  //     root.equalizerRacks[0].effect_units[deck].effects[0].parameters[channel].button_value
+  // },
   'gain': (deck: number) => {
     return channelControlDefs[deck].volume
   },
@@ -86,53 +66,6 @@ const container = (children: Component[]) => {
       super.onUnmount()
     }
   }()
-}
-
-
-type VerticalGroupParams = {
-  template: number,
-  columnOffset: number,
-  numDecks: number,
-}
-
-const defaultVerticalGroupParams: VerticalGroupParams = {
-  template: 0,
-  columnOffset: 0,
-  numDecks: mixxxNumDecks,
-}
-
-
-const makeEq3 = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
-  const children: Component[] = []
-
-  const channelColorPalette = [
-    device.colors.hi_red,
-    device.colors.hi_yellow,
-    device.colors.hi_green,
-    device.colors.hi_amber,
-  ] 
-
-  for (const i of range(numDecks)) {
-    const col = i + columnOffset
-    const eqs = eq3(col, col)
-    for (const [midi, cd] of eqs) {
-      const control = controlIndex[cd.type](cd.params.channel, cd.params.deck, cd.params.parameter)
-      const controlComponent = new ControlComponent(control, true)
-      children.push(controlComponent)
-
-
-      const midiComponent = new LCMidiComponent(device, template, midi)
-      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
-        setValue(control, absoluteNonLin(value, 0, 1, 4))
-      })
-      midiComponent.addListener('mount', () => {
-        device.sendColor(template, midiComponent.led, channelColorPalette[i % 4])
-      })
-      children.push(midiComponent)
-    }
-  }
-
-  return children
 }
 
 const makeGain = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {

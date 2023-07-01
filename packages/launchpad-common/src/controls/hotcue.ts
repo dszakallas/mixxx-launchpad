@@ -1,9 +1,8 @@
 import { range } from '@mixxx-launch/common'
 import type { ControlComponent, ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
-import { parseRGBColor } from '../color'
 import { Control, MakeDeckControlTemplate } from '../Control'
-import { MidiComponent } from '../device'
+import { MidiComponent, parseRGBColor } from '../device'
 import { modes } from '../ModifierSidebar'
 
 export type Type = {

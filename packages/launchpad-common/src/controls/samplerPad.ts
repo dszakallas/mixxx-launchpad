@@ -1,7 +1,6 @@
 import type { ControlComponent, ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
-import { LaunchpadDevice, MidiComponent } from '../device'
-import { parseRGBColor, RGBColor } from '../color'
+import { LaunchpadDevice, MidiComponent, parseRGBColor, RGBColor } from '../device'
 import { Control, MakeSamplerControlTemplate } from '../Control'
 import { modes } from '../ModifierSidebar'
 

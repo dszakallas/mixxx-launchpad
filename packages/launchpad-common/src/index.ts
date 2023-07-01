@@ -15,6 +15,4 @@ export type ControllerControlDef = [number, number];
 
 export const convertControlDef = (name: string, [status, midino]: ControllerControlDef): MidiControlDef => ({ name, status, midino })
 
-export type { RGBColor } from './color'
-
-export { LaunchpadDevice, MidiComponent } from './device'
+export { RGBColor, LaunchpadDevice, MidiComponent } from './device'

@@ -1,7 +1,7 @@
 import type { MidiMessage } from '@mixxx-launch/mixxx'
 import { Component } from '@mixxx-launch/mixxx'
 
-import { LaunchpadDevice, MidiComponent } from '.'
+import { LaunchpadDevice, MidiComponent } from './device'
 
 export type ModifierState = {
   ctrl: boolean
