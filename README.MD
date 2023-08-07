@@ -444,5 +444,5 @@ make watch_install
 [babel]:https://babeljs.io/
 [rollup]:https://rollupjs.org
 [standalone]:https://github.com/substack/node-browserify#usage
-[template]:script/Launchpad.midi.xml.ejs
+[template]:scripts/template.xml.ejs
 [ejs]:http://ejs.co/
