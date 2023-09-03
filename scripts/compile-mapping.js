@@ -1,12 +1,27 @@
 #!/usr/bin/env node
 
-import ejs from 'ejs'
-import { resolve, dirname, join } from 'path'
+import { resolve, dirname, join } from 'node:path'
 import { readFile, writeFile } from 'node:fs/promises'
+import { exec } from 'node:child_process'
+import { promisify } from'node:util'
+
+import ejs from 'ejs'
 import mkdirp from 'mkdirp'
 
 if (process.argv.length !== 4) {
   throw Error('Usage: target outFile')
+}
+
+const execAsync = promisify(exec)
+
+const gitSHA = async () => {
+  const { stdout } = await execAsync('git rev-parse HEAD')
+  return stdout.trim()
+}
+
+const gitTagAlwaysDirty = async () => {
+  const { stdout } = await execAsync('git describe --tags --always --dirty')
+  return stdout.trim()
 }
 
 const [tgt, outFile] = process.argv.slice(-2)
@@ -29,6 +44,8 @@ const rendered = ejs.render(template.toString(), {
   buttons: Object.values(controller.controls),
   hexFormat: hexFormat,
   sysex: controller.sysex,
+  gitTag: await gitTagAlwaysDirty(),
+  gitHash: await gitSHA(),
 })
 await mkdirp(dirname(resolve(outFile)))
 await writeFile(resolve(outFile), rendered)
