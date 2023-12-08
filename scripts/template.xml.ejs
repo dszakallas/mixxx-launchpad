@@ -21,9 +21,9 @@
 <% } -%>
 <% buttons.forEach(function (button) { -%>
             <control>
-                <key><%= global %>.__midi_<%= hexFormat(button[0], 2) %>_<%= hexFormat(button[1], 2) %></key>
-                <status><%= hexFormat(button[0], 2) %></status>
-                <midino><%= hexFormat(button[1], 2) %></midino>
+                <key><%= global %>.__m<%= hexFormat(button[0], 2) %><%= hexFormat(button[1], 2) %></key>
+                <status>0x<%= hexFormat(button[0], 2) %></status>
+                <midino>0x<%= hexFormat(button[1], 2) %></midino>
                 <options>
                     <script-binding/>
                 </options>

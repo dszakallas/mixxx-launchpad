@@ -1,6 +1,6 @@
 export const posMod = (x: number, n: number): number => ((x % n) + n) % n
 
-export const hexFormat = (n: number, d: number) => '0x' + n.toString(16).toUpperCase().padStart(d, '0')
+export const hexFormat = (n: number, d: number) => n.toString(16).toUpperCase().padStart(d, '0')
 
 export const range = function * (n: number): Generator<number> {
   for (let i = 0; i < n; i++) {
