@@ -4,9 +4,10 @@ import { ControlMessage, createEffectUnitChannelDef, getValue, numDecks as mixxx
 import { LaunchControlDevice, LCMidiComponent } from './device'
 import { makeEffectParameterPage } from './effectParameter'
 import { makeEq3 } from './eq'
+import { makeQuickEffect } from './fx'
 import { makePadSelector } from './padSelector'
 import { MakePage, makePager } from './pager'
-import { defaultVerticalGroupParams, VerticalGroupParams } from './util'
+import { VerticalGroupParams } from './util'
 
 export type MakeComponent = (device: LaunchControlDevice) => Component
 
@@ -68,7 +69,8 @@ const container = (children: Component[]) => {
   }()
 }
 
-const makeGain = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
+const makeGain = ({ template, columnOffset, numDecks }: VerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
+  columnOffset = columnOffset || 0
   const children: Component[] = []
 
   for (const i of range(numDecks)) {
@@ -199,7 +201,7 @@ const makeEnablers = (template: number) => (device: LaunchControlDevice) => {
   for (const i of range(4)) {
     const row = ~~(i / 2)
     const col = i % 2
-    const controls = [...map(j => root.effectRacks[0].effect_units[i].effects[j].enabled, range(3)), null]
+    const controls = [...map(j => root.effectRacks[0].effect_units[i].effects[j].enabled, range(3)), root.effectRacks[0].effect_units[i].enabled]
     controls.forEach((control, j) => {
       const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
       const midiComponent = new LCMidiComponent(device, template, `pad.${row}.${(col * 4) + j}`, 'on')
@@ -229,7 +231,8 @@ const makeEnablers = (template: number) => (device: LaunchControlDevice) => {
   return container(children)
 }
 
-const makeEffectSuper = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
+const makeEffectMeta = ({ template, columnOffset, numDecks }: VerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
+  columnOffset = columnOffset || 0
   const children: Component[] = []
 
   const channelColorPalette = [
@@ -263,7 +266,42 @@ const makeEffectSuper = ({ template, columnOffset, numDecks }: VerticalGroupPara
   return children
 }
 
-const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams = defaultVerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
+
+const makeEffectSuper = ({ template, columnOffset, rowOffset, numDecks }: VerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
+  columnOffset = columnOffset || 0
+  rowOffset = rowOffset || 0
+  const children: Component[] = []
+
+  const channelColorPalette = [
+    device.colors.hi_red,
+    device.colors.hi_yellow,
+    device.colors.hi_green,
+    device.colors.hi_amber,
+  ] 
+
+  for (const i of range(numDecks)) {
+    const effect = root.effectRacks[0].effect_units[i]
+    const super1 = new ControlComponent(effect.super1, true)
+    children.push(super1)
+
+    const midiComponent = new LCMidiComponent(device, template, `knob.${rowOffset}.${i + columnOffset}`)
+    midiComponent.addListener('midi', ({ value }: MidiMessage) => {
+      setValue(effect.super1, value / 127)
+    })
+    children.push(midiComponent)
+
+    const enabled = new ControlComponent(effect.enabled)
+    enabled.addListener('update', ({ value }: ControlMessage) => {
+      device.sendColor(template, midiComponent.led, value ? channelColorPalette[i % 4] : device.colors.black)
+    })
+
+    children.push(enabled)
+  }
+  return children
+}
+
+const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
+  columnOffset = columnOffset || 0
   const children: Component[] = []
   for (const i of range(numDecks)) {
     const effectUnit = root.effectRacks[0].effect_units[i]
@@ -279,8 +317,6 @@ const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams
 
   return children
 }
-
-
 
 // const makeEffectUnit = (device: LaunchControlDevice) => {
 //   const children: Component[] = []
@@ -327,15 +363,36 @@ const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams
 //   return container(children)
 // }
 
+// const makeKitchenSinkPage = (template: number) => (device: LaunchControlDevice) => container([
+//   ...makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
+//   ...makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
+//   ...makeAlt([
+//     container(makeEffectSuper({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device)),
+//     container(makeQuickEffect({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device)),
+//   ])(template)(device),
+//   ...makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
+// ])
+
+
 const makeKitchenSinkPage = (template: number) => (device: LaunchControlDevice) => container([
   ...makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
   ...makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
-  ...makeEffectSuper({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
+  ...makeEffectMeta({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
   ...makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
 ])
 
+
+const makeKitchenSinkPage2 = (template: number) => (device: LaunchControlDevice) => container([
+  ...makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
+  ...makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
+  ...makeQuickEffect({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
+  ...makeEffectSuper({ template, columnOffset: 4, rowOffset: 1, numDecks: mixxxNumDecks })(device),
+  ...makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
+])
+
+
 const makeApp = (device: LaunchControlDevice) => container([
-  makePager([makeKitchenSinkPage, makeEffectParameterPage], 16)(device),
+  makePager([makeKitchenSinkPage, makeKitchenSinkPage2, makeEffectParameterPage], 16)(device),
   makePager(
     [() => makePadSelector([
       statelessFreePage(makeEffectSelector),
