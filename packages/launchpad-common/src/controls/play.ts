@@ -1,49 +1,56 @@
-import type { ControlComponent, ControlMessage } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, ControlComponent, ControlMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
-import { Control, MakeDeckControlTemplate } from '../Control'
 import { MidiComponent } from '../device'
+import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
 import { modes } from '../ModifierSidebar'
 import { onAttack } from '../util'
 
 export type Type = {
   type: 'play'
   bindings: {
-    playIndicator: ControlComponent
-    play: MidiComponent
+    playIndicator: ControlBindingTemplate<Type>
+    play: ButtonBindingTemplate<Type>
   }
-  params: Record<string, unknown>
+  params: {
+    deck: ChannelControlDef
+    gridPosition: [number, number]
+  }
   state: Record<string, unknown>
 }
 
-const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
+const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
   state: {},
   bindings: {
     playIndicator: {
-      type: 'control',
+      type: ControlComponent,
       target: deck.play_indicator,
-      update:
-        ({ bindings, context: { device } }: Control<Type>) =>
-        ({ value }: ControlMessage) => {
-          if (value) {
-            device.sendColor(bindings.play.control, device.colors.hi_red)
-          } else if (!value) {
-            device.clearColor(bindings.play.control)
-          }
-        },
+      listeners: {
+        update:
+          ({ bindings, context: { device } }: Control<Type>) =>
+            ({ value }: ControlMessage) => {
+              if (value) {
+                device.sendColor(bindings.play.control, device.colors.hi_red)
+              } else if (!value) {
+                device.clearColor(bindings.play.control)
+              }
+            },
+      }
     },
     play: {
-      type: 'button',
+      type: MidiComponent,
       target: gridPosition,
-      midi:
-        ({ context: { modifier } }: Control<Type>) =>
-        onAttack(() => {
-          modes(
-            modifier.getState(),
-            () => setValue(deck.play, Number(!getValue(deck.play))),
-            () => setValue(deck.start_play, 1),
-            () => setValue(deck.start_stop, 1),
-          )
-        }),
+      listeners: {
+        midi:
+          ({ context: { modifier } }: Control<Type>) =>
+            onAttack(() => {
+              modes(
+                modifier.getState(),
+                () => setValue(deck.play, Number(!getValue(deck.play))),
+                () => setValue(deck.start_play, 1),
+                () => setValue(deck.start_stop, 1),
+              )
+            }),
+      }
     },
   },
 })

@@ -1,27 +1,33 @@
-import type { ControlComponent, ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
+import { ControlComponent, ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { LaunchpadDevice, MidiComponent, parseRGBColor, RGBColor } from '../device'
-import { Control, MakeSamplerControlTemplate } from '../Control'
 import { modes } from '../ModifierSidebar'
+import { ButtonBindingTemplate, ControlBindingTemplate, MakeSamplerControlTemplate, Control } from '../Control'
+import { SamplerControlDef } from '@mixxx-launch/mixxx/src/Control'
+import { Theme } from '../App'
 
 export type Type = {
   type: 'samplerPad'
   bindings: {
-    button: MidiComponent
-    playing: ControlComponent
-    loaded: ControlComponent
-    colorChanged: ControlComponent
+    button: ButtonBindingTemplate<Type>
+    playing: ControlBindingTemplate<Type>
+    loaded: ControlBindingTemplate<Type>
+    colorChanged: ControlBindingTemplate<Type>
   }
   state: {
     loaded: boolean
     playing: boolean
     color: RGBColor | null
   }
-  params: Record<string, unknown>
+  params: {
+    sampler: SamplerControlDef
+    gridPosition: [number, number]
+    theme: Theme
+  }
 }
 
-export const make: MakeSamplerControlTemplate<Type> = (_, gridPosition, sampler, theme) => {
-  const onStateChanged = (state: Type['state'], device: LaunchpadDevice, bindings: Type['bindings']) => {
+export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, theme }) => {
+  const onStateChanged = (state: Type['state'], device: LaunchpadDevice, bindings: Control<Type>['bindings']) => {
     const color = state.color == null ? theme.fallbackTrackColor : state.color
     if (!state.loaded) {
       device.clearColor(bindings.button.control)
@@ -47,64 +53,72 @@ export const make: MakeSamplerControlTemplate<Type> = (_, gridPosition, sampler,
     },
     bindings: {
       button: {
-        type: 'button',
+        type: MidiComponent,
         target: gridPosition,
-        midi:
-          ({ context: { modifier }, state }: Control<Type>) =>
-          ({value}: MidiMessage) => {
-            if (value) {
-              modes(
-                modifier.getState(),
-                () => {
-                  if (!state.loaded) {
-                    setValue(sampler.LoadSelectedTrack, 1)
-                  } else {
-                    setValue(sampler.cue_gotoandplay, 1)
-                  }
-                },
-                () => {
-                  if (state.playing) {
-                    setValue(sampler.stop, 1)
-                  } else if (state.loaded) {
-                    setValue(sampler.eject, 1)
-                  }
-                },
-              )
-            }
-          },
+        listeners: {
+          midi:
+            ({ context: { modifier }, state }: Control<Type>) =>
+              ({ value }: MidiMessage) => {
+                if (value) {
+                  modes(
+                    modifier.getState(),
+                    () => {
+                      if (!state.loaded) {
+                        setValue(sampler.LoadSelectedTrack, 1)
+                      } else {
+                        setValue(sampler.cue_gotoandplay, 1)
+                      }
+                    },
+                    () => {
+                      if (state.playing) {
+                        setValue(sampler.stop, 1)
+                      } else if (state.loaded) {
+                        setValue(sampler.eject, 1)
+                      }
+                    },
+                  )
+                }
+              },
+        }
       },
 
       playing: {
-        type: 'control',
+        type: ControlComponent,
         target: sampler.play_latched,
-        update:
-          ({ context: { device }, bindings, state }: Control<Type>) =>
-          ({ value }: ControlMessage) => {
-            state.playing = !!value
-            onStateChanged(state, device, bindings)
-          },
+        listeners: {
+          update:
+            ({ context: { device }, bindings, state }: Control<Type>) =>
+              ({ value }: ControlMessage) => {
+                state.playing = !!value
+                onStateChanged(state, device, bindings)
+              },
+        }
       },
 
       loaded: {
-        type: 'control',
+        type: ControlComponent,
         target: sampler.track_loaded,
-        update:
-          ({ context: { device }, bindings, state }: Control<Type>) =>
-          ({ value }: ControlMessage) => {
-            state.loaded = !!value
-            onStateChanged(state, device, bindings)
-          },
+        listeners: {
+          update:
+            ({ context: { device }, bindings, state }: Control<Type>) =>
+              ({ value }: ControlMessage) => {
+                state.loaded = !!value
+                onStateChanged(state, device, bindings)
+              },
+        }
       },
 
       colorChanged: {
-        type: 'control',
+        type: ControlComponent,
         target: sampler.track_color,
-        update:
-          ({ context: { device }, bindings, state }: Control<Type>) =>
-          ({ value }: ControlMessage) => {
-            state.color = parseRGBColor(value)
-            onStateChanged(state, device, bindings)
-          },
+        listeners: {
+          update:
+            ({ context: { device }, bindings, state }: Control<Type>) =>
+              ({ value }: ControlMessage) => {
+                state.color = parseRGBColor(value)
+                onStateChanged(state, device, bindings)
+              },
+        }
       },
     },
   }

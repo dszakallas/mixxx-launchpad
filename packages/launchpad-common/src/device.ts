@@ -40,4 +40,10 @@ export abstract class LaunchpadDevice extends MidiDevice {
   }
 }
 
-export class MidiComponent extends mixxxMidiComponent<LaunchpadDevice> {}
+export class MidiComponent extends mixxxMidiComponent<LaunchpadDevice> {
+  onUnmount() {
+    // TODO: find better place for clearing color on onMount
+    this._device.clearColor(this.control)
+    super.onUnmount()
+  }
+}
