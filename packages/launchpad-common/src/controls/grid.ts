@@ -1,20 +1,23 @@
-import type { MidiMessage } from '@mixxx-launch/mixxx'
+import type { ChannelControlDef, MidiMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
-import { Control, MakeDeckControlTemplate } from '../Control'
 import { MidiComponent } from '../device'
+import { ButtonBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
 import { modes } from '../ModifierSidebar'
 
 export type Type = {
   type: 'grid'
   bindings: {
-    back: MidiComponent
-    forth: MidiComponent
+    back: ButtonBindingTemplate<Type>
+    forth: ButtonBindingTemplate<Type>
   }
   state: Record<string, unknown>
-  params: Record<string, unknown>
+  params: {
+    deck: ChannelControlDef,
+    gridPosition: [number, number]
+  }
 }
 
-const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
+const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   const steps = {
     back: {
       normal: deck.beats_translate_earlier,
@@ -27,38 +30,42 @@ const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => {
   }
   const onGrid =
     (dir: 'back' | 'forth') =>
-    ({ context: { device, modifier }, bindings }: Control<Type>) =>
-    ({ value }: MidiMessage) => {
-      if (!value) {
-        device.clearColor(bindings[dir].control)
-      } else {
-        modes(
-          modifier.getState(),
-          () => {
-            device.sendColor(bindings[dir].control, device.colors.hi_yellow)
-            setValue(steps[dir].normal, 1)
-          },
-          () => {
-            device.sendColor(bindings[dir].control, device.colors.hi_amber)
-            setValue(steps[dir].ctrl, 1)
-          },
-        )
-      }
-    }
+      ({ context: { device, modifier }, bindings }: Control<Type>) =>
+        ({ value }: MidiMessage) => {
+          if (!value) {
+            device.clearColor(bindings[dir].control)
+          } else {
+            modes(
+              modifier.getState(),
+              () => {
+                device.sendColor(bindings[dir].control, device.colors.hi_yellow)
+                setValue(steps[dir].normal, 1)
+              },
+              () => {
+                device.sendColor(bindings[dir].control, device.colors.hi_amber)
+                setValue(steps[dir].ctrl, 1)
+              },
+            )
+          }
+        }
   return {
     bindings: {
       back: {
-        type: 'button',
+        type: MidiComponent,
         target: gridPosition,
-        midi: onGrid('back'),
+        listeners: {
+          midi: onGrid('back'),
+        }
       },
       forth: {
-        type: 'button',
+        type: MidiComponent,
         target: [gridPosition[0] + 1, gridPosition[1]],
-        midi: onGrid('forth'),
+        listeners: {
+          midi: onGrid('forth'),
+        }
       },
     },
-    state: {} 
+    state: {}
   }
 }
 

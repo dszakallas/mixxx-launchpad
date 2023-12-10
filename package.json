@@ -40,6 +40,7 @@
   "workspaces": [
     "packages/common",
     "packages/mixxx",
+    "packages/launch-common",
     "packages/launchpad-common",
     "packages/launchpad-mk1",
     "packages/launchpad-mk2",

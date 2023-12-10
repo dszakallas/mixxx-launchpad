@@ -15,6 +15,9 @@
       "path": "./packages/common"
     },
     {
+      "path": "./packages/launch-common"
+    },
+    {
       "path": "./packages/launchcontrol-common"
     },
     {
