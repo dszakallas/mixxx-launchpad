@@ -1,7 +1,7 @@
 import { array, map, range } from '@mixxx-launch/common'
 import { ChannelControlDef, Component, ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
 import { Theme } from './App'
-import { Bindings, Control as BaseControl, ControlTemplate, ControlType as BaseControlType, IControl as BaseIControl, MakeControlTemplate } from '@mixxx-launch/launch-common/src/Control'
+import { Bindings, Control as BaseControl, ControlTemplate, ControlType as BaseControlType, MakeControlTemplate } from '@mixxx-launch/launch-common/src/Control'
 
 
 import { ControlComponent, ControlDef, getValue, root } from '@mixxx-launch/mixxx/src/Control'
@@ -16,10 +16,8 @@ export type ControlContext = {
   device: LaunchpadDevice
 }
 
-
 export type ControlType = BaseControlType<ControlContext>
 export type Control<C extends ControlType> = BaseControl<ControlContext, C>
-export type IControl<C extends ControlType> = BaseIControl<ControlContext, C>
 
 export type MakeSamplerControlTemplate<C extends ControlType> = MakeControlTemplate<C>
 
@@ -86,11 +84,7 @@ type PresetTemplate = {
   controls: ControlTemplate<any>[]
 }
 
-export type IPreset = {
-  controls: IControl<any>[]
-}
-
-export class Preset extends Component implements IPreset {
+export class Preset extends Component {
   controls: Control<any>[]
 
   constructor(ctx: ControlContext, presetTemplate: PresetTemplate) {
@@ -99,7 +93,7 @@ export class Preset extends Component implements IPreset {
       return new BaseControl(makeBindings, c.bindings, c.state, ctx)
     })
   }
- 
+
   onMount() {
     super.onMount()
     for (const control of this.controls) {
@@ -153,5 +147,4 @@ export const makePresetTemplate = (
     return makeSamplerPalettePresetTemplate(conf, gridPosition, channel, theme)
   }
 }
-
 

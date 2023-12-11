@@ -1,56 +1,75 @@
-import { range } from "@mixxx-launch/common"
-import { absoluteNonLin, Component, MidiMessage } from "@mixxx-launch/mixxx"
+import { Control as BaseControl, MakeControlTemplate } from '@mixxx-launch/launch-common/src/Control'
+import { absoluteNonLin, MidiMessage } from "@mixxx-launch/mixxx"
 import { ControlComponent, ControlMessage, root, setValue } from "@mixxx-launch/mixxx/src/Control"
 import { LaunchControlDevice, LCMidiComponent } from "./device"
-import { VerticalGroupParams } from "./util"
+import { Control, ControlBindingTemplate, ControlContext, MidiBindingTemplate, makeBindings } from './Control'
 
-export enum Eq3Channel {
-  Low,
-  Mid,
-  High,
-}
+const eq3Channel = ['low', 'mid', 'hi']
 
-const eq3 = (deck: number, col: number) => {
-  return [
-    [`knob.0.${col}`, { type: 'eq3', params: { channel: Eq3Channel.High, deck: deck } }],
-    [`knob.1.${col}`, { type: 'eq3', params: { channel: Eq3Channel.Mid, deck: deck } }],
-    [`knob.2.${col}`, { type: 'eq3', params: { channel: Eq3Channel.Low, deck: deck } }],
-  ] as const
-}
-
-export const makeEq3 = ({ template, columnOffset, numDecks }: VerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
-  columnOffset = columnOffset || 0
-  const children: Component[] = []
-
-  const channelColorPalette = [
-    [device.colors.hi_red, device.colors.lo_red],
-    [device.colors.hi_yellow, device.colors.lo_yellow],
-    [device.colors.hi_green, device.colors.lo_green],
-    [device.colors.hi_amber, device.colors.lo_amber],
-  ]
-
-  for (const i of range(numDecks)) {
-    const col = i + columnOffset
-    const eqs = eq3(col, col)
-    for (const [midi, cd] of eqs) {
-      const effectParam = root.equalizerRacks[0].effect_units[cd.params.deck].effects[0].parameters[cd.params.channel]
-      const paramControlComponent = new ControlComponent(effectParam.value, true)
-      children.push(paramControlComponent)
-
-      const killedControlComponent = new ControlComponent(effectParam.button_value)
-      children.push(killedControlComponent)
-
-      const midiComponent = new LCMidiComponent(device, template, midi)
-      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
-        setValue(effectParam.value, absoluteNonLin(value, 0, 1, 4))
-      })
-
-      killedControlComponent.addListener('update', ({ value }: ControlMessage) => {
-        device.sendColor(template, midiComponent.led, channelColorPalette[i % 4][value ? 1 : 0])
-      })
-      children.push(midiComponent)
-    }
+export type Type = {
+  type: 'eq3'
+  bindings: {
+    [ch in typeof eq3Channel[number] as `knob.${ch}`]: MidiBindingTemplate<Type>
+  } & {
+    [ch in typeof eq3Channel[number] as `kill.${ch}`]: ControlBindingTemplate<Type>
+  } & {
+    [ch in typeof eq3Channel[number] as `val.${ch}`]: ControlBindingTemplate<Type>
   }
-
-  return children
+  params: {
+    template: number
+    column: number
+    deck: number
+  }
+  state: Record<string, unknown>
 }
+
+const channelColorPalette = [
+  ['hi_red', 'lo_red'],
+  ['hi_yellow', 'lo_yellow'],
+  ['hi_green', 'lo_green'],
+  ['hi_amber', 'lo_amber'],
+] as const
+
+export const makeEq3Control = (device: LaunchControlDevice, template: number, column: number, deck: number) => {
+  const eq3 = makeEq3({template, column, deck})
+  return new BaseControl<ControlContext, Type>(makeBindings, eq3.bindings, eq3.state, { device })
+}
+
+export const makeEq3: MakeControlTemplate<Type> = ({ template, column, deck }) => {
+  const bindings: Type['bindings'] = {}
+  const fxParams = root.equalizerRacks[0].effect_units[deck].effects[0].parameters
+  eq3Channel.forEach((v, i) => {
+    bindings[`knob.${v}`] = {
+      type: LCMidiComponent,
+      target: [template, `knob.${2-i}.${column}`],
+      listeners: {
+        midi: ({ bindings }: Control<Type>) => ({ value }: MidiMessage) => {
+          setValue(bindings[`val.${v}`].control, absoluteNonLin(value, 0, 1, 4))
+        }
+      }
+    }
+
+    bindings[`kill.${v}`] = {
+      type: ControlComponent,
+      target: fxParams[i].button_value,
+      listeners: {
+        update: ({ context: { device }, bindings }: Control<Type>) => ({ value }: ControlMessage) => {
+          device.sendColor(template, bindings[`knob.${v}`].led, device.colors[channelColorPalette[deck % 4][value ? 1 : 0]])
+        }
+      }
+    }
+
+    bindings[`val.${v}`] = {
+      type: ControlComponent,
+      target: fxParams[i].value,
+      softTakeOver: true,
+      listeners: {}
+    }
+  })
+
+  return {
+    state: {},
+    bindings,
+  }
+}
+

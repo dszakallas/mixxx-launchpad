@@ -39,13 +39,7 @@ export type Bindings<C extends ControlType<any>> = {
   [K in keyof C["bindings"]]: InstanceType<C["bindings"][K]["type"]>
 }
 
-export type IControl<Ctx, C extends ControlType<Ctx>> = {
-  bindings: Bindings<C>
-  state: C['state']
-  context: Ctx
-}
-
-export class Control<Ctx, C extends ControlType<Ctx>> extends Component implements IControl<Ctx, C> {
+export class Control<Ctx, C extends ControlType<Ctx>> extends Component {
   templates: C['bindings']
   bindings: Bindings<C>
   state: C['state']

@@ -60,6 +60,8 @@ export abstract class LaunchControlDevice extends MidiDevice {
   }
 }
 
+export type OnOff = "on" | "off" | undefined
+
 
 // LCMidiComponent stands for LaunchControlMidiComponent and augments MidiComponent with
 // the LaunchControl specific property of having a separate identifier for the LED when targeting with SysEx.
@@ -75,7 +77,7 @@ export class LCMidiComponent extends MidiComponent<LaunchControlDevice> {
   // Use the note parameter to listen to note on/off events instead of control change events. This is required for
   // certain controls like the mute/solo/arm buttons or channel controls. For reference, see the LaunchControl
   // programmer manual or controller.json.
-  constructor(device: LaunchControlDevice, template: number, controlKey: string, note: "on" | "off" | null = null) {
+  constructor(device: LaunchControlDevice, template: number, controlKey: string, note?: OnOff) {
     const controlName = note ? `${template}.${controlKey}.${note}` : `${template}.${controlKey}`
     super(device, device.controls[controlName])
     this.template = template

@@ -1,9 +1,9 @@
 import { map, range } from '@mixxx-launch/common'
-import { channelControlDefs, Component, ControlComponent, MidiControlDef, MidiMessage, sendShortMsg, setValue } from "@mixxx-launch/mixxx"
+import { Component, ControlComponent, MidiControlDef, MidiMessage, channelControlDefs, sendShortMsg, setValue } from "@mixxx-launch/mixxx"
 import { ControlMessage, createEffectUnitChannelDef, getValue, numDecks as mixxxNumDecks, root } from "@mixxx-launch/mixxx/src/Control"
-import { LaunchControlDevice, LCMidiComponent } from './device'
+import { LCMidiComponent, LaunchControlDevice } from './device'
 import { makeEffectParameterPage } from './effectParameter'
-import { makeEq3 } from './eq'
+import { makeEq3Control } from './eq'
 import { makeQuickEffect } from './fx'
 import { makePadSelector } from './padSelector'
 import { MakePage, makePager } from './pager'
@@ -120,7 +120,6 @@ const makeKillers = (template: number) => (device: LaunchControlDevice) => {
         device.sendColor(template, midiComponent.led, value ? device.colors.hi_red : device.colors.black)
       })
       children.push(controlComponent)
-      
     }
   }
   return container(children)
@@ -375,7 +374,7 @@ const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams
 
 
 const makeKitchenSinkPage = (template: number) => (device: LaunchControlDevice) => container([
-  ...makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
+  ...map((i) => makeEq3Control(device, template, i, i), range(4)),
   ...makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
   ...makeEffectMeta({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
   ...makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
@@ -383,7 +382,7 @@ const makeKitchenSinkPage = (template: number) => (device: LaunchControlDevice) 
 
 
 const makeKitchenSinkPage2 = (template: number) => (device: LaunchControlDevice) => container([
-  ...makeEq3({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
+  ...map((i) => makeEq3Control(device, template, i, i), range(4)),
   ...makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
   ...makeQuickEffect({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
   ...makeEffectSuper({ template, columnOffset: 4, rowOffset: 1, numDecks: mixxxNumDecks })(device),
