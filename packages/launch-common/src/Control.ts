@@ -5,7 +5,7 @@ import {
 export type BindingTemplate = {
   type: new (...args: any[]) => Component,
   target: any,
-  listeners: {
+  listeners?: {
     [_: string]: (control: any) => any
   }  
 }
@@ -17,7 +17,7 @@ export type ControlType < Ctx > = {
   type: string
   bindings: { [k: string | number | symbol]: BindingTemplate }
   params: Params
-  state: State
+  state?: State
   context?: Phantom<Ctx>
 }
 
@@ -26,7 +26,7 @@ export type Params = { [k: string]: any }
 
 export type ControlTemplate<C extends ControlType<any>> = {
   bindings: C['bindings']
-  state: C['state']
+  state?: C['state']
 }
 
 export type MakeControlTemplate<C extends ControlType<any>> = (
@@ -59,8 +59,9 @@ export class Control<Ctx, C extends ControlType<Ctx>> extends Component {
 
     Object.keys(this.bindings).forEach((k) => {
       const b = this.bindings[k]
-      Object.keys(this.templates[k].listeners).forEach((event) => {
-        const listener = this.templates[k].listeners[event]
+      const listeners = this.templates[k].listeners ?? {}
+      Object.keys(listeners).forEach((event) => {
+        const listener= listeners[event]
         if (listener != null) {
           b.addListener(event, listener(this))
         }

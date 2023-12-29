@@ -1,13 +1,16 @@
 import { map, range } from '@mixxx-launch/common'
-import { Component, ControlComponent, MidiControlDef, MidiMessage, channelControlDefs, sendShortMsg, setValue } from "@mixxx-launch/mixxx"
-import { ControlMessage, createEffectUnitChannelDef, getValue, numDecks as mixxxNumDecks, root } from "@mixxx-launch/mixxx/src/Control"
+import { Control as BaseControl } from '@mixxx-launch/launch-common/src/Control'
+import { Component, ControlComponent, MidiControlDef, MidiMessage, channelControlDefs, setValue } from "@mixxx-launch/mixxx"
+import { numDecks as mixxxNumDecks } from "@mixxx-launch/mixxx/src/Control"
+import { ControlContext, makeBindings } from './Control'
+import { Eq3KillType, Eq3Type, makeEq3, makeEq3Kill } from './controls/eq'
+import { FxEnablerType, FxMetaType, FxMixType, FxSelectorType, FxSuperType, QuickFxType, makeFxEnabler, makeFxMeta, makeFxMix, makeFxSelector, makeFxSuper, makeQuickFx } from './controls/fx'
 import { LCMidiComponent, LaunchControlDevice } from './device'
 import { makeEffectParameterPage } from './effectParameter'
-import { makeEq3Control } from './eq'
-import { makeQuickEffect } from './fx'
 import { makePadSelector } from './padSelector'
 import { MakePage, makePager } from './pager'
 import { VerticalGroupParams } from './util'
+
 
 export type MakeComponent = (device: LaunchControlDevice) => Component
 
@@ -96,38 +99,9 @@ const makeGain = ({ template, columnOffset, numDecks }: VerticalGroupParams) => 
   return children
 }
 
-const makeKillers = (template: number) => (device: LaunchControlDevice) => {
-  const children: Component[] = []
-
-  for (const i of range(4)) {
-    const row = ~~(i / 2)
-    const col = i % 2
-
-    const controls = [...map(j => root.equalizerRacks[0].effect_units[i].effects[0].parameters[2 - j].button_value, range(3)), root.quickEffectRacks[0].effect_units[i].enabled]
-    for (const j of range(4)) {
-      const midiComponent = new LCMidiComponent(device, template, `pad.${row}.${(col * 4) + j}`, 'on')
-
-      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
-        if (value) {
-          setValue(controls[j], 1 - getValue(controls[j]))
-        }
-      })
-      children.push(midiComponent)
-
-      const controlComponent = new ControlComponent(controls[j])
-
-      controlComponent.addListener('update', ({ value }: ControlMessage) => {
-        device.sendColor(template, midiComponent.led, value ? device.colors.hi_red : device.colors.black)
-      })
-      children.push(controlComponent)
-    }
-  }
-  return container(children)
-}
-
-
 // given a MakePage, creates a MakeComponent, which rerenders the page when the template changes
 // by simply reinitializing the page with the new template
+
 const statelessFreePage = (makePage: MakePage): MakeComponent => (device: LaunchControlDevice): Component => {
   return new class extends Component {
     _device: LaunchControlDevice
@@ -163,159 +137,6 @@ const statelessFreePage = (makePage: MakePage): MakeComponent => (device: Launch
   }(device)
 }
 
-const makeEffectSelector = (template: number) => (device: LaunchControlDevice) => {
-  const children: Component[] = []
-
-  for (const i of range(4)) {
-    const row = ~~(i / 2)
-    const col = i % 2
-    for (const j of range(4)) {
-
-      const midiComponent = new LCMidiComponent(device, template, `pad.${row}.${(col * 4) + j}`, 'on') 
-
-      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
-        if (value) {
-          setValue(control, 1 - getValue(control))
-        }
-      })
-      children.push(midiComponent)
-
-      const control = createEffectUnitChannelDef(
-        "EffectRack1", `EffectUnit${j + 1}`, `Channel${i + 1}`,
-      ).enable
-      const controlComponent = new ControlComponent(control)
-      controlComponent.addListener('update', ({ value }: ControlMessage) => {
-        device.sendColor(template, midiComponent.led, value ? device.colors.hi_yellow : device.colors.black)
-      })
-      children.push(controlComponent)
-    }
-  }
-
-  return container(children)
-}
-
-const makeEnablers = (template: number) => (device: LaunchControlDevice) => {
-  const children: Component[] = []
-
-  for (const i of range(4)) {
-    const row = ~~(i / 2)
-    const col = i % 2
-    const controls = [...map(j => root.effectRacks[0].effect_units[i].effects[j].enabled, range(3)), root.effectRacks[0].effect_units[i].enabled]
-    controls.forEach((control, j) => {
-      const midiControl = device.controls[`${template}.pad.${row}.${(col * 4) + j}.on`]
-      const midiComponent = new LCMidiComponent(device, template, `pad.${row}.${(col * 4) + j}`, 'on')
-
-      children.push(midiComponent)
-      if (!control) {
-        sendShortMsg(midiControl, device.colors.black)
-        midiComponent.addListener('mount', () => {
-          device.sendColor(template, midiComponent.led, device.colors.black)
-        })
-        return
-      }
-
-      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
-        if (value) {
-          setValue(control, 1 - getValue(control))
-        }
-      })
-      const controlComponent = new ControlComponent(control)
-      controlComponent.addListener('update', ({ value }: ControlMessage) => {
-        device.sendColor(template, midiComponent.led, value ? device.colors.hi_green : device.colors.black)
-      })
-      children.push(controlComponent)
-
-    })
-  }
-  return container(children)
-}
-
-const makeEffectMeta = ({ template, columnOffset, numDecks }: VerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
-  columnOffset = columnOffset || 0
-  const children: Component[] = []
-
-  const channelColorPalette = [
-    device.colors.hi_red,
-    device.colors.hi_yellow,
-    device.colors.hi_green,
-    device.colors.hi_amber,
-  ] 
-
-  for (const i of range(numDecks)) {
-    for (const j of range(3)) {
-      const effect = root.effectRacks[0].effect_units[i].effects[j]
-      const meta = new ControlComponent(effect.meta, true)
-      children.push(meta)
-
-      const midiComponent = new LCMidiComponent(device, template, `knob.${j}.${i + columnOffset}`)
-      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
-        setValue(effect.meta, value / 127)
-      })
-      children.push(midiComponent)
-
-      const enabled = new ControlComponent(effect.enabled)
-      enabled.addListener('update', ({ value }: ControlMessage) => {
-        device.sendColor(template, midiComponent.led, value ? channelColorPalette[i % 4] : device.colors.black)
-      })
-
-      children.push(enabled)
-
-    }
-  }
-  return children
-}
-
-
-const makeEffectSuper = ({ template, columnOffset, rowOffset, numDecks }: VerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
-  columnOffset = columnOffset || 0
-  rowOffset = rowOffset || 0
-  const children: Component[] = []
-
-  const channelColorPalette = [
-    device.colors.hi_red,
-    device.colors.hi_yellow,
-    device.colors.hi_green,
-    device.colors.hi_amber,
-  ] 
-
-  for (const i of range(numDecks)) {
-    const effect = root.effectRacks[0].effect_units[i]
-    const super1 = new ControlComponent(effect.super1, true)
-    children.push(super1)
-
-    const midiComponent = new LCMidiComponent(device, template, `knob.${rowOffset}.${i + columnOffset}`)
-    midiComponent.addListener('midi', ({ value }: MidiMessage) => {
-      setValue(effect.super1, value / 127)
-    })
-    children.push(midiComponent)
-
-    const enabled = new ControlComponent(effect.enabled)
-    enabled.addListener('update', ({ value }: ControlMessage) => {
-      device.sendColor(template, midiComponent.led, value ? channelColorPalette[i % 4] : device.colors.black)
-    })
-
-    children.push(enabled)
-  }
-  return children
-}
-
-const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams) => (device: LaunchControlDevice): Component[] => {
-  columnOffset = columnOffset || 0
-  const children: Component[] = []
-  for (const i of range(numDecks)) {
-    const effectUnit = root.effectRacks[0].effect_units[i]
-    const mix = new ControlComponent(effectUnit.mix, true)
-    children.push(mix)
-
-    const midiComponent = new LCMidiComponent(device, template, `fader.0.${ i + columnOffset }`)
-    midiComponent.addListener('midi', ({ value }: MidiMessage) => {
-      setValue(effectUnit.mix, value / 127)
-    })
-    children.push(midiComponent)
-  }
-
-  return children
-}
 
 // const makeEffectUnit = (device: LaunchControlDevice) => {
 //   const children: Component[] = []
@@ -372,21 +193,111 @@ const makeEffectMix = ({ template, columnOffset, numDecks }: VerticalGroupParams
 //   ...makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
 // ])
 
+export type GenericControlType<T> = { type: T, params: { column: number, deck: number, template: number } }
+
+export type ControlTypeIndex = |
+  GenericControlType<'eq3'> |
+  GenericControlType<'gain'> |
+  GenericControlType<'fxMeta3'> |
+  GenericControlType<'fxMix'> |
+  GenericControlType<'quickFxSuper'> |
+  GenericControlType<'fxSuper'>
+
+
+export type ControlConf = {
+  type: ControlTypeIndex['type']
+  params?: Omit<ControlTypeIndex['params'], 'template'>
+}
+
+
+export type GenericPage = {
+  type: 'genericPage'
+  controls: readonly ControlConf[]
+}
+
+export type Pages = {
+  pages: readonly GenericPage[]
+}
+
+
+// const _pages: Pages = {
+//   pages : [{
+//     type: 'genericPage',
+//     controls: [
+//       ...map((i) => ({ type: 'eq3' as const, params: {column: i, deck: i} }), range(4)),
+//       ...map((i) => ({ type: 'gain' as const, params: { column: i, deck: i } }), range(4)),
+//       ...map((i) => ({ type: 'fxMeta3' as const, column: i + 4, deck: i }), range(4)),
+//       // ...map((i) => ({ type: 'fxMix', column: i + 4, deck: i }), range(4)),
+//     ]}, {
+//       type: 'genericPage',
+//       controls: [
+//         // ...map((i) => ({ type: 'eq3', params: {column: i, deck: i} }), range(4)),
+//         // ...map((i) => ({ type: 'gain', column: i, deck: i }), range(4)),
+//         // ...map((i) => ({ type: 'quickFxSuper', column: i + 4, deck: i }), range(4)),
+//         // ...map((i) => ({ type: 'fxSuper', column: i + 4, deck: i }), range(4)),
+//         // ...map((i) => ({ type: 'fxMix', column: i + 4, deck: i }), range(4)),
+//       ]
+//     }
+//   ]
+// }
+
+const makeEq3Legacy = (device: LaunchControlDevice, template: number, column: number, deck: number) => {
+  const eq3 = makeEq3({ template, column, deck })
+  return new BaseControl<ControlContext, Eq3Type>(makeBindings, eq3.bindings, eq3.state, { device })
+}
+
+const makeEq3KillLegacy = (device: LaunchControlDevice, template: number, row: number, column: number, deck: number) => {
+  const eq3 = makeEq3Kill({ template, row, column, deck })
+  return new BaseControl<ControlContext, Eq3KillType>(makeBindings, eq3.bindings, eq3.state, { device })
+}
+
+const makeFxEnablerLegacy = (device: LaunchControlDevice, template: number, row: number, column: number, deck: number) => {
+  const fxEnabler = makeFxEnabler({ template, row, column, deck })
+  return new BaseControl<ControlContext, FxEnablerType>(makeBindings, fxEnabler.bindings, fxEnabler.state, { device })
+}
+
+const makeFxSelectorLegacy = (device: LaunchControlDevice, template: number, row: number, column: number, deck: number) => {
+  const fxSelector = makeFxSelector({ template, row, column, deck })
+  return new BaseControl<ControlContext, FxSelectorType>(makeBindings, fxSelector.bindings, fxSelector.state, { device })
+}
+
+const makeFxMetaLegacy = (device: LaunchControlDevice, template: number, column: number, unit: number) => {
+  const fxMeta = makeFxMeta({ template, column, unit })
+  return new BaseControl<ControlContext, FxMetaType>(makeBindings, fxMeta.bindings, fxMeta.state, { device })
+}
+
+const makeFxSuperLegacy = (device: LaunchControlDevice, template: number, column: number, row: number, unit: number) => {
+  const fxSuper = makeFxSuper({ template, column, row, unit })
+  return new BaseControl<ControlContext, FxSuperType>(makeBindings, fxSuper.bindings, fxSuper.state, { device })
+}
+
+const makeFxMixLegacy = (device: LaunchControlDevice, template: number, column: number, unit: number) => {
+  const fxMix = makeFxMix({ template, column, unit })
+  return new BaseControl<ControlContext, FxMixType>(makeBindings, fxMix.bindings, fxMix.state, { device })
+}
+
+const makeQuickFxLegacy = (device: LaunchControlDevice, template: number, column: number, row: number, unit: number) => {
+  const quickFx = makeQuickFx({ template, row, column, unit })
+  return new BaseControl<ControlContext, QuickFxType>(makeBindings, quickFx.bindings, quickFx.state, { device })
+}
 
 const makeKitchenSinkPage = (template: number) => (device: LaunchControlDevice) => container([
-  ...map((i) => makeEq3Control(device, template, i, i), range(4)),
+  ...map((i) => makeEq3Legacy(device, template, i, i), range(4)),
   ...makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
-  ...makeEffectMeta({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
-  ...makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
+  ...map((i) => makeFxMetaLegacy(device, template, i + 4, i), range(4)),
+  ...map((i) => makeFxMixLegacy(device, template, i + 4, i), range(4)),
 ])
 
 
 const makeKitchenSinkPage2 = (template: number) => (device: LaunchControlDevice) => container([
-  ...map((i) => makeEq3Control(device, template, i, i), range(4)),
+  ...map((i) => makeEq3Legacy(device, template, i, i), range(4)),
   ...makeGain({ template, columnOffset: 0, numDecks: mixxxNumDecks })(device),
-  ...makeQuickEffect({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
-  ...makeEffectSuper({ template, columnOffset: 4, rowOffset: 1, numDecks: mixxxNumDecks })(device),
-  ...makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
+  ...map((i) => makeQuickFxLegacy(device, template, i + 4, 0, i), range(4)),
+  // ...makeQuickEffect({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
+  ...map((i) => makeFxSuperLegacy(device, template, i + 4, 1, i), range(4)),
+  //...makeEffectSuper({ template, columnOffset: 4, rowOffset: 1, numDecks: mixxxNumDecks })(device),
+  ...map((i) => makeFxMixLegacy(device, template, i + 4, i), range(4)),
+  //...makeEffectMix({ template, columnOffset: 4, numDecks: mixxxNumDecks })(device),
 ])
 
 
@@ -394,9 +305,30 @@ const makeApp = (device: LaunchControlDevice) => container([
   makePager([makeKitchenSinkPage, makeKitchenSinkPage2, makeEffectParameterPage], 16)(device),
   makePager(
     [() => makePadSelector([
-      statelessFreePage(makeEffectSelector),
-      statelessFreePage(makeKillers),
-      statelessFreePage(makeEnablers),
+      statelessFreePage((template) => (device) => {
+        return container([
+          makeFxSelectorLegacy(device, template, 0, 0, 0),
+          makeFxSelectorLegacy(device, template, 0, 4, 1),
+          makeFxSelectorLegacy(device, template, 1, 0, 2),
+          makeFxSelectorLegacy(device, template, 1, 4, 3)
+        ])
+      }),
+      statelessFreePage((template) => (device) => {
+        return container([
+          makeEq3KillLegacy(device, template, 0, 0, 0),
+          makeEq3KillLegacy(device, template, 0, 4, 1),
+          makeEq3KillLegacy(device, template, 1, 0, 2),
+          makeEq3KillLegacy(device, template, 1, 4, 3)
+        ])
+      }),
+      statelessFreePage((template) => (device) => {
+        return container([
+          makeFxEnablerLegacy(device, template, 0, 0, 0),
+          makeFxEnablerLegacy(device, template, 0, 4, 1),
+          makeFxEnablerLegacy(device, template, 1, 0, 2),
+          makeFxEnablerLegacy(device, template, 1, 4, 3),
+        ])
+      })
     ])]
   )(device),
 ])

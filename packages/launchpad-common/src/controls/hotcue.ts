@@ -21,7 +21,6 @@ export type Type = {
     [k: `cue.${string}`]: ControlBindingTemplate<Type>
     [k: `color.${string}`]: ControlBindingTemplate<Type>
   }
-  state: Record<string, unknown>
 }
 
 const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0, gridPosition, deck, theme }) => {
@@ -96,10 +95,7 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0, gridPositi
     }
   }
 
-  return {
-    bindings,
-    state: {},
-  }
+  return { bindings }
 }
 
 export default make

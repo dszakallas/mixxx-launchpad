@@ -16,7 +16,6 @@ export type Type = {
     gridPosition: [number, number],
     amount: number,
   }
-  state: Record<string, unknown>
 }
 
 const make: MakeDeckControlTemplate<Type> = ({ amount, gridPosition, deck }) => {
@@ -25,7 +24,6 @@ const make: MakeDeckControlTemplate<Type> = ({ amount, gridPosition, deck }) => 
       ({ context: { modifier } }: Control<Type>) =>
         onAttack((_: MidiMessage) => modes(modifier.getState(), () => setValue(deck.loop_move, dir * amount)))
   return {
-    state: {},
     bindings: {
       back: {
         type: MidiComponent,

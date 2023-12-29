@@ -12,8 +12,8 @@ export type Control<C extends ControlType> = BaseControl<ControlContext, C>
 export type ControlBindingTemplate<C extends ControlType> = {
   type: new (...args: any[]) => ControlComponent
   target: ControlDef
-  softTakeOver?: boolean
-  listeners: {
+  softTakeover?: boolean
+  listeners?: {
     update?: (c: Control<C>) => (message: ControlMessage) => void
     mount?: (c: Control<C>) => () => void
     unmount?: (c: Control<C>) => () => void
@@ -43,8 +43,8 @@ export const makeBindings = <C extends ControlType>(ctx: ControlContext, t: Bind
   for (const k in t) {
     if (t[k].type === ControlComponent) {
       const c = t[k] as ControlBindingTemplate<C>
-      const softTakeOver = c.softTakeOver || false
-      ret[k] = new ControlComponent(c.target, softTakeOver)
+      const softTakeover = c.softTakeover || false
+      ret[k] = new ControlComponent(c.target, softTakeover)
     } else {
       const c = t[k] as MidiBindingTemplate<C>
       ret[k] = new LCMidiComponent(ctx.device, ...c.target)

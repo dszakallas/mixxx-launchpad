@@ -12,7 +12,6 @@ export type Type = {
     loops: readonly number[]
     rows: number
   }
-  state: Record<string, unknown>
   bindings: {
     [k: `b.${string}`]: ButtonBindingTemplate<Type>
     [k: `c.${string}`]: ControlBindingTemplate<Type>
@@ -57,10 +56,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, loops, rows }
     }
   })
 
-  return {
-    bindings,
-    state: {},
-  }
+  return { bindings }
 }
 
 export default make

@@ -16,7 +16,6 @@ export type Type = {
     deck: ChannelControlDef
     gridPosition: [number, number]
   }
-  state: Record<string, unknown>
 }
 
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
@@ -25,7 +24,6 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
     setValue(deck.bpm, avg)
   })
   return {
-    state: {},
     bindings: {
       tap: {
         type: MidiComponent,

@@ -10,7 +10,6 @@ export type Type = {
     halve: ButtonBindingTemplate<Type>
     double: ButtonBindingTemplate<Type>
   }
-  state: Record<string, unknown>
   params: {
     deck: ChannelControlDef
     gridPosition: [number, number]
@@ -26,7 +25,6 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         }
   const onMidi = (k: 'double' | 'halve') => (_: Control<Type>) => onAttack((_: MidiMessage) => setValue(deck[`loop_${k}`], 1))
   return {
-    state: {},
     bindings: {
       halve: {
         type: MidiComponent,
