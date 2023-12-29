@@ -15,12 +15,10 @@ export type Type = {
     deck: ChannelControlDef,
     gridPosition: [number, number]
   }
-  state: Record<string, unknown>
 }
 
 
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
-  state: {},
   bindings: {
     cue: {
       type: MidiComponent,

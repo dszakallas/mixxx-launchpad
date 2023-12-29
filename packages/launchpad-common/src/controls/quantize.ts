@@ -11,7 +11,6 @@ export type Type = {
     deck: ChannelControlDef
     gridPosition: [number, number]
   }
-  state: Record<string, unknown>
   bindings: {
     quantize: ControlBindingTemplate<Type>
     button: ButtonBindingTemplate<Type>
@@ -19,7 +18,6 @@ export type Type = {
 }
 
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
-  state: {},
   bindings: {
     quantize: {
       type: ControlComponent,

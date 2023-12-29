@@ -64,8 +64,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
           midi: onGrid('forth'),
         }
       },
-    },
-    state: {}
+    }
   }
 }
 

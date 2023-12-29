@@ -11,7 +11,6 @@ export type Type = {
     in: ButtonBindingTemplate<Type>
     out: ButtonBindingTemplate<Type>
   }
-  state: Record<string, unknown>
   params: {
     deck: ChannelControlDef,
     gridPosition: [number, number]
@@ -46,7 +45,6 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
           )
         })
   return {
-    state: {},
     bindings: {
       in: {
         type: MidiComponent,
