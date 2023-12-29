@@ -510,13 +510,13 @@ const disconnect = (handle: ControlHandle): void => {
 
 export class ControlComponent extends Component {
   control: ControlDef
-  private _handle?: any
+  private _handle?: ControlHandle
   private _softTakeover?: boolean
 
   constructor(control: ControlDef, softTakeover?: boolean) {
     super()
     this.control = control
-    this._handle = null
+    this._handle = undefined
     this._softTakeover = softTakeover
   }
 
@@ -542,7 +542,7 @@ export class ControlComponent extends Component {
         softTakeOverIgnoreNextValue(this.control)
       }
       disconnect(this._handle)
-      this._handle = null
+      this._handle = undefined
     }
   }
 }

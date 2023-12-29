@@ -1,54 +1,60 @@
-import type { ControlComponent, ControlMessage } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, ControlComponent, ControlMessage, MidiComponent } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 
-import { Control, MakeDeckControlTemplate } from '../Control'
-import { MidiComponent } from '../device'
+import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
 import { modes, retainAttackMode } from '../ModifierSidebar'
+
 
 export type Type = {
   type: 'cue'
   bindings: {
-    cue: MidiComponent
-    cueIndicator: ControlComponent
+    cue: ButtonBindingTemplate<Type>
+    cueIndicator: ControlBindingTemplate<Type>
   }
-  params: Record<string, unknown>
-  state: Record<string, unknown>
+  params: {
+    deck: ChannelControlDef,
+    gridPosition: [number, number]
+  }
 }
 
-const make: MakeDeckControlTemplate<Type> = (_, gridPosition, deck) => ({
-  state: {},
+
+const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
   bindings: {
     cue: {
-      type: 'button',
+      type: MidiComponent,
       target: gridPosition,
-      midi: ({ context: { modifier } }: Control<Type>) =>
-        retainAttackMode(modifier, (mode, { value }) => {
-          modes(
-            mode,
-            () => {
-              setValue(deck.cue_default, value ? 1 : 0)
-            },
-            () => value && setValue(deck.cue_set, 1),
-          )
-        }),
+      listeners: {
+        midi: ({ context: { modifier } }: Control<Type>) =>
+          retainAttackMode(modifier, (mode, { value }) => {
+            modes(
+              mode,
+              () => {
+                setValue(deck.cue_default, value ? 1 : 0)
+              },
+              () => value && setValue(deck.cue_set, 1),
+            )
+          }),
+      },
     },
     cueIndicator: {
-      type: 'control',
+      type: ControlComponent,
       target: deck.cue_indicator,
-      update:
-        ({
-          bindings: {
-            cue: { control },
-          },
-          context: { device },
-        }: Control<Type>) =>
-        ({ value }: ControlMessage) => {
-          if (value) {
-            device.sendColor(control, device.colors.hi_red)
-          } else if (!value) {
-            device.clearColor(control)
-          }
-        },
+      listeners: {
+        update:
+          ({
+            bindings: {
+              cue: { control },
+            },
+            context: { device },
+          }: Control<Type>) =>
+            ({ value }: ControlMessage) => {
+              if (value) {
+                device.sendColor(control, device.colors.hi_red)
+              } else if (!value) {
+                device.clearColor(control)
+              }
+            },
+      },
     },
   },
 })

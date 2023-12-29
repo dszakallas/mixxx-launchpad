@@ -15,12 +15,12 @@ export type MidiMessage = {
 export type RawMidiMessageTask = (channel: number, control: number, value: number, status: number) => void
 export type SysexTask = (data: number[]) => void
 
-const midiCallbackPrefix = '__midi' as const
+const midiCallbackPrefix = '__m' as const
 // mixxx currently doesn't support custom names for sysex callback handlers, see https://github.com/mixxxdj/mixxx/issues/11536
 const sysexCallbackPrefix = 'incomingData' as const
 
 type RawMidiMessageTaskRegistry = {
-  [k in `${typeof midiCallbackPrefix}_${string}`]?: RawMidiMessageTask
+  [k in `${typeof midiCallbackPrefix}${string}`]?: RawMidiMessageTask
 } & { [sysexCallbackPrefix]: SysexTask }
 
 export abstract class MidiDevice extends Component {
@@ -41,7 +41,7 @@ export abstract class MidiDevice extends Component {
     super.onMount()
     const _this = this as unknown as RawMidiMessageTaskRegistry
     Object.values(this.controls).forEach((control) => {
-      _this[`${midiCallbackPrefix}_${hexFormat(control.status, 2)}_${hexFormat(control.midino, 2)}`] = (
+      _this[`${midiCallbackPrefix}${hexFormat(control.status, 2)}${hexFormat(control.midino, 2)}`] = (
         _channel,
         _control,
         value,

@@ -31,7 +31,7 @@ const [pkg, controller] = await Promise.all([
 ])
 
 const templateFile = join('scripts', 'template.xml.ejs')
-const hexFormat = (n, d) => '0x' + n.toString(16).toUpperCase().padStart(d, '0')
+const hexFormat = (n, d) => n.toString(16).toUpperCase().padStart(d, '0')
 
 const template = await readFile(templateFile)
 const rendered = ejs.render(template.toString(), {

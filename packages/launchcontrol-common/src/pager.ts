@@ -1,11 +1,9 @@
 import { lazy, Lazy } from "@mixxx-launch/common"
 import { Component } from "@mixxx-launch/mixxx"
 import { LaunchControlDevice } from "./device"
+import { PageConf, makePageIndex } from "./page"
 
-// For a single template
-export type MakePage = (template: number) => (device: LaunchControlDevice) => Component
-
-export const makePager = (pages: MakePage[], repeat: number | null = null) => (device: LaunchControlDevice) => new Pager(device, pages, repeat)
+export const makePager = (pages: readonly PageConf[], repeat: number | null = null) => (device: LaunchControlDevice) => new Pager(device, pages, repeat)
 
 export class Pager extends Component {
   pages: Lazy<Component>[]
@@ -14,12 +12,12 @@ export class Pager extends Component {
   private _selected: number | null
   private _device: LaunchControlDevice
 
-  constructor(device: LaunchControlDevice, pages: MakePage[], repeat: number | null = null) {
+  constructor(device: LaunchControlDevice, pages: readonly PageConf[], repeat: number | null = null) {
     super()
     this._device = device
     this._selected = 0
     this.repeat = repeat || pages.length 
-    this.pages = pages.map((page, i) => lazy(() => page(i)(this._device)))
+    this.pages = pages.map((page, i) => lazy(() => makePageIndex[page.type](page as unknown as any, i, this._device)))
   }
 
   onTemplate(template: number) {
