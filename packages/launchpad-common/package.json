@@ -7,6 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "eventemitter3": "~5.0.0",
-    "@mixxx-launch/mixxx": "~1.0.0"
+    "@mixxx-launch/mixxx": "~1.0.0",
+    "@mixxx-launch/launch-common": "~1.0.0"
   }
 }

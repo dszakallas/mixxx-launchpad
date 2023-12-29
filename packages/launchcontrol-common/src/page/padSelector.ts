@@ -1,11 +1,18 @@
 import { lazy, Lazy } from "@mixxx-launch/common"
 import { Component, MidiMessage } from "@mixxx-launch/mixxx"
-import { MakeComponent } from "."
-import { LaunchControlDevice, LCMidiComponent } from "./device"
+import { MakeComponent } from "../util"
+import { LaunchControlDevice, LCMidiComponent } from "../device"
 
-export const makePadSelector = (pads: [MakeComponent, MakeComponent, MakeComponent], initialSelection: number = 0) => (device: LaunchControlDevice) => new PadSelector(device, pads, initialSelection)
 
-export default class PadSelector extends Component {
+export type PadSelectorPageConf = {
+  type: 'padSelectorPage'
+  pads: [MakeComponent, MakeComponent, MakeComponent]
+  initialSelection?: number
+}
+
+export const makePadSelectorPage = (conf: PadSelectorPageConf, _template: number, device: LaunchControlDevice) => new PadSelectorPage(device, conf.pads, conf.initialSelection)
+
+export default class PadSelectorPage extends Component {
   private _pads: Lazy<Component>[]
   private _device: LaunchControlDevice
   private _selected: number

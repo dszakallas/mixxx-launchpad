@@ -1,4 +1,3 @@
-import { MakeDeckControlTemplate } from '../Control'
 import makeBeatjump, { Type as Beatjump } from './beatjump'
 import makeBeatloop, { Type as Beatloop } from './beatloop'
 import makeCue, { Type as Cue } from './cue'
@@ -19,6 +18,7 @@ import makeReloop, { Type as Reloop } from './reloop'
 import makeSlip, { Type as Slip } from './slip'
 import makeSync, { Type as Sync } from './sync'
 import makeTap, { Type as Tap } from './tap'
+import { MakeDeckControlTemplate } from '../Control'
 
 export type ControlTypeIndex =
   | Beatjump
@@ -66,5 +66,6 @@ const index: MakeControlTemplateIndex = {
   sync: makeSync,
   tap: makeTap,
 }
+
 
 export default index

@@ -1,16 +1,18 @@
 import { posMod } from '@mixxx-launch/common'
-import { setValue } from '@mixxx-launch/mixxx'
-import { Control, MakeDeckControlTemplate } from '../Control'
+import { ChannelControlDef, setValue } from '@mixxx-launch/mixxx'
 import { MidiComponent } from '../device'
+import { ButtonBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
 import { modes, retainAttackMode } from '../ModifierSidebar'
 
 export type Type = {
   type: 'loopjump'
 
   bindings: {
-    [k: number]: MidiComponent
+    [k: number]: ButtonBindingTemplate<Type>
   }
   params: {
+    deck: ChannelControlDef,
+    gridPosition: [number, number]
     jumps: readonly [number, number][]
     vertical?: boolean
   }
@@ -23,67 +25,67 @@ export type Type = {
   }
 }
 
-const make: MakeDeckControlTemplate<Type> = ({ jumps, vertical = false }, gridPosition, deck) => {
-  const bindings: { [k: number]: any } = {}
+const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertical = false }) => {
+  const bindings: Type['bindings'] = {}
   const onMidi =
     (k: number, j: [number, number], d: number) =>
-    ({ context: { modifier, device }, bindings, state }: Control<Type>) =>
-      retainAttackMode(modifier, (mode, { value }) => {
-        modes(
-          mode,
-          () => {
-            if (!state.mode) {
-              if (value) {
-                setValue(deck.loop_move, j[state.set] * d)
-              }
-            } else {
-              if (value) {
-                const currentJump = j[state.set] * d
-
-                setValue(deck.loop_move, currentJump)
-                if (state.pressing != null) {
-                  device.sendColor(bindings[state.pressing].control, device.colors[`lo_${state.color[state.set]}`])
+      ({ context: { modifier, device }, bindings, state }: Control<Type>) =>
+        retainAttackMode(modifier, (mode, { value }) => {
+          modes(
+            mode,
+            () => {
+              if (!state.mode) {
+                if (value) {
+                  setValue(deck.loop_move, j[state.set] * d)
                 }
-                device.sendColor(bindings[k].control, device.colors[`hi_${state.color[state.set]}`])
-                state.pressing = k
-                state.diff = state.diff + currentJump
               } else {
-                if (state.pressing === k) {
-                  device.sendColor(bindings[k].control, device.colors[`lo_${state.color[state.set]}`])
-                  state.pressing = null
-                  setValue(deck.loop_move, -state.diff)
-                  state.diff = 0
+                if (value) {
+                  const currentJump = j[state.set] * d
+
+                  setValue(deck.loop_move, currentJump)
+                  if (state.pressing != null) {
+                    device.sendColor(bindings[state.pressing].control, device.colors[`lo_${state.color[state.set]}`])
+                  }
+                  device.sendColor(bindings[k].control, device.colors[`hi_${state.color[state.set]}`])
+                  state.pressing = k
+                  state.diff = state.diff + currentJump
+                } else {
+                  if (state.pressing === k) {
+                    device.sendColor(bindings[k].control, device.colors[`lo_${state.color[state.set]}`])
+                    state.pressing = null
+                    setValue(deck.loop_move, -state.diff)
+                    state.diff = 0
+                  }
                 }
               }
-            }
-          },
-          () => {
-            if (value) {
-              state.set = posMod(state.set + 1, 2)
-              const prefix = state.mode ? 'lo' : 'hi'
-              for (let b = 0; b < spec.length; ++b) {
-                device.sendColor(bindings[b].control, device.colors[`${prefix}_${state.color[state.set]}`])
+            },
+            () => {
+              if (value) {
+                state.set = posMod(state.set + 1, 2)
+                const prefix = state.mode ? 'lo' : 'hi'
+                for (let b = 0; b < spec.length; ++b) {
+                  device.sendColor(bindings[b].control, device.colors[`${prefix}_${state.color[state.set]}`])
+                }
               }
-            }
-          },
-          () => {
-            if (value) {
-              state.mode = !state.mode
-              const prefix = state.mode ? 'lo' : 'hi'
-              for (let b = 0; b < spec.length; ++b) {
-                device.sendColor(bindings[b].control, device.colors[`${prefix}_${state.color[state.set]}`])
+            },
+            () => {
+              if (value) {
+                state.mode = !state.mode
+                const prefix = state.mode ? 'lo' : 'hi'
+                for (let b = 0; b < spec.length; ++b) {
+                  device.sendColor(bindings[b].control, device.colors[`${prefix}_${state.color[state.set]}`])
+                }
               }
-            }
-          },
-        )
-      })
+            },
+          )
+        })
   const onMount =
     (k: number) =>
-    ({ context: { device }, bindings, state }: Control<Type>) =>
-    () => {
-      const prefix = state.mode ? 'lo' : 'hi'
-      device.sendColor(bindings[k].control, device.colors[`${prefix}_${state.color[state.set]}`])
-    }
+      ({ context: { device }, bindings, state }: Control<Type>) =>
+        () => {
+          const prefix = state.mode ? 'lo' : 'hi'
+          device.sendColor(bindings[k].control, device.colors[`${prefix}_${state.color[state.set]}`])
+        }
   const spec = jumps.flatMap((j) => [
     [j, 1],
     [j, -1],
@@ -91,12 +93,14 @@ const make: MakeDeckControlTemplate<Type> = ({ jumps, vertical = false }, gridPo
 
   spec.forEach(([jump, dir], i) => {
     bindings[i] = {
-      type: 'button',
+      type: MidiComponent,
       target: vertical
         ? [gridPosition[0] + (i % 2), gridPosition[1] + ~~(i / 2)]
         : [gridPosition[0] + ~~(i / 2), gridPosition[1] + (i % 2)],
-      midi: onMidi(i, jump as [number, number], dir as number),
-      mount: onMount(i),
+      listeners: {
+        mount: onMount(i),
+        midi: onMidi(i, jump as [number, number], dir as number),
+      }
     }
   })
   return {

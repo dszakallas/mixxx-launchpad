@@ -1,13 +1,14 @@
 import { posMod } from '@mixxx-launch/common'
-import { setValue } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, MidiComponent, setValue } from '@mixxx-launch/mixxx'
 
-import { Control, MakeDeckControlTemplate } from '../Control'
-import { MidiComponent } from '../device'
+import { ButtonBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
 import { modes, ModifierState, retainAttackMode } from '../ModifierSidebar'
 
 export type Type = {
   type: 'beatjump'
   params: {
+    deck: ChannelControlDef,
+    gridPosition: [number, number]
     jumps: readonly [number, number][]
     vertical?: boolean
   }
@@ -17,13 +18,13 @@ export type Type = {
     diff: number
     set: number
   }
-  bindings: { [k: number]: MidiComponent }
+  bindings: { [k: number]: ButtonBindingTemplate<Type> }
 }
 
 const colors = ['green', 'red'] as const
 
-const make: MakeDeckControlTemplate<Type> = ({ jumps, vertical = false }, gridPosition, deck) => {
-  const bindings: { [k: string]: any } = {}
+const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertical = false }) => {
+  const bindings: Type['bindings'] = {}
   const spec = jumps.flatMap((j) => [
     [j, -1],
     [j, 1],
@@ -31,72 +32,74 @@ const make: MakeDeckControlTemplate<Type> = ({ jumps, vertical = false }, gridPo
 
   const onMidi =
     (k: number, j: [number, number], d: number) =>
-    ({ bindings, state, context: { modifier, device } }: Control<Type>) =>
-      retainAttackMode(modifier, (mode: ModifierState, { value }) => {
-        modes(
-          mode,
-          () => {
-            if (!state.mode) {
-              if (value) {
-                setValue(deck.beatjump, j[state.set] * d)
-              }
-            } else {
-              if (value) {
-                const currentJump = j[state.set] * d
-                setValue(deck.beatjump, currentJump)
-                if (state.pressing != null) {
-                  device.sendColor(bindings[state.pressing].control, device.colors[`lo_${colors[state.set]}`])
+      ({ bindings, state, context: { modifier, device } }: Control<Type>) =>
+        retainAttackMode(modifier, (mode: ModifierState, { value }) => {
+          modes(
+            mode,
+            () => {
+              if (!state.mode) {
+                if (value) {
+                  setValue(deck.beatjump, j[state.set] * d)
                 }
-                device.sendColor(bindings[k].control, device.colors[`hi_${colors[state.set]}`])
-                state.pressing = k
-                state.diff = state.diff + currentJump
               } else {
-                if (state.pressing === k) {
-                  device.sendColor(bindings[k].control, device.colors[`lo_${colors[state.set]}`])
-                  state.pressing = null
-                  setValue(deck.beatjump, -state.diff)
-                  state.diff = 0
+                if (value) {
+                  const currentJump = j[state.set] * d
+                  setValue(deck.beatjump, currentJump)
+                  if (state.pressing != null) {
+                    device.sendColor(bindings[state.pressing].control, device.colors[`lo_${colors[state.set]}`])
+                  }
+                  device.sendColor(bindings[k].control, device.colors[`hi_${colors[state.set]}`])
+                  state.pressing = k
+                  state.diff = state.diff + currentJump
+                } else {
+                  if (state.pressing === k) {
+                    device.sendColor(bindings[k].control, device.colors[`lo_${colors[state.set]}`])
+                    state.pressing = null
+                    setValue(deck.beatjump, -state.diff)
+                    state.diff = 0
+                  }
                 }
               }
-            }
-          },
-          () => {
-            if (value) {
-              state.set = posMod(state.set + 1, 2)
-              const prefix = state.mode ? 'lo' : 'hi'
-              for (let b = 0; b < spec.length; ++b) {
-                device.sendColor(bindings[b].control, device.colors[`${prefix}_${colors[state.set]}`])
+            },
+            () => {
+              if (value) {
+                state.set = posMod(state.set + 1, 2)
+                const prefix = state.mode ? 'lo' : 'hi'
+                for (let b = 0; b < spec.length; ++b) {
+                  device.sendColor(bindings[b].control, device.colors[`${prefix}_${colors[state.set]}`])
+                }
               }
-            }
-          },
-          () => {
-            if (value) {
-              state.mode = !state.mode
-              const prefix = state.mode ? 'lo' : 'hi'
-              for (let b = 0; b < spec.length; ++b) {
-                device.sendColor(bindings[b].control, device.colors[`${prefix}_${colors[state.set]}`])
+            },
+            () => {
+              if (value) {
+                state.mode = !state.mode
+                const prefix = state.mode ? 'lo' : 'hi'
+                for (let b = 0; b < spec.length; ++b) {
+                  device.sendColor(bindings[b].control, device.colors[`${prefix}_${colors[state.set]}`])
+                }
               }
-            }
-          },
-        )
-      })
+            },
+          )
+        })
   const onMount =
     (k: number) =>
-    ({ bindings, state, context: { device } }: Control<Type>) =>
-    () => {
-      const prefix = state.mode ? 'lo' : 'hi'
+      ({ bindings, state, context: { device } }: Control<Type>) =>
+        () => {
+          const prefix = state.mode ? 'lo' : 'hi'
 
-      device.sendColor(bindings[k].control, device.colors[`${prefix}_${colors[state.set]}`])
-    }
+          device.sendColor(bindings[k].control, device.colors[`${prefix}_${colors[state.set]}`])
+        }
 
   spec.forEach(([jump, dir], i) => {
     bindings[i] = {
-      type: 'button',
+      type: MidiComponent,
       target: vertical
         ? [gridPosition[0] + (i % 2), gridPosition[1] + ~~(i / 2)]
         : [gridPosition[0] + ~~(i / 2), gridPosition[1] + (i % 2)],
-      midi: onMidi(i, jump as [number, number], dir as number),
-      mount: onMount(i),
+      listeners: {
+        midi: onMidi(i, jump as [number, number], dir as number),
+        mount: onMount(i),
+      }
     }
   })
   return {
