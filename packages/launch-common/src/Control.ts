@@ -3,10 +3,10 @@ import {
 } from '@mixxx-launch/mixxx'
 
 export type BindingTemplate = {
-  type: new (...args: any[]) => Component,
-  target: any,
+  type: new (...args: unknown[]) => Component,
+  target: unknown,
   listeners?: {
-    [_: string]: (control: any) => any
+    [_: string]: (control: any) => (...args: any[]) => void
   }  
 }
 
@@ -21,21 +21,21 @@ export type ControlType < Ctx > = {
   context?: Phantom<Ctx>
 }
 
-export type State = { [k: string]: any }
-export type Params = { [k: string]: any }
+export type State = { [k: string]: unknown }
+export type Params = { [k: string]: unknown }
 
-export type ControlTemplate<C extends ControlType<any>> = {
+export type ControlTemplate<C extends ControlType<unknown>> = {
   bindings: C['bindings']
   state?: C['state']
 }
 
-export type MakeControlTemplate<C extends ControlType<any>> = (
+export type MakeControlTemplate<C extends ControlType<unknown>> = (
   params: C['params']
 ) => ControlTemplate<C>
 
 export type MakeBindings<Ctx, C extends ControlType<Ctx>> = (ctx: Ctx, template: C["bindings"]) => Bindings<C>
 
-export type Bindings<C extends ControlType<any>> = {
+export type Bindings<C extends ControlType<unknown>> = {
   [K in keyof C["bindings"]]: InstanceType<C["bindings"][K]["type"]>
 }
 
@@ -61,7 +61,7 @@ export class Control<Ctx, C extends ControlType<Ctx>> extends Component {
       const b = this.bindings[k]
       const listeners = this.templates[k].listeners ?? {}
       Object.keys(listeners).forEach((event) => {
-        const listener= listeners[event]
+        const listener = listeners[event]
         if (listener != null) {
           b.addListener(event, listener(this))
         }

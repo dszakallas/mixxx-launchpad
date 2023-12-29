@@ -59,7 +59,7 @@ export const makeEq3: MakeControlTemplate<Eq3Type> = ({ template, column, deck }
 
 
 export type Eq3KillType = {
-  type: 'eq3kill'
+  type: 'eq3Kill'
   bindings: {
     [ch in typeof eq3Channel[number] | "qfx" as `pad.${ch}`]: MidiBindingTemplate<Eq3KillType>
   } & {
@@ -108,3 +108,35 @@ export const makeEq3Kill: MakeControlTemplate<Eq3KillType> = ({ template, row, c
 
   return { bindings }
 }
+
+export type GainType = {
+  type: 'gain'
+  bindings: {
+    fader: MidiBindingTemplate<GainType>
+    ctrl:ControlBindingTemplate<GainType>
+  }
+  params: {
+    template: number
+    column: number
+    deck: number
+  }
+}
+
+export const makeGain: MakeControlTemplate<GainType> = ({ template, column, deck }) => ({
+  bindings: {
+    fader: {
+      type: LCMidiComponent,
+      target: [template, `fader.0.${column}`],
+      listeners: {
+        midi: ({ bindings }: Control<GainType>) => ({ value }: MidiMessage) => {
+          setValue(bindings.ctrl.control, value / 127)
+        }
+      }
+    },
+    ctrl: {
+      type: ControlComponent,
+      target: root.channels[deck].volume,
+      softTakeover: true
+    }
+  }
+})

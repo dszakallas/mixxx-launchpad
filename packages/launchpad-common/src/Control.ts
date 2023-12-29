@@ -70,7 +70,7 @@ export type BindingTemplates<C extends ControlType> = {
 const nameOf = (x: number, y: number) => `${7 - y},${x}`
 
 const makeBindings = <C extends ControlType>(ctx: ControlContext, t: BindingTemplates<C>): Bindings<C> => {
-  const ret: { [_: string]: any } = {}
+  const ret: { [_: string]: unknown } = {}
   for (const k in t) {
     ret[k] = t[k].type === ControlComponent
       ? new ControlComponent((t[k] as ControlBindingTemplate<C>).target)
