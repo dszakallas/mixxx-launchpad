@@ -1,5 +1,5 @@
-import { Component } from "@mixxx-launch/mixxx"
-import { LaunchControlDevice } from "./device"
+import { Component } from '@mixxx-launch/mixxx'
+import { LaunchControlDevice } from './device'
 
 export const channelColorPalette = [
   ['hi_red', 'lo_red'],
@@ -7,7 +7,6 @@ export const channelColorPalette = [
   ['hi_green', 'lo_green'],
   ['hi_amber', 'lo_amber'],
 ] as const
-
 
 export const makeContainer = (children: Component[]) => new Container(children)
 
@@ -24,7 +23,6 @@ export class Container extends Component {
     for (const child of this.children) {
       child.mount()
     }
-
   }
   onUnmount() {
     for (const child of this.children) {

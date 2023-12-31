@@ -1,6 +1,6 @@
 import { array, map, range } from '@mixxx-launch/common'
-import { MidiMessage } from "@mixxx-launch/mixxx"
-import { ControlMessage, createEffectUnitChannelDef, getValue, root, setValue } from "@mixxx-launch/mixxx/src/Control"
+import { MidiMessage } from '@mixxx-launch/mixxx'
+import { ControlMessage, createEffectUnitChannelDef, getValue, root, setValue } from '@mixxx-launch/mixxx/src/Control'
 import { Control, ControlBindingTemplate, MidiBindingTemplate, control, midi, MakeControlTemplate } from '../Control'
 import { channelColorPalette } from '../util'
 
@@ -23,7 +23,7 @@ export type FxEnablerType = {
 
 export const makeFxEnabler: MakeControlTemplate<FxEnablerType> = ({ template, row, column, deck }) => {
   const unit = fxRack.effect_units[deck]
-  const controls = [...map(i => unit.effects[i].enabled, range(3)), unit.enabled]
+  const controls = [...map((i) => unit.effects[i].enabled, range(3)), unit.enabled]
 
   const bindings: FxEnablerType['bindings'] = {}
 
@@ -31,21 +31,25 @@ export const makeFxEnabler: MakeControlTemplate<FxEnablerType> = ({ template, ro
     bindings[`pad.${i}`] = {
       type: midi(template, `pad.${row}.${column + i}`, 'on'),
       listeners: {
-        midi: ({ bindings }: Control<FxEnablerType>) => ({ value }: MidiMessage) => {
-          if (value) {
-            const ctrl = bindings[`ctrl.${i}`].control
-            setValue(ctrl, 1 - getValue(ctrl))
-          }
-        }
-      }
+        midi:
+          ({ bindings }: Control<FxEnablerType>) =>
+          ({ value }: MidiMessage) => {
+            if (value) {
+              const ctrl = bindings[`ctrl.${i}`].control
+              setValue(ctrl, 1 - getValue(ctrl))
+            }
+          },
+      },
     }
     bindings[`ctrl.${i}`] = {
       type: control(c),
       listeners: {
-        update: ({ context: { device }, bindings }: Control<FxEnablerType>) => ({ value }: ControlMessage) => {
-          device.sendColor(template, bindings[`pad.${i}`].led, value ? device.colors.hi_green : device.colors.black)
-        }
-      }
+        update:
+          ({ context: { device }, bindings }: Control<FxEnablerType>) =>
+          ({ value }: ControlMessage) => {
+            device.sendColor(template, bindings[`pad.${i}`].led, value ? device.colors.hi_green : device.colors.black)
+          },
+      },
     }
   })
   return { bindings }
@@ -68,28 +72,30 @@ export type FxSelectorType = {
 export const makeFxSelector: MakeControlTemplate<FxSelectorType> = ({ template, row, column, deck }) => {
   const bindings: FxSelectorType['bindings'] = {}
 
-  array(range(4)).forEach(i => {
-    const c = createEffectUnitChannelDef(
-      "EffectRack1", `EffectUnit${i + 1}`, `Channel${deck + 1}`,
-    ).enable
+  array(range(4)).forEach((i) => {
+    const c = createEffectUnitChannelDef('EffectRack1', `EffectUnit${i + 1}`, `Channel${deck + 1}`).enable
 
     bindings[`pad.${i}`] = {
       type: midi(template, `pad.${row}.${column + i}`, 'on'),
       listeners: {
-        midi: ({ bindings }: Control<FxSelectorType>) => ({ value }: MidiMessage) => {
-          if (value) {
-            setValue(bindings[`ctrl.${i}`].control, 1 - getValue(bindings[`ctrl.${i}`].control))
-          }
-        }
-      }
+        midi:
+          ({ bindings }: Control<FxSelectorType>) =>
+          ({ value }: MidiMessage) => {
+            if (value) {
+              setValue(bindings[`ctrl.${i}`].control, 1 - getValue(bindings[`ctrl.${i}`].control))
+            }
+          },
+      },
     }
     bindings[`ctrl.${i}`] = {
       type: control(c),
       listeners: {
-        update: ({ context: { device }, bindings }: Control<FxSelectorType>) => ({ value }: ControlMessage) => {
-          device.sendColor(template, bindings[`pad.${i}`].led, value ? device.colors.hi_yellow : device.colors.black)
-        }
-      }
+        update:
+          ({ context: { device }, bindings }: Control<FxSelectorType>) =>
+          ({ value }: ControlMessage) => {
+            device.sendColor(template, bindings[`pad.${i}`].led, value ? device.colors.hi_yellow : device.colors.black)
+          },
+      },
     }
   })
 
@@ -112,23 +118,31 @@ export type FxMeta3Type = {
 export const makeFxMeta3: MakeControlTemplate<FxMeta3Type> = ({ template, column, unit }) => {
   const bindings: FxMeta3Type['bindings'] = {}
 
-  array(range(3)).forEach(i => {
+  array(range(3)).forEach((i) => {
     const c = fxRack.effect_units[unit].effects[i].meta
     bindings[`knob.${i}`] = {
       type: midi(template, `knob.${i}.${column}`),
       listeners: {
-        midi: ({ bindings }: Control<FxMeta3Type>) => ({ value }: MidiMessage) => {
-          setValue(bindings[`ctrl.${i}`].control, value / 127)
-        }
-      }
+        midi:
+          ({ bindings }: Control<FxMeta3Type>) =>
+          ({ value }: MidiMessage) => {
+            setValue(bindings[`ctrl.${i}`].control, value / 127)
+          },
+      },
     }
     bindings[`ctrl.${i}`] = {
       type: control(c, true),
       listeners: {
-        update: ({ context: { device }, bindings }: Control<FxMeta3Type>) => ({ value }: ControlMessage) => {
-          device.sendColor(template, bindings[`knob.${i}`].led, value ? device.colors[channelColorPalette[unit % 4][0]] : device.colors.black)
-        }
-      }
+        update:
+          ({ context: { device }, bindings }: Control<FxMeta3Type>) =>
+          ({ value }: ControlMessage) => {
+            device.sendColor(
+              template,
+              bindings[`knob.${i}`].led,
+              value ? device.colors[channelColorPalette[unit % 4][0]] : device.colors.black,
+            )
+          },
+      },
     }
   })
   return { bindings }
@@ -153,20 +167,28 @@ export const makeFxSuper: MakeControlTemplate<FxSuperType> = ({ template, column
     knob: {
       type: midi(template, `knob.${row}.${column}`),
       listeners: {
-        midi: ({ bindings }: Control<FxSuperType>) => ({ value }: MidiMessage) => {
-          setValue(bindings.ctrl.control, value / 127)
-        }
-      }
+        midi:
+          ({ bindings }: Control<FxSuperType>) =>
+          ({ value }: MidiMessage) => {
+            setValue(bindings.ctrl.control, value / 127)
+          },
+      },
     },
     ctrl: {
       type: control(fxRack.effect_units[unit].super1, true),
       listeners: {
-        update: ({ context: { device }, bindings }: Control<FxSuperType>) => ({ value }: ControlMessage) => {
-          device.sendColor(template, bindings.knob.led, value ? device.colors[channelColorPalette[unit % 4][0]] : device.colors.black)
-        }
-      }
-    }
-  }
+        update:
+          ({ context: { device }, bindings }: Control<FxSuperType>) =>
+          ({ value }: ControlMessage) => {
+            device.sendColor(
+              template,
+              bindings.knob.led,
+              value ? device.colors[channelColorPalette[unit % 4][0]] : device.colors.black,
+            )
+          },
+      },
+    },
+  },
 })
 
 export type FxMixType = {
@@ -187,15 +209,17 @@ export const makeFxMix: MakeControlTemplate<FxMixType> = ({ template, column, un
     fader: {
       type: midi(template, `fader.0.${column}`),
       listeners: {
-        midi: ({ bindings }: Control<FxMixType>) => ({ value }: MidiMessage) => {
-          setValue(bindings.ctrl.control, value / 127)
-        }
-      }
+        midi:
+          ({ bindings }: Control<FxMixType>) =>
+          ({ value }: MidiMessage) => {
+            setValue(bindings.ctrl.control, value / 127)
+          },
+      },
     },
     ctrl: {
-      type: control(fxRack.effect_units[unit].mix, true)
-    }
-  }
+      type: control(fxRack.effect_units[unit].mix, true),
+    },
+  },
 })
 
 export type QuickFxSuperType = {
@@ -218,19 +242,23 @@ export const makeQuickFxSuper: MakeControlTemplate<QuickFxSuperType> = ({ templa
     knob: {
       type: midi(template, `knob.${row}.${column}`),
       listeners: {
-        midi: ({ bindings }: Control<QuickFxSuperType>) => ({ value }: MidiMessage) => {
-          setValue(bindings.value.control, value / 127)
-        }
-      }
+        midi:
+          ({ bindings }: Control<QuickFxSuperType>) =>
+          ({ value }: MidiMessage) => {
+            setValue(bindings.value.control, value / 127)
+          },
+      },
     },
     value: { type: control(qfxRack.effect_units[unit].super1, true) },
     kill: {
       type: control(qfxRack.effect_units[unit].enabled),
       listeners: {
-        update: ({ context: { device }, bindings }: Control<QuickFxSuperType>) => ({ value }: ControlMessage) => {
-          device.sendColor(template, bindings.knob.led, device.colors[channelColorPalette[unit % 4][value ? 1 : 0]])
-        }
-      }
-    }
-  }
+        update:
+          ({ context: { device }, bindings }: Control<QuickFxSuperType>) =>
+          ({ value }: ControlMessage) => {
+            device.sendColor(template, bindings.knob.led, device.colors[channelColorPalette[unit % 4][value ? 1 : 0]])
+          },
+      },
+    },
+  },
 })

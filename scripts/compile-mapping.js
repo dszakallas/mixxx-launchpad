@@ -3,7 +3,7 @@
 import { resolve, dirname, join } from 'node:path'
 import { readFile, writeFile } from 'node:fs/promises'
 import { exec } from 'node:child_process'
-import { promisify } from'node:util'
+import { promisify } from 'node:util'
 
 import ejs from 'ejs'
 import mkdirp from 'mkdirp'

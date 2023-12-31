@@ -1,12 +1,10 @@
-import {
-  Component,
-} from '@mixxx-launch/mixxx'
+import { Component } from '@mixxx-launch/mixxx'
 
-export type BindingTemplate < Ctx > = {
-  type: (ctx: Ctx) => Component,
+export type BindingTemplate<Ctx> = {
+  type: (ctx: Ctx) => Component
   listeners?: {
     [_: string]: (control: any) => (...args: any[]) => void
-  }  
+  }
 }
 
 export type KeyType = string | number | symbol
@@ -14,9 +12,9 @@ export type KeyType = string | number | symbol
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type Phantom<_Ctx> = never
 
-export type ControlType < Ctx > = {
+export type ControlType<Ctx> = {
   type: string
-  bindings: { [_: KeyType]: BindingTemplate < Ctx > }
+  bindings: { [_: KeyType]: BindingTemplate<Ctx> }
   params: Params
   state?: State
   context?: Phantom<Ctx>
@@ -30,12 +28,10 @@ export type ControlTemplate<Ctx, C extends ControlType<Ctx>> = {
   state?: C['state']
 }
 
-export type MakeControlTemplate<Ctx, C extends ControlType<Ctx>> = (
-  params: C['params']
-) => ControlTemplate<Ctx, C>
+export type MakeControlTemplate<Ctx, C extends ControlType<Ctx>> = (params: C['params']) => ControlTemplate<Ctx, C>
 
 export type Bindings<Ctx, C extends ControlType<Ctx>> = {
-  [K in keyof C["bindings"]]: ReturnType<C["bindings"][K]["type"]>
+  [K in keyof C['bindings']]: ReturnType<C['bindings'][K]['type']>
 }
 
 export class Control<Ctx, C extends ControlType<Ctx>> extends Component {
@@ -68,7 +64,7 @@ export class Control<Ctx, C extends ControlType<Ctx>> extends Component {
         if (listener != null) {
           b.addListener(event, listener(this))
         }
-      }) 
+      })
     })
 
     Object.values(this.bindings).forEach((b) => b.mount())

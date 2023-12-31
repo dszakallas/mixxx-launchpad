@@ -24,9 +24,8 @@ class LaunchpadMK1Device extends LaunchpadDevice {
   constructor() {
     super()
     this.controls = Object.fromEntries(
-      Object
-        .entries(def.controls)
-        .map(([k, v]) => [k, convertControlDef(k, v as [number, number])]))
+      Object.entries(def.controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
+    )
     this.colors = colors
     this.supportsRGBColors = false
   }

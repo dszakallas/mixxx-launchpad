@@ -2,7 +2,14 @@ import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
 import { modes } from '../ModifierSidebar'
 import { onAttack } from '../util'
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control, midi, control } from '../Control'
+import {
+  ButtonBindingTemplate,
+  ControlBindingTemplate,
+  MakeDeckControlTemplate,
+  Control,
+  midi,
+  control,
+} from '../Control'
 
 export type Type = {
   type: 'play'
@@ -23,29 +30,28 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       listeners: {
         update:
           ({ bindings, context: { device } }: Control<Type>) =>
-            ({ value }: ControlMessage) => {
-              if (value) {
-                device.sendColor(bindings.play.control, device.colors.hi_red)
-              } else if (!value) {
-                device.clearColor(bindings.play.control)
-              }
-            },
-      }
+          ({ value }: ControlMessage) => {
+            if (value) {
+              device.sendColor(bindings.play.control, device.colors.hi_red)
+            } else if (!value) {
+              device.clearColor(bindings.play.control)
+            }
+          },
+      },
     },
     play: {
       type: midi(gridPosition),
       listeners: {
-        midi:
-          ({ context: { modifier } }: Control<Type>) =>
-            onAttack(() => {
-              modes(
-                modifier.getState(),
-                () => setValue(deck.play, Number(!getValue(deck.play))),
-                () => setValue(deck.start_play, 1),
-                () => setValue(deck.start_stop, 1),
-              )
-            }),
-      }
+        midi: ({ context: { modifier } }: Control<Type>) =>
+          onAttack(() => {
+            modes(
+              modifier.getState(),
+              () => setValue(deck.play, Number(!getValue(deck.play))),
+              () => setValue(deck.start_play, 1),
+              () => setValue(deck.start_stop, 1),
+            )
+          }),
+      },
     },
   },
 })

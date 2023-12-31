@@ -67,5 +67,4 @@ const index: MakeControlTemplateIndex = {
   tap: makeTap,
 }
 
-
 export default index

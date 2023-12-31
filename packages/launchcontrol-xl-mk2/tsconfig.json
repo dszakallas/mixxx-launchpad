@@ -4,11 +4,6 @@
     "composite": true,
     "outDir": "dist"
   },
-  "include": [
-    "controller.json",
-    "src"
-  ],
-  "references": [
-    { "path": "../launchcontrol-common" }
-  ]
+  "include": ["controller.json", "src"],
+  "references": [{ "path": "../launchcontrol-common" }]
 }

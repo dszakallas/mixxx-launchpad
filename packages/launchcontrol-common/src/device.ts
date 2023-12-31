@@ -1,13 +1,13 @@
-import { range } from "@mixxx-launch/common"
-import { MidiComponent, MidiDevice } from "@mixxx-launch/mixxx"
+import { range } from '@mixxx-launch/common'
+import { MidiComponent as BaseMidiComponent, MidiDevice } from '@mixxx-launch/mixxx'
 
 export abstract class LaunchControlDevice extends MidiDevice {
   abstract colors: { [key: string]: number }
   abstract numTemplates: number
 
-  // LaunchControl control names follow the pattern "${template}.${controlKey}[.(on|off)]" where the note
-  // part is only used for note on/off controls. LED indexes here only use the controlKey part.
-  // Note that not every control has a LED.
+  // LaunchControl control names follow the pattern "${template}.${controlKey}[.(on|off)]" where the last
+  // part is only used for note on/off controls.
+  // LED indexes here only use the controlKey part. Note that not every control has a LED.
   abstract leds: { [controlKey: string]: number }
 
   sysex = true
@@ -60,19 +60,17 @@ export abstract class LaunchControlDevice extends MidiDevice {
   }
 }
 
-export type OnOff = "on" | "off" | undefined
+export type OnOff = 'on' | 'off' | undefined
 
-
-// LCMidiComponent stands for LaunchControlMidiComponent and augments MidiComponent with
-// the LaunchControl specific property of having a separate identifier for the LED when targeting with SysEx.
+// MidiComponent augments MidiComponent with the LaunchControl specific property
+// of having a separate identifier for the LED when targeting with SysEx.
 // The LaunchControl programmer manual suggests sending SysEx messages for lighting LEDs
 // and they have a different MIDI control than their button/knob counterparts.
 // Lighting LEDs with SysEx messages avoids the problem of the LaunchControl ignoring
 // MIDI messages that don't match the current template.
-export class LCMidiComponent extends MidiComponent<LaunchControlDevice> {
+export class MidiComponent extends BaseMidiComponent<LaunchControlDevice> {
   template: number
   led: number
-
 
   // Use the note parameter to listen to note on/off events instead of control change events. This is required for
   // certain controls like the mute/solo/arm buttons or channel controls. For reference, see the LaunchControl
@@ -89,5 +87,4 @@ export class LCMidiComponent extends MidiComponent<LaunchControlDevice> {
     this._device.sendColor(this.template, this.led, this._device.colors.black)
     super.onUnmount()
   }
-
 }

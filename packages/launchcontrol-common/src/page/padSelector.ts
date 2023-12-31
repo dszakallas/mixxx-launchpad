@@ -1,8 +1,7 @@
-import { lazy, Lazy } from "@mixxx-launch/common"
-import { Component, MidiMessage } from "@mixxx-launch/mixxx"
-import { MakeComponent } from "../util"
-import { LaunchControlDevice, LCMidiComponent } from "../device"
-
+import { lazy, Lazy } from '@mixxx-launch/common'
+import { Component, MidiMessage } from '@mixxx-launch/mixxx'
+import { MakeComponent } from '../util'
+import { LaunchControlDevice, MidiComponent } from '../device'
 
 export type PadSelectorPageConf = {
   type: 'padSelectorPage'
@@ -10,7 +9,8 @@ export type PadSelectorPageConf = {
   initialSelection?: number
 }
 
-export const makePadSelectorPage = (conf: PadSelectorPageConf, _template: number, device: LaunchControlDevice) => new PadSelectorPage(device, conf.pads, conf.initialSelection)
+export const makePadSelectorPage = (conf: PadSelectorPageConf, _template: number, device: LaunchControlDevice) =>
+  new PadSelectorPage(device, conf.pads, conf.initialSelection)
 
 export default class PadSelectorPage extends Component {
   private _pads: Lazy<Component>[]
@@ -21,7 +21,7 @@ export default class PadSelectorPage extends Component {
   constructor(
     device: LaunchControlDevice,
     pads: [MakeComponent, MakeComponent, MakeComponent],
-    initialSelection: number = 0
+    initialSelection: number = 0,
   ) {
     super()
     this._pads = pads.map((page) => lazy(() => page(this._device)))
@@ -32,18 +32,24 @@ export default class PadSelectorPage extends Component {
 
   assignButtonComponents(template: number) {
     const btns = ['mute', 'solo', 'arm']
-    const buttonComponents = btns.map((btn) =>
-      new LCMidiComponent(this._device, template, btn, 'on')
-    )
+    const buttonComponents = btns.map((btn) => new MidiComponent(this._device, template, btn, 'on'))
 
     buttonComponents.forEach((btn, i) => {
       btn.addListener('mount', () => {
-        this._device.sendColor(template, btn.led, i === this._selected ? this._device.colors.hi_yellow : this._device.colors.black)
+        this._device.sendColor(
+          template,
+          btn.led,
+          i === this._selected ? this._device.colors.hi_yellow : this._device.colors.black,
+        )
       })
       btn.addListener('midi', ({ value }: MidiMessage) => {
         if (value && i !== this._selected) {
           buttonComponents.forEach((btn, j) => {
-            this._device.sendColor(template, btn.led, j === i ? this._device.colors.hi_yellow : this._device.colors.black)
+            this._device.sendColor(
+              template,
+              btn.led,
+              j === i ? this._device.colors.hi_yellow : this._device.colors.black,
+            )
           })
           this._pads[this._selected].value.unmount()
           this._selected = i
@@ -53,7 +59,6 @@ export default class PadSelectorPage extends Component {
       // btn.addListener('unmount', () => {
       //   this._device.sendColor(template, btn.led, this._device.colors.black)
       // })
-
     })
     this._selectors = buttonComponents
   }

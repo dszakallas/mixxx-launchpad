@@ -12,7 +12,6 @@ export const parseRGBColor = (number: number): RGBColor | null => {
   return [red, green, blue]
 }
 
-
 export abstract class LaunchpadDevice extends MidiDevice {
   abstract colors: { [key: string]: number }
 

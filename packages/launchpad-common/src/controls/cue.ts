@@ -1,9 +1,15 @@
 import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control, midi, control } from '../Control'
+import {
+  ButtonBindingTemplate,
+  ControlBindingTemplate,
+  MakeDeckControlTemplate,
+  Control,
+  midi,
+  control,
+} from '../Control'
 import { modes, retainAttackMode } from '../ModifierSidebar'
-
 
 export type Type = {
   type: 'cue'
@@ -12,11 +18,10 @@ export type Type = {
     cueIndicator: ControlBindingTemplate<Type>
   }
   params: {
-    deck: ChannelControlDef,
+    deck: ChannelControlDef
     gridPosition: [number, number]
   }
 }
-
 
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
   bindings: {
@@ -45,13 +50,13 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
             },
             context: { device },
           }: Control<Type>) =>
-            ({ value }: ControlMessage) => {
-              if (value) {
-                device.sendColor(control, device.colors.hi_red)
-              } else if (!value) {
-                device.clearColor(control)
-              }
-            },
+          ({ value }: ControlMessage) => {
+            if (value) {
+              device.sendColor(control, device.colors.hi_red)
+            } else if (!value) {
+              device.clearColor(control)
+            }
+          },
       },
     },
   },

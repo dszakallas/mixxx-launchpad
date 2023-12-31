@@ -5,10 +5,11 @@
   "description": "Novation Launchpad mapping for Mixxx",
   "homepage": "https://github.com/dszakallas/mixxx-launchpad",
   "scripts": {
-    "lint": "eslint .",
-    "check": "tsc -b",
+    "check-eslint": "eslint .",
+    "check-types": "tsc -b",
+    "check-format": "prettier --check .",
     "which": "which",
-    "prettify": "prettier -w .",
+    "format": "prettier -w .",
     "semantic-release": "semantic-release"
   },
   "author": "Midiparse",
@@ -33,6 +34,7 @@
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^6.0.0",
     "mkdirp": "^1.0.3",
+    "prettier": "^3.1.1",
     "rollup": "^3.19.1",
     "semantic-release": "^21.0.1",
     "typescript": "^4.9.5"

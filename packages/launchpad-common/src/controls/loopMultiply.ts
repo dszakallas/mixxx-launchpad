@@ -18,11 +18,12 @@ export type Type = {
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   const onMount =
     (k: 'halve' | 'double') =>
-      ({ context: { device }, bindings }: Control<Type>) =>
-        () => {
-          device.sendColor(bindings[k].control, device.colors.lo_yellow)
-        }
-  const onMidi = (k: 'double' | 'halve') => (_: Control<Type>) => onAttack((_: MidiMessage) => setValue(deck[`loop_${k}`], 1))
+    ({ context: { device }, bindings }: Control<Type>) =>
+    () => {
+      device.sendColor(bindings[k].control, device.colors.lo_yellow)
+    }
+  const onMidi = (k: 'double' | 'halve') => (_: Control<Type>) =>
+    onAttack((_: MidiMessage) => setValue(deck[`loop_${k}`], 1))
   return {
     bindings: {
       halve: {
@@ -30,14 +31,14 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         listeners: {
           mount: onMount('halve'),
           midi: onMidi('halve'),
-        }
+        },
       },
       double: {
         type: midi([gridPosition[0] + 1, gridPosition[1]]),
         listeners: {
           mount: onMount('double'),
           midi: onMidi('double'),
-        }
+        },
       },
     },
   }

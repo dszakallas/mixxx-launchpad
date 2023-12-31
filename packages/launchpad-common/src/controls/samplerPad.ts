@@ -2,7 +2,14 @@ import { ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { LaunchpadDevice, parseRGBColor, RGBColor } from '../device'
 import { modes } from '../ModifierSidebar'
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeSamplerControlTemplate, Control, midi, control } from '../Control'
+import {
+  ButtonBindingTemplate,
+  ControlBindingTemplate,
+  MakeSamplerControlTemplate,
+  Control,
+  midi,
+  control,
+} from '../Control'
 import { SamplerControlDef } from '@mixxx-launch/mixxx/src/Control'
 import { Theme } from '../App'
 
@@ -57,28 +64,28 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
         listeners: {
           midi:
             ({ context: { modifier }, state }: Control<Type>) =>
-              ({ value }: MidiMessage) => {
-                if (value) {
-                  modes(
-                    modifier.getState(),
-                    () => {
-                      if (!state.loaded) {
-                        setValue(sampler.LoadSelectedTrack, 1)
-                      } else {
-                        setValue(sampler.cue_gotoandplay, 1)
-                      }
-                    },
-                    () => {
-                      if (state.playing) {
-                        setValue(sampler.stop, 1)
-                      } else if (state.loaded) {
-                        setValue(sampler.eject, 1)
-                      }
-                    },
-                  )
-                }
-              },
-        }
+            ({ value }: MidiMessage) => {
+              if (value) {
+                modes(
+                  modifier.getState(),
+                  () => {
+                    if (!state.loaded) {
+                      setValue(sampler.LoadSelectedTrack, 1)
+                    } else {
+                      setValue(sampler.cue_gotoandplay, 1)
+                    }
+                  },
+                  () => {
+                    if (state.playing) {
+                      setValue(sampler.stop, 1)
+                    } else if (state.loaded) {
+                      setValue(sampler.eject, 1)
+                    }
+                  },
+                )
+              }
+            },
+        },
       },
 
       playing: {
@@ -86,11 +93,11 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
         listeners: {
           update:
             ({ context: { device }, bindings, state }: Control<Type>) =>
-              ({ value }: ControlMessage) => {
-                state.playing = !!value
-                onStateChanged(state, device, bindings)
-              },
-        }
+            ({ value }: ControlMessage) => {
+              state.playing = !!value
+              onStateChanged(state, device, bindings)
+            },
+        },
       },
 
       loaded: {
@@ -98,11 +105,11 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
         listeners: {
           update:
             ({ context: { device }, bindings, state }: Control<Type>) =>
-              ({ value }: ControlMessage) => {
-                state.loaded = !!value
-                onStateChanged(state, device, bindings)
-              },
-        }
+            ({ value }: ControlMessage) => {
+              state.loaded = !!value
+              onStateChanged(state, device, bindings)
+            },
+        },
       },
 
       colorChanged: {
@@ -110,11 +117,11 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
         listeners: {
           update:
             ({ context: { device }, bindings, state }: Control<Type>) =>
-              ({ value }: ControlMessage) => {
-                state.color = parseRGBColor(value)
-                onStateChanged(state, device, bindings)
-              },
-        }
+            ({ value }: ControlMessage) => {
+              state.color = parseRGBColor(value)
+              onStateChanged(state, device, bindings)
+            },
+        },
       },
     },
   }

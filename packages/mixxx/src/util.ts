@@ -9,13 +9,20 @@ export type Action<T> = (t: T) => void
             (Default knob values are standard MIDI 0..127)
    Output:  MixxxControl value corresponding to the knob position
    -------- ------------------------------------------------------ */
-export const absoluteNonLin = (value: number, low: number, mid: number, high: number, min: number = 0, max: number = 127) => {
-  const center = (max - min) / 2;
+export const absoluteNonLin = (
+  value: number,
+  low: number,
+  mid: number,
+  high: number,
+  min: number = 0,
+  max: number = 127,
+) => {
+  const center = (max - min) / 2
   if (value === center || value === Math.round(center)) {
-    return mid;
+    return mid
   } else if (value < center) {
-    return low + (value / (center / (mid - low)));
+    return low + value / (center / (mid - low))
   } else {
-    return mid + ((value - center) / (center / (high - mid)));
+    return mid + (value - center) / (center / (high - mid))
   }
 }

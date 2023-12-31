@@ -19,20 +19,24 @@ const colors = {
 
 const leds = Object.assign(
   {},
-  Object.fromEntries([...function* () {
-    for (const r of range(3)) {
-      for (const c of range(8)) {
-        yield [`knob.${r}.${c}`, r * 8 + c]
+  Object.fromEntries([
+    ...(function* () {
+      for (const r of range(3)) {
+        for (const c of range(8)) {
+          yield [`knob.${r}.${c}`, r * 8 + c]
+        }
       }
-    }
-  }()]),
-  Object.fromEntries([...function* () {
-    for (const r of range(3)) {
-      for (const c of range(8)) {
-        yield [`pad.${r}.${c}`, r * 8 + c + 24]
+    })(),
+  ]),
+  Object.fromEntries([
+    ...(function* () {
+      for (const r of range(3)) {
+        for (const c of range(8)) {
+          yield [`pad.${r}.${c}`, r * 8 + c + 24]
+        }
       }
-    }
-  }()]),
+    })(),
+  ]),
   {
     device: 0x28,
     mute: 0x29,
@@ -42,7 +46,7 @@ const leds = Object.assign(
     down: 0x2d,
     left: 0x2e,
     right: 0x2f,
-  }
+  },
 )
 
 const templateChangeSysexPreamble = [240, 0, 32, 41, 2, 17, 119] as const
@@ -57,9 +61,8 @@ class LaunchControlXLMK2Device extends LaunchControlDevice {
   constructor() {
     super()
     this.controls = Object.fromEntries(
-      Object
-        .entries(def.controls)
-        .map(([k, v]) => [k, convertControlDef(k, v as [number, number])]))
+      Object.entries(def.controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
+    )
     this.leds = leds
     this.colors = colors
   }
@@ -84,4 +87,3 @@ class LaunchControlXLMK2Device extends LaunchControlDevice {
 }
 
 export default useDevice(new LaunchControlXLMK2Device())
-

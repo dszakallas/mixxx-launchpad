@@ -14,19 +14,19 @@ const colors = {
   hi_orange: 84,
   lo_orange: 61,
   hi_yellow: 13,
-  lo_yellow: 15
+  lo_yellow: 15,
 }
 
 enum DeviceMode {
   Live,
-  Programmer
+  Programmer,
 }
 
 enum LightingType {
   Static,
   Flash,
   Pulse,
-  RGB
+  RGB,
 }
 
 const selectMode = (mode: DeviceMode) => {
@@ -41,9 +41,8 @@ class LaunchpadMiniMK3Device extends LaunchpadDevice {
   constructor() {
     super()
     this.controls = Object.fromEntries(
-      Object
-        .entries(def.controls)
-        .map(([k, v]) => [k, convertControlDef(k, v as [number, number])]))
+      Object.entries(def.controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
+    )
     this.colors = colors
     this.supportsRGBColors = true
   }

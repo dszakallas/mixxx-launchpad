@@ -7,7 +7,7 @@ import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '.
 export type Type = {
   type: 'keyshift'
   params: {
-    deck: ChannelControlDef,
+    deck: ChannelControlDef
     gridPosition: [number, number]
     shifts: readonly [number, number][]
     rows: number
@@ -52,21 +52,21 @@ const make: MakeDeckControlTemplate<Type> = ({ shifts, rows, gridPosition, deck 
 
   const onMidi =
     (i: number) =>
-      ({ context: { modifier, device }, bindings, state }: Control<Type>) =>
-        retainAttackMode(modifier, (mode, { value }) => {
-          modes(
-            mode,
-            () => temporaryChange(i, value, bindings, state, device),
-            () => {
-              if (value) {
-                state.set = posMod(state.set + 1, 2)
-                for (let i = 0; i < shifts.length; ++i) {
-                  device.sendColor(bindings[i].control, device.colors[`lo_${colors[state.set]}`])
-                }
+    ({ context: { modifier, device }, bindings, state }: Control<Type>) =>
+      retainAttackMode(modifier, (mode, { value }) => {
+        modes(
+          mode,
+          () => temporaryChange(i, value, bindings, state, device),
+          () => {
+            if (value) {
+              state.set = posMod(state.set + 1, 2)
+              for (let i = 0; i < shifts.length; ++i) {
+                device.sendColor(bindings[i].control, device.colors[`lo_${colors[state.set]}`])
               }
-            },
-          )
-        })
+            }
+          },
+        )
+      })
 
   shifts.forEach((_, i) => {
     const dx = i % rows
@@ -78,10 +78,10 @@ const make: MakeDeckControlTemplate<Type> = ({ shifts, rows, gridPosition, deck 
         midi: onMidi(i),
         mount:
           ({ context: { device }, bindings, state }: Control<Type>) =>
-            () => {
-              device.sendColor(bindings[i].control, device.colors[`lo_${colors[state.set]}`])
-            },
-      }
+          () => {
+            device.sendColor(bindings[i].control, device.colors[`lo_${colors[state.set]}`])
+          },
+      },
     }
   })
   return {

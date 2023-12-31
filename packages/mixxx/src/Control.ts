@@ -60,15 +60,18 @@ const createSamplerControlDef = (i: number): SamplerControlDef => {
     stop: { group: `[${type}${number}]`, name: 'stop', type: 'binary' },
     track_color: { group: `[${type}${number}]`, name: 'track_color', type: 'number' },
     track_loaded: { group: `[${type}${number}]`, name: 'track_loaded', type: 'binary' },
- }
+  }
 }
 
 export const numDecks = 4 as const
 export const numSamplers = 64 as const
 
-const getChannelNameForOrdinal = (i: number): [string, number] => (i < numDecks ? ['Channel', i + 1] : ['Sampler', i - 4 + 1])
+const getChannelNameForOrdinal = (i: number): [string, number] =>
+  i < numDecks ? ['Channel', i + 1] : ['Sampler', i - 4 + 1]
 
-export const samplerControlDefs: SamplerControlDef[] = array(map(createSamplerControlDef, range(numDecks + numSamplers)))
+export const samplerControlDefs: SamplerControlDef[] = array(
+  map(createSamplerControlDef, range(numDecks + numSamplers)),
+)
 
 // the full control palette for decks, minus repeated controls (e.g hotcues)
 export type SimpleChannelControlKey =
@@ -367,9 +370,22 @@ export const channelControlDefs: ChannelControlDef[] = array(map((i: number) => 
 
 // effect parameters
 export const numEffectParameters = 8 as const
-export type EffectParameterKey = 'value' | 'link_inverse' | 'link_type' | 'loaded' | 'type' | 'button_value' | 'button_loaded' | 'button_type'
+export type EffectParameterKey =
+  | 'value'
+  | 'link_inverse'
+  | 'link_type'
+  | 'loaded'
+  | 'type'
+  | 'button_value'
+  | 'button_loaded'
+  | 'button_type'
 export type EffectParameterDef = { [_ in EffectParameterKey]: ControlDef }
-export const createEffectParameterDef = (rack: RackName, unit: EffectUnitName, effect: string, parameter: number): EffectParameterDef => ({
+export const createEffectParameterDef = (
+  rack: RackName,
+  unit: EffectUnitName,
+  effect: string,
+  parameter: number,
+): EffectParameterDef => ({
   value: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}`, type: 'number' },
   link_inverse: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}_link_inverse`, type: 'binary' },
   link_type: { group: `[${rack}_${unit}_${effect}]`, name: `parameter${parameter}_link_type`, type: 'number' },
@@ -383,8 +399,18 @@ export const createEffectParameterDef = (rack: RackName, unit: EffectUnitName, e
 // effects
 export const numEqualizerEffects = 1 as const
 export const numEffects = 3 as const
-export type EffectKey = 'clear' | 'effect_selector' | 'enabled' | 'loaded' | 'next_effect' | 'num_parameters' | 'num_parameterslots' |
-  'num_button_parameters' | 'num_button_parameterslots' | 'meta' | 'prev_effect'
+export type EffectKey =
+  | 'clear'
+  | 'effect_selector'
+  | 'enabled'
+  | 'loaded'
+  | 'next_effect'
+  | 'num_parameters'
+  | 'num_parameterslots'
+  | 'num_button_parameters'
+  | 'num_button_parameterslots'
+  | 'meta'
+  | 'prev_effect'
 export type EffectDef = { [_ in EffectKey]: ControlDef } & { parameters: EffectParameterDef[] }
 export const createEffectDef = (rack: RackName, unit: EffectUnitName, effect: string): EffectDef => ({
   clear: { group: `[${rack}_${unit}_${effect}]`, name: `clear`, type: 'binary' },
@@ -395,19 +421,32 @@ export const createEffectDef = (rack: RackName, unit: EffectUnitName, effect: st
   num_parameters: { group: `[${rack}_${unit}_${effect}]`, name: `num_parameters`, type: 'number' },
   num_parameterslots: { group: `[${rack}_${unit}_${effect}]`, name: `num_parameterslots`, type: 'number' },
   num_button_parameters: { group: `[${rack}_${unit}_${effect}]`, name: `num_button_parameters`, type: 'number' },
-  num_button_parameterslots: { group: `[${rack}_${unit}_${effect}]`, name: `num_button_parameterslots`, type: 'number' },
+  num_button_parameterslots: {
+    group: `[${rack}_${unit}_${effect}]`,
+    name: `num_button_parameterslots`,
+    type: 'number',
+  },
   meta: { group: `[${rack}_${unit}_${effect}]`, name: `meta`, type: 'number' },
   prev_effect: { group: `[${rack}_${unit}_${effect}]`, name: `prev_effect`, type: 'binary' },
-  parameters: lazyArray(array(map(
-    (i: number) => lazy(() => createEffectParameterDef(rack, unit, effect, i + 1)),
-    range(numEffectParameters)
-  ))),
+  parameters: lazyArray(
+    array(
+      map((i: number) => lazy(() => createEffectParameterDef(rack, unit, effect, i + 1)), range(numEffectParameters)),
+    ),
+  ),
 })
 
 // effect units
 export const numEffectUnits = 4 as const
 export type EffectUnitName = string
-export type EffectUnitKey = 'chain_selector' | 'clear' | 'enabled' | 'focused_effect' | 'mix' | 'super1' | 'num_effects' | 'num_effectslots'
+export type EffectUnitKey =
+  | 'chain_selector'
+  | 'clear'
+  | 'enabled'
+  | 'focused_effect'
+  | 'mix'
+  | 'super1'
+  | 'num_effects'
+  | 'num_effectslots'
 export type EffectUnitDef = { [_ in EffectUnitKey]: ControlDef } & { effects: EffectDef[] }
 export const createEffectUnitDef = (rack: RackName, unit: EffectUnitName): EffectUnitDef => ({
   chain_selector: { group: `[${rack}_${unit}]`, name: `chain_selector`, type: 'number' },
@@ -418,10 +457,9 @@ export const createEffectUnitDef = (rack: RackName, unit: EffectUnitName): Effec
   super1: { group: `[${rack}_${unit}]`, name: `super1`, type: 'number' },
   num_effects: { group: `[${rack}_${unit}]`, name: `num_effects`, type: 'number' },
   num_effectslots: { group: `[${rack}_${unit}]`, name: `num_effectslots`, type: 'number' },
-  effects: lazyArray(array(map(
-    (i: number) => lazy(() => createEffectDef(rack, unit, `Effect${i + 1}`)),
-    range(numEffects)
-  ))),
+  effects: lazyArray(
+    array(map((i: number) => lazy(() => createEffectDef(rack, unit, `Effect${i + 1}`)), range(numEffects))),
+  ),
 })
 
 // effect racks
@@ -429,17 +467,15 @@ export type RackName = `EffectRack${number}` | `EqualizerRack${number}` | `Quick
 export type EffectRackKey = 'num_effectunits' | 'clear'
 export type EffectRackDef = { [_ in EffectRackKey]: ControlDef } & { effect_units: EffectUnitDef[] }
 export const createEffectRackDef = (rack: RackName): EffectRackDef => {
-  const units = rack.startsWith('EqualizerRack') || rack.startsWith('QuickEffectRack') ?
-    map((i) => `[Channel${i+1}]`, range(numDecks)) :
-    map((i) => `EffectUnit${i+1}`, range(numEffectUnits))
+  const units =
+    rack.startsWith('EqualizerRack') || rack.startsWith('QuickEffectRack')
+      ? map((i) => `[Channel${i + 1}]`, range(numDecks))
+      : map((i) => `EffectUnit${i + 1}`, range(numEffectUnits))
 
   return {
     num_effectunits: { group: `[${rack}]`, name: `num_effectunits`, type: 'number' },
     clear: { group: `[${rack}]`, name: `clear`, type: 'binary' },
-    effect_units: lazyArray(array(map(
-      (unit: string) => lazy(() => createEffectUnitDef(rack, unit)),
-      units
-    )))
+    effect_units: lazyArray(array(map((unit: string) => lazy(() => createEffectUnitDef(rack, unit)), units))),
   }
 }
 
@@ -453,15 +489,15 @@ export const createEffectUnitChannelDef = (rack: RackName, unit: EffectUnitName,
 })
 
 export type RootControlDef = {
-  master: MasterControlDef,
-  playList: PlayListControlDef,
-  samplers: SamplerControlDef[],
-  channels: ChannelControlDef[],
-  effectRacks: EffectRackDef[],
-  quickEffectRacks: EffectRackDef[],
+  master: MasterControlDef
+  playList: PlayListControlDef
+  samplers: SamplerControlDef[]
+  channels: ChannelControlDef[]
+  effectRacks: EffectRackDef[]
+  quickEffectRacks: EffectRackDef[]
   equalizerRacks: EffectRackDef[]
 }
-  
+
 export const root: RootControlDef = {
   master: masterControlDef,
   playList: playListControlDef,

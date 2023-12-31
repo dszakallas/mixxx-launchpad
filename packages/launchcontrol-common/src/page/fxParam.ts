@@ -1,9 +1,17 @@
-import { array, map, range } from "@mixxx-launch/common"
-import { Component, MidiMessage, sendShortMsg } from "@mixxx-launch/mixxx"
-import { ControlComponent, EffectDef, EffectParameterDef, getValue, root, setValue } from "@mixxx-launch/mixxx/src/Control"
-import { LaunchControlDevice, LCMidiComponent } from "../device"
+import { array, map, range } from '@mixxx-launch/common'
+import { Component, MidiMessage, sendShortMsg } from '@mixxx-launch/mixxx'
+import {
+  ControlComponent,
+  EffectDef,
+  EffectParameterDef,
+  getValue,
+  root,
+  setValue,
+} from '@mixxx-launch/mixxx/src/Control'
+import { LaunchControlDevice, MidiComponent } from '../device'
 
-export const makeFxParamPage = (_conf: FxParamPageConf, template: number, device: LaunchControlDevice) => new FxParamPage(device, template)
+export const makeFxParamPage = (_conf: FxParamPageConf, template: number, device: LaunchControlDevice) =>
+  new FxParamPage(device, template)
 
 export type FxParamPageConf = {
   type: 'fxParamPage'
@@ -23,7 +31,7 @@ export class FxParamPage extends Component {
     this._children = []
     this._selectors = []
 
-    const prevEffectUnit = new LCMidiComponent(device, this._template, 'up')
+    const prevEffectUnit = new MidiComponent(device, this._template, 'up')
 
     this._selectedEffectUnit = 0
 
@@ -60,7 +68,7 @@ export class FxParamPage extends Component {
 
     this._selectors.push(prevEffectUnit)
 
-    const nextEffectUnit = new LCMidiComponent(device, this._template, 'down')
+    const nextEffectUnit = new MidiComponent(device, this._template, 'down')
 
     nextEffectUnit.addListener('mount', () => {
       drawNextLed()
@@ -90,7 +98,12 @@ export class FxParamPage extends Component {
   changeEffectUnit() {
     for (const i of range(3)) {
       this._children[i].unmount()
-      this._children[i] = new FxComponent(this._device, this._template, i, root.effectRacks[0].effect_units[this._selectedEffectUnit].effects[i])
+      this._children[i] = new FxComponent(
+        this._device,
+        this._template,
+        i,
+        root.effectRacks[0].effect_units[this._selectedEffectUnit].effects[i],
+      )
       this._children[i].mount()
     }
   }
@@ -117,13 +130,13 @@ class FxComponent extends Component {
 
   private _loadedComponent: ControlComponent
   private _enabledComponent: ControlComponent
-  private _midiComponents: LCMidiComponent[]
+  private _midiComponents: MidiComponent[]
 
   private _device: LaunchControlDevice
   private _params: EffectParameterDef[]
   private _buttonParams: EffectParameterDef[]
- 
-  constructor(device: LaunchControlDevice, template: number, row: number, effectDef: EffectDef) { 
+
+  constructor(device: LaunchControlDevice, template: number, row: number, effectDef: EffectDef) {
     super()
     this.effectDef = effectDef
 
@@ -140,7 +153,7 @@ class FxComponent extends Component {
     this._midiComponents = []
 
     for (const i of range(8)) {
-      const midiComponent = new LCMidiComponent(device, template, `knob.${row}.${7 - i}`) 
+      const midiComponent = new MidiComponent(device, template, `knob.${row}.${7 - i}`)
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         if (i < this._params.length) {
           setValue(this._params[i].value, toEffectKnobRange(value))

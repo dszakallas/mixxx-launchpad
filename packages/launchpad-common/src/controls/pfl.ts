@@ -1,6 +1,13 @@
 import { ChannelControlDef, ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control, midi, control } from '../Control'
+import {
+  ButtonBindingTemplate,
+  ControlBindingTemplate,
+  MakeDeckControlTemplate,
+  Control,
+  midi,
+  control,
+} from '../Control'
 import { modes } from '../ModifierSidebar'
 import { onAttack } from '../util'
 
@@ -23,20 +30,20 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       listeners: {
         update:
           ({ context: { device }, bindings }: Control<Type>) =>
-            ({ value }: ControlMessage) =>
-              value
-                ? device.sendColor(bindings.button.control, device.colors.hi_green)
-                : device.clearColor(bindings.button.control),
-      }
+          ({ value }: ControlMessage) =>
+            value
+              ? device.sendColor(bindings.button.control, device.colors.hi_green)
+              : device.clearColor(bindings.button.control),
+      },
     },
     button: {
       type: midi(gridPosition),
       listeners: {
-        midi:
-          ({ context: { modifier }, bindings }: Control<Type>) =>
-            onAttack((_: MidiMessage) =>
-              modes(modifier.getState(), () => setValue(bindings.pfl.control, Number(!getValue(bindings.pfl.control))))),
-      }
+        midi: ({ context: { modifier }, bindings }: Control<Type>) =>
+          onAttack((_: MidiMessage) =>
+            modes(modifier.getState(), () => setValue(bindings.pfl.control, Number(!getValue(bindings.pfl.control)))),
+          ),
+      },
     },
   },
 })

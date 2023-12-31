@@ -2,7 +2,7 @@
 
 import { readFile, writeFile } from 'node:fs/promises'
 import { exec } from 'node:child_process'
-import { promisify } from'node:util'
+import { promisify } from 'node:util'
 import { resolve, dirname, basename } from 'node:path'
 
 import mkdirp from 'mkdirp'

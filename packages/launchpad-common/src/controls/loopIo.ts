@@ -11,7 +11,7 @@ export type Type = {
     out: ButtonBindingTemplate<Type>
   }
   params: {
-    deck: ChannelControlDef,
+    deck: ChannelControlDef
     gridPosition: [number, number]
   }
 }
@@ -25,37 +25,37 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   }
   const onMidi =
     (dir: 'in' | 'out') =>
-      ({ context: { modifier } }: Control<Type>) =>
-        onAttack((_: MidiMessage) => {
-          modes(
-            modifier.getState(),
-            () => {
-              setValue(map[dir][0], 1)
-              setValue(map[dir][0], 0)
-            },
-            () => {
-              const ctrl = map[dir][1]
-              setValue(ctrl, getValue(ctrl) - SMALL_SAMPLES)
-            },
-            () => {
-              const ctrl = map[dir][1]
-              setValue(ctrl, getValue(ctrl) + SMALL_SAMPLES)
-            },
-          )
-        })
+    ({ context: { modifier } }: Control<Type>) =>
+      onAttack((_: MidiMessage) => {
+        modes(
+          modifier.getState(),
+          () => {
+            setValue(map[dir][0], 1)
+            setValue(map[dir][0], 0)
+          },
+          () => {
+            const ctrl = map[dir][1]
+            setValue(ctrl, getValue(ctrl) - SMALL_SAMPLES)
+          },
+          () => {
+            const ctrl = map[dir][1]
+            setValue(ctrl, getValue(ctrl) + SMALL_SAMPLES)
+          },
+        )
+      })
   return {
     bindings: {
       in: {
         type: midi(gridPosition),
         listeners: {
           midi: onMidi('in'),
-        }
+        },
       },
       out: {
         type: midi(gridPosition),
         listeners: {
           midi: onMidi('out'),
-        }
+        },
       },
     },
   }

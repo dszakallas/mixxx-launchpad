@@ -6,25 +6,25 @@ Flexible and customizable controller mapping for Novation Launch[Pad|Control] fa
 
 ## Features
 
- - map up to 4 channels (decks or samplers) on a single Launchpad at the same time
- - utilize presets of multiple sizes and features, change between them during performance
- - 6 presets in 3 sizes
- - create your own presets with ease
- - rich arsenal of controls
-   - play, cue, hotcues
-   - loop controls, beatloop, beatjump
-   - sync/master, tap, pitch shift
-   - custom controls like bouncy jumps
- - only trigger-like controls supported - no clumsy mixers and faders
- - library navigation
+- map up to 4 channels (decks or samplers) on a single Launchpad at the same time
+- utilize presets of multiple sizes and features, change between them during performance
+- 6 presets in 3 sizes
+- create your own presets with ease
+- rich arsenal of controls
+  - play, cue, hotcues
+  - loop controls, beatloop, beatjump
+  - sync/master, tap, pitch shift
+  - custom controls like bouncy jumps
+- only trigger-like controls supported - no clumsy mixers and faders
+- library navigation
 
 ## Supported controllers
 
- - Launchpad Mini Mk3
- - Launchpad Mk2
- - Launchpad Mk1
- - LaunchControl XL MK2 (experimental)
- 
+- Launchpad Mini Mk3
+- Launchpad Mk2
+- Launchpad Mk1
+- LaunchControl XL MK2 (experimental)
+
 ## Controller setup instructions
 
 ### Launchpad Mini Mk3
@@ -38,11 +38,11 @@ and PRs are welcome.
 
 ## How to get started
 
- 💾 [Download the latest release](https://github.com/szdavid92/mixxx-launchpad/releases/latest).
+💾 [Download the latest release](https://github.com/szdavid92/mixxx-launchpad/releases/latest).
 
- 🛠 Alternatively, see [Building from source](#building-from-source) the build it from source.
+🛠 Alternatively, see [Building from source](#building-from-source) the build it from source.
 
- 📘 Follow the [instructions in the Mixxx User Manual](https://www.mixxx.org/manual/latest/chapters/controlling_mixxx.html#installing-a-preset-from-the-forum) to install the preset.
+📘 Follow the [instructions in the Mixxx User Manual](https://www.mixxx.org/manual/latest/chapters/controlling_mixxx.html#installing-a-preset-from-the-forum) to install the preset.
 
 ## User guide
 
@@ -52,29 +52,29 @@ Global controls consist of **Deck selectors**, **Library controls** and
 **Modifier keys**.
 
 **Deck selectors** are located on the top bar. They are used to select decks and
-samplers to be laid out on the main grid. *D1-D4* are mapped to corresponding
-*decks*, *S1-S4* to *samplers*.
+samplers to be laid out on the main grid. _D1-D4_ are mapped to corresponding
+_decks_, _S1-S4_ to _samplers_.
 
 **Library controls** are located on the sidebar to the right. They occupy the
 upper 6 buttons. Their functions from top to bottom:
 
- - up in the library sidebar
- - down in the library sidebar
- - expand/close selected library sidebar entry
- - up a track
- - down a track
- - maximize/restore library
+- up in the library sidebar
+- down in the library sidebar
+- expand/close selected library sidebar entry
+- up a track
+- down a track
+- maximize/restore library
 
 > Note: The up/down controls are autoscrolled. If you hold them down for longer,
-the scrolling activates. This comes in handy when navigating lengthy playlists.
+> the scrolling activates. This comes in handy when navigating lengthy playlists.
 
 ![layout](docs/lp-mki-layout.png)
 
 **Modifier keys** are located on the lower 2 buttons of the sidebar, and used
 for the same purpose as you would expect on a computer keyboard.
 
-The figures show  Shift in **bold**,  Ctrl in *italic*, Ctrl+Shift
-in ***bold italic***.
+The figures show Shift in **bold**, Ctrl in _italic_, Ctrl+Shift
+in **_bold italic_**.
 
 > Note: For some controls the modifier keys will act like toggles, but the modifier keys themselves are never toggled globally.
 
@@ -89,12 +89,12 @@ To select a single channel, simply press the button corresponding to the
 channel. This will remove all existing selections, and find the largest default
 preset that can be fit on the main grid.
 
-Presets come in 3 different sizes: *short* (4x4), *tall* (4x8) and *grande*
+Presets come in 3 different sizes: _short_ (4x4), _tall_ (4x8) and _grande_
 (8x8)<sup>1</sup>. Multiple presets can have the same size, but only one preset
 can be default per size.
 
 To select multiple channels to be laid out, press the corresponding buttons
-in a *chord*. This way you can select to 4 channels.
+in a _chord_. This way you can select to 4 channels.
 
 So what is a chord? In a chord you press buttons so you only release the first
 after you pressed the last one. The order of presses matter, however the order
@@ -104,7 +104,7 @@ for 1 (single channel), 2, 3 and 4 note chords. Once more the algorithm will
 fill out the spaces with the largest default preset.
 
 | ![1] | ![2] |
-|------|------|
+| ---- | ---- |
 | ![3] | ![4] |
 
 [1]: docs/lp-1.png
@@ -113,6 +113,7 @@ fill out the spaces with the largest default preset.
 [4]: docs/lp-4.png
 
 This means that e.g. if you press down D3-D2-S1 in this chord sequence,
+
 - D3 will be mapped to block 1 with the default tall preset,
 - D2 will be mapped to block 2 with the default short preset and
 - S1 will be mapped to block 3 with the default short preset.
@@ -120,22 +121,23 @@ This means that e.g. if you press down D3-D2-S1 in this chord sequence,
 After a channel has been laid out you can cycle between all the presets that can
 fit into its space. This won't reflow the layout, even if you end up using a
 smaller preset. To cycle between presets
-  - press Ctrl + Channel Selector to cycle forward,
-  - press Shift + Channel Selector to cycle backward or
-  - press Ctrl + Shift + Channel Selector to revert to default.
+
+- press Ctrl + Channel Selector to cycle forward,
+- press Shift + Channel Selector to cycle backward or
+- press Ctrl + Shift + Channel Selector to revert to default.
 
 The cycling order is the following:
-  - primary: large to small
-  - secondary: default then all others in fixed but not specified order.
+
+- primary: large to small
+- secondary: default then all others in fixed but not specified order.
 
 The presets featured out of the box:
 
-|        | default (0)                                         | (1)                                                                                           |
-|--------|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| grande | ![grande]  **GRANDE** is the default grande layout. | **SAMPLER8X8** is a (8x8) grid of samplers assigned statically from [Sampler1] to [Sampler64] |
-| tall   | ![tall]    **TALL** is the default tall layout.     | ![juggler] **JUGGLER** is a tall layout optimized for beat jumping.                           |
-| short  | ![short]  **SHORT** is the default short layout.    | ![sampler]  **SAMPLER** is an all-cue short layout for samplers.                              |
-
+|        | default (0)                                        | (1)                                                                                           |
+| ------ | -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| grande | ![grande] **GRANDE** is the default grande layout. | **SAMPLER8X8** is a (8x8) grid of samplers assigned statically from [Sampler1] to [Sampler64] |
+| tall   | ![tall] **TALL** is the default tall layout.       | ![juggler] **JUGGLER** is a tall layout optimized for beat jumping.                           |
+| short  | ![short] **SHORT** is the default short layout.    | ![sampler] **SAMPLER** is an all-cue short layout for samplers.                               |
 
 [grande]: docs/lp-mki-grande.png
 [tall]: docs/lp-mki-tall.png
@@ -153,32 +155,32 @@ These following controls are supported currently.
 
 Controls
 
- - **normal**: toggles playing (if track is playable, starts playing; if track is playing, stops playing)
- - **ctrl**: seeks to start of track
- - **shift**: seeks to start of track and stops
+- **normal**: toggles playing (if track is playable, starts playing; if track is playing, stops playing)
+- **ctrl**: seeks to start of track
+- **shift**: seeks to start of track and stops
 
 Feedback
 
- - **bright red**: track is playing
- - **bright red blinking**: track is stopped, playable
- - **blank**: track is stopped, not playable
+- **bright red**: track is playing
+- **bright red blinking**: track is stopped, playable
+- **blank**: track is stopped, not playable
 
 #### SYNC / MASTER
 
 Controls
 
- - **normal**: toggles sync:
-  - if deck is synced (follower or master) it becomes  not synced
-  - if track is not synced it becomes a sync follower
- - **ctrl**: toggles master sync:
-  - if track is sync master, it becomes sync follower
-  - if track is not synced or sync follower, it becomes sync master
+- **normal**: toggles sync:
+- if deck is synced (follower or master) it becomes not synced
+- if track is not synced it becomes a sync follower
+- **ctrl**: toggles master sync:
+- if track is sync master, it becomes sync follower
+- if track is not synced or sync follower, it becomes sync master
 
 Feedback
 
- - **bright red**: track is sync master
- - **bright orange**: track is sync follower
- - **blank**: track is not synced
+- **bright red**: track is sync master
+- **bright orange**: track is sync follower
+- **blank**: track is not synced
 
 #### NUDGE / PITCH
 
@@ -186,25 +188,25 @@ Feedback
 
 Controls
 
- - **normal**: nudges (temporarily alters pitch) in direction by primary value. See *Preferences > Interface > Temporary Speed Adjustment Buttons > Left click*
- - **ctrl**: permanently changes pitch in direction by primary value. See *Preferences > Interface > Permanent Speed Adjustment Buttons > Left click*
- - **shift**: nudges (temporarily alters pitch) in direction by secondary value. See *Preferences > Interface > Temporary Speed Adjustment Buttons > Right click*
- - **ctrl+shift**: permanently changes pitch in direction by secondary value. See *Preferences > Interface > Permanent Speed Adjustment Buttons > Right click*
- - **normal (both buttons simultaneously)**: reset pitch to original value
+- **normal**: nudges (temporarily alters pitch) in direction by primary value. See _Preferences > Interface > Temporary Speed Adjustment Buttons > Left click_
+- **ctrl**: permanently changes pitch in direction by primary value. See _Preferences > Interface > Permanent Speed Adjustment Buttons > Left click_
+- **shift**: nudges (temporarily alters pitch) in direction by secondary value. See _Preferences > Interface > Temporary Speed Adjustment Buttons > Right click_
+- **ctrl+shift**: permanently changes pitch in direction by secondary value. See _Preferences > Interface > Permanent Speed Adjustment Buttons > Right click_
+- **normal (both buttons simultaneously)**: reset pitch to original value
 
 Feedback
 
-  - **bright yellow**: while nudging with primary speed
-  - **dim yellow**: while nudging with secondary speed
-  - **bright red**: while permanently changing pitch with primary speed
-  - **dim red**: while permanently changing pitch with secondary speed
-  - **dim orange**: while not pressing, and pitch has been altered in that direction
+- **bright yellow**: while nudging with primary speed
+- **dim yellow**: while nudging with secondary speed
+- **bright red**: while permanently changing pitch with primary speed
+- **dim red**: while permanently changing pitch with secondary speed
+- **dim orange**: while not pressing, and pitch has been altered in that direction
 
 #### CUE
 
 Controls
 
-- **normal**: behaves like the default cue method set in *Preferences > Interface > Cue mode*
+- **normal**: behaves like the default cue method set in _Preferences > Interface > Cue mode_
 - **ctrl**: sets cue at cursor
 
 Feedback
@@ -257,7 +259,7 @@ Feedback
 #### KEY SHIFTS
 
 Buttons for temporarily chaning pitch, bound left to right, bottom to top. While pressed, they modify the key of
-the track. When pressing multiple, the one later pressed *steals* the modification.
+the track. When pressing multiple, the one later pressed _steals_ the modification.
 
 #### LOAD/EJECT
 
@@ -310,8 +312,9 @@ _Changed in 3.0.0: changing between sets and modes works differently._
 
 Controls for jumping backward (lower lane) and forward (upper lane).
 Supports two modes:
- - the **normal mode** is represented with bright color. Jumping works as you would expect.
- - the **rebouncing mode** is shown with dim color. It jumps on attack, then jumps back on release. Jumping legato works and uses the same stealing algorithm as key shifting.
+
+- the **normal mode** is represented with bright color. Jumping works as you would expect.
+- the **rebouncing mode** is shown with dim color. It jumps on attack, then jumps back on release. Jumping legato works and uses the same stealing algorithm as key shifting.
 
 You can change modes by pressing **shift+[any beatjump key]**.
 
@@ -372,7 +375,7 @@ Feedback
 - **bright green**: loop on
 - **dim green**: loop off
 
-## Troubleshooting 
+## Troubleshooting
 
 ### Launchpad Mini Mk3
 
@@ -397,6 +400,7 @@ git clone https://github.com/szdavid92/mixxx-launchpad
 cd mixxx-launchpad
 npm install
 ```
+
 To compile the sources run
 
 ```shell
@@ -426,7 +430,7 @@ To install into the Mixxx resources folder, run
 make -j 4 install installDir=$MIXXX_SETTINGS_DIR
 ```
 
-where `$MIXXX_SETTINGS_DIR` is the [Mixxx settings directory](https://manual.mixxx.org/2.3/en/chapters/appendix/settings_directory.html#location) for your platform. The Makefile providers default values for macOS and Linux, so running 
+where `$MIXXX_SETTINGS_DIR` is the [Mixxx settings directory](https://manual.mixxx.org/2.3/en/chapters/appendix/settings_directory.html#location) for your platform. The Makefile providers default values for macOS and Linux, so running
 
 ```shell
 make -j 4 install
@@ -441,8 +445,8 @@ make watch
 make watch_install
 ```
 
-[babel]:https://babeljs.io/
-[rollup]:https://rollupjs.org
-[standalone]:https://github.com/substack/node-browserify#usage
-[template]:scripts/template.xml.ejs
-[ejs]:http://ejs.co/
+[babel]: https://babeljs.io/
+[rollup]: https://rollupjs.org
+[standalone]: https://github.com/substack/node-browserify#usage
+[template]: scripts/template.xml.ejs
+[ejs]: http://ejs.co/

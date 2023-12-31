@@ -72,23 +72,50 @@ $(eval $(call releaseRule,$(targets)))
 release : $(builddir)/mixxx-launchpad-$(version).zip
 .PHONY : release
 
-test :
-	npm run lint
-	npm run check
-.PHONY : test
+check-eslint :
+	npm run check-eslint
+.PHONY : check-eslint
 
-watch_install :
-	@echo Stop watching with Ctrl-C
-	@sleep 1 # Wait a bit so users can read
-	@$(MAKE) install
-	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE) install; done
-.PHONY : watch_install
+check-types :
+	npm run check-types
+.PHONY : check-types
+
+check-format :
+	npm run check-format
+.PHONY : check-format
+
+check-all : check-eslint check-types check-format
+.PHONY : check-all
 
 watch :
 	@echo Stop watching with Ctrl-C
 	@sleep 1 # Wait a bit so users can read
 	@$(MAKE)
 	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE); done
+.PHONY : watch
+
+dev : check-eslint check-types
+	@$(MAKE)
+.PHONY : dev
+
+dev_install : check-eslint check-types
+	@$(MAKE) install
+.PHONY : dev_install
+
+watchables := compile dev install dev_install
+
+define watchRule
+watch_$(1):
+	@echo Stop watching with Ctrl-C
+	@sleep 1 # Wait a bit so users can read
+	@$(MAKE) $(1) || true
+	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE) $(1); done
+.PHONY : watch_$(1)
+endef
+
+$(foreach target,$(watchables),$(eval $(call watchRule,$(target))))
+
+watch : watch_compile
 .PHONY : watch
 
 clean :

@@ -5,7 +5,5 @@
     "outDir": "dist"
   },
   "include": ["controller.json", "src"],
-  "references": [
-    { "path": "../launchpad-common" }
-  ]
+  "references": [{ "path": "../launchpad-common" }]
 }

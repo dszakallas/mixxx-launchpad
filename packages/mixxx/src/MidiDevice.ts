@@ -53,9 +53,10 @@ export abstract class MidiDevice extends Component {
     })
 
     if (this.sysex) {
-      _this[sysexCallbackPrefix] = (data: number[]) => { this.emit('sysex', data) }
+      _this[sysexCallbackPrefix] = (data: number[]) => {
+        this.emit('sysex', data)
+      }
     }
-
   }
 
   onUnmount() {

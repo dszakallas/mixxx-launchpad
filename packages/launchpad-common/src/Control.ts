@@ -1,6 +1,9 @@
 import { ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
-import { Control as BaseControl, ControlType as BaseControlType, MakeControlTemplate } from '@mixxx-launch/launch-common/src/Control'
-
+import {
+  Control as BaseControl,
+  ControlType as BaseControlType,
+  MakeControlTemplate,
+} from '@mixxx-launch/launch-common/src/Control'
 
 import { ControlComponent, ControlDef } from '@mixxx-launch/mixxx/src/Control'
 import { LaunchpadDevice, MidiComponent } from './device'
@@ -33,10 +36,9 @@ export type ButtonKey = readonly [number, number]
 const nameOf = (x: number, y: number) => `${7 - y},${x}`
 
 export const midi = (key: ButtonKey) => (ctx: ControlContext) =>
-  new MidiComponent(ctx.device, ctx.device.controls[nameOf(...(key))])
+  new MidiComponent(ctx.device, ctx.device.controls[nameOf(...key)])
 
-export const control = (control: ControlDef) => (_ctx: ControlContext) => 
-  new ControlComponent(control)
+export const control = (control: ControlDef) => (_ctx: ControlContext) => new ControlComponent(control)
 
 export type ButtonBindingTemplate<C extends ControlType> = {
   type: (ctx: ControlContext) => MidiComponent

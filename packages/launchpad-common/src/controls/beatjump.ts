@@ -7,7 +7,7 @@ import { modes, ModifierState, retainAttackMode } from '../ModifierSidebar'
 export type Type = {
   type: 'beatjump'
   params: {
-    deck: ChannelControlDef,
+    deck: ChannelControlDef
     gridPosition: [number, number]
     jumps: readonly [number, number][]
     vertical?: boolean
@@ -32,74 +32,75 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
 
   const onMidi =
     (k: number, j: [number, number], d: number) =>
-      ({ bindings, state, context: { modifier, device } }: Control<Type>) =>
-        retainAttackMode(modifier, (mode: ModifierState, { value }) => {
-          modes(
-            mode,
-            () => {
-              if (!state.mode) {
-                if (value) {
-                  setValue(deck.beatjump, j[state.set] * d)
+    ({ bindings, state, context: { modifier, device } }: Control<Type>) =>
+      retainAttackMode(modifier, (mode: ModifierState, { value }) => {
+        modes(
+          mode,
+          () => {
+            if (!state.mode) {
+              if (value) {
+                setValue(deck.beatjump, j[state.set] * d)
+              }
+            } else {
+              if (value) {
+                const currentJump = j[state.set] * d
+                setValue(deck.beatjump, currentJump)
+                if (state.pressing != null) {
+                  device.sendColor(bindings[state.pressing].control, device.colors[`lo_${colors[state.set]}`])
                 }
+                device.sendColor(bindings[k].control, device.colors[`hi_${colors[state.set]}`])
+                state.pressing = k
+                state.diff = state.diff + currentJump
               } else {
-                if (value) {
-                  const currentJump = j[state.set] * d
-                  setValue(deck.beatjump, currentJump)
-                  if (state.pressing != null) {
-                    device.sendColor(bindings[state.pressing].control, device.colors[`lo_${colors[state.set]}`])
-                  }
-                  device.sendColor(bindings[k].control, device.colors[`hi_${colors[state.set]}`])
-                  state.pressing = k
-                  state.diff = state.diff + currentJump
-                } else {
-                  if (state.pressing === k) {
-                    device.sendColor(bindings[k].control, device.colors[`lo_${colors[state.set]}`])
-                    state.pressing = null
-                    setValue(deck.beatjump, -state.diff)
-                    state.diff = 0
-                  }
+                if (state.pressing === k) {
+                  device.sendColor(bindings[k].control, device.colors[`lo_${colors[state.set]}`])
+                  state.pressing = null
+                  setValue(deck.beatjump, -state.diff)
+                  state.diff = 0
                 }
               }
-            },
-            () => {
-              if (value) {
-                state.set = posMod(state.set + 1, 2)
-                const prefix = state.mode ? 'lo' : 'hi'
-                for (let b = 0; b < spec.length; ++b) {
-                  device.sendColor(bindings[b].control, device.colors[`${prefix}_${colors[state.set]}`])
-                }
+            }
+          },
+          () => {
+            if (value) {
+              state.set = posMod(state.set + 1, 2)
+              const prefix = state.mode ? 'lo' : 'hi'
+              for (let b = 0; b < spec.length; ++b) {
+                device.sendColor(bindings[b].control, device.colors[`${prefix}_${colors[state.set]}`])
               }
-            },
-            () => {
-              if (value) {
-                state.mode = !state.mode
-                const prefix = state.mode ? 'lo' : 'hi'
-                for (let b = 0; b < spec.length; ++b) {
-                  device.sendColor(bindings[b].control, device.colors[`${prefix}_${colors[state.set]}`])
-                }
+            }
+          },
+          () => {
+            if (value) {
+              state.mode = !state.mode
+              const prefix = state.mode ? 'lo' : 'hi'
+              for (let b = 0; b < spec.length; ++b) {
+                device.sendColor(bindings[b].control, device.colors[`${prefix}_${colors[state.set]}`])
               }
-            },
-          )
-        })
+            }
+          },
+        )
+      })
   const onMount =
     (k: number) =>
-      ({ bindings, state, context: { device } }: Control<Type>) =>
-        () => {
-          const prefix = state.mode ? 'lo' : 'hi'
+    ({ bindings, state, context: { device } }: Control<Type>) =>
+    () => {
+      const prefix = state.mode ? 'lo' : 'hi'
 
-          device.sendColor(bindings[k].control, device.colors[`${prefix}_${colors[state.set]}`])
-        }
+      device.sendColor(bindings[k].control, device.colors[`${prefix}_${colors[state.set]}`])
+    }
 
   spec.forEach(([jump, dir], i) => {
     bindings[i] = {
-      type: midi(vertical
-        ? [gridPosition[0] + (i % 2), gridPosition[1] + ~~(i / 2)]
-        : [gridPosition[0] + ~~(i / 2), gridPosition[1] + (i % 2)]
+      type: midi(
+        vertical
+          ? [gridPosition[0] + (i % 2), gridPosition[1] + ~~(i / 2)]
+          : [gridPosition[0] + ~~(i / 2), gridPosition[1] + (i % 2)],
       ),
       listeners: {
         midi: onMidi(i, jump as [number, number], dir as number),
         mount: onMount(i),
-      }
+      },
     }
   })
   return {

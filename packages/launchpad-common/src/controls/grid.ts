@@ -11,7 +11,7 @@ export type Type = {
   }
   state: Record<string, unknown>
   params: {
-    deck: ChannelControlDef,
+    deck: ChannelControlDef
     gridPosition: [number, number]
   }
 }
@@ -29,39 +29,39 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   }
   const onGrid =
     (dir: 'back' | 'forth') =>
-      ({ context: { device, modifier }, bindings }: Control<Type>) =>
-        ({ value }: MidiMessage) => {
-          if (!value) {
-            device.clearColor(bindings[dir].control)
-          } else {
-            modes(
-              modifier.getState(),
-              () => {
-                device.sendColor(bindings[dir].control, device.colors.hi_yellow)
-                setValue(steps[dir].normal, 1)
-              },
-              () => {
-                device.sendColor(bindings[dir].control, device.colors.hi_amber)
-                setValue(steps[dir].ctrl, 1)
-              },
-            )
-          }
-        }
+    ({ context: { device, modifier }, bindings }: Control<Type>) =>
+    ({ value }: MidiMessage) => {
+      if (!value) {
+        device.clearColor(bindings[dir].control)
+      } else {
+        modes(
+          modifier.getState(),
+          () => {
+            device.sendColor(bindings[dir].control, device.colors.hi_yellow)
+            setValue(steps[dir].normal, 1)
+          },
+          () => {
+            device.sendColor(bindings[dir].control, device.colors.hi_amber)
+            setValue(steps[dir].ctrl, 1)
+          },
+        )
+      }
+    }
   return {
     bindings: {
       back: {
         type: midi(gridPosition),
         listeners: {
           midi: onGrid('back'),
-        }
+        },
       },
       forth: {
         type: midi([gridPosition[0] + 1, gridPosition[1]]),
         listeners: {
           midi: onGrid('forth'),
-        }
+        },
       },
-    }
+    },
   }
 }
 

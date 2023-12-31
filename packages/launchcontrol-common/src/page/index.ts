@@ -1,8 +1,8 @@
-import { Component } from "@mixxx-launch/mixxx";
-import { LaunchControlDevice } from "../device";
-import { FxParamPageConf, makeFxParamPage } from "./fxParam";
-import { GenericPageConf, makeGenericPage } from "./generic";
-import { PadSelectorPageConf, makePadSelectorPage } from "./padSelector"
+import { Component } from '@mixxx-launch/mixxx'
+import { LaunchControlDevice } from '../device'
+import { FxParamPageConf, makeFxParamPage } from './fxParam'
+import { GenericPageConf, makeGenericPage } from './generic'
+import { PadSelectorPageConf, makePadSelectorPage } from './padSelector'
 
 export type MakePage<C extends PageConf> = (conf: C, template: number, device: LaunchControlDevice) => Component
 
@@ -15,4 +15,3 @@ export const makePageIndex: MakePageIndex = {
   fxParamPage: makeFxParamPage,
   padSelectorPage: makePadSelectorPage,
 } as const
-
