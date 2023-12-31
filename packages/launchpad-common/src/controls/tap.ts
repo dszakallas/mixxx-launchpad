@@ -1,10 +1,9 @@
 import { modes } from '../ModifierSidebar'
-import { ChannelControlDef, ControlComponent, ControlMessage } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import Bpm from '../Bpm'
 import { onAttack } from '../util'
-import { MidiComponent } from '../device'
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
+import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control, midi, control } from '../Control'
 
 export type Type = {
   type: 'tap'
@@ -26,8 +25,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   return {
     bindings: {
       tap: {
-        type: MidiComponent,
-        target: gridPosition,
+        type: midi(gridPosition),
         listeners: {
           midi:
             ({ context: { modifier } }: Control<Type>) =>
@@ -43,8 +41,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         }
       },
       beat: {
-        type: ControlComponent,
-        target: deck.beat_active,
+        type: control(deck.beat_active),
         listeners: {
           update:
             ({ context: { device }, bindings }: Control<Type>) =>

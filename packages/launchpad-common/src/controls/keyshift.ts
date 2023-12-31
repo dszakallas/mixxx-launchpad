@@ -1,8 +1,8 @@
 import { posMod } from '@mixxx-launch/common'
 import { ChannelControlDef, getValue, setValue } from '@mixxx-launch/mixxx'
-import { LaunchpadDevice, MidiComponent } from '../device'
+import { LaunchpadDevice } from '../device'
 import { modes, retainAttackMode } from '../ModifierSidebar'
-import { ButtonBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
+import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
 
 export type Type = {
   type: 'keyshift'
@@ -73,8 +73,7 @@ const make: MakeDeckControlTemplate<Type> = ({ shifts, rows, gridPosition, deck 
     const dy = ~~(i / rows)
     const position = [gridPosition[0] + dx, gridPosition[1] + dy] as const
     bindings[i] = {
-      type: MidiComponent,
-      target: position,
+      type: midi(position),
       listeners: {
         midi: onMidi(i),
         mount:

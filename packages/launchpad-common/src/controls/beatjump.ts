@@ -1,7 +1,7 @@
 import { posMod } from '@mixxx-launch/common'
-import { ChannelControlDef, MidiComponent, setValue } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, setValue } from '@mixxx-launch/mixxx'
 
-import { ButtonBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
+import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
 import { modes, ModifierState, retainAttackMode } from '../ModifierSidebar'
 
 export type Type = {
@@ -92,10 +92,10 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
 
   spec.forEach(([jump, dir], i) => {
     bindings[i] = {
-      type: MidiComponent,
-      target: vertical
+      type: midi(vertical
         ? [gridPosition[0] + (i % 2), gridPosition[1] + ~~(i / 2)]
-        : [gridPosition[0] + ~~(i / 2), gridPosition[1] + (i % 2)],
+        : [gridPosition[0] + ~~(i / 2), gridPosition[1] + (i % 2)]
+      ),
       listeners: {
         midi: onMidi(i, jump as [number, number], dir as number),
         mount: onMount(i),

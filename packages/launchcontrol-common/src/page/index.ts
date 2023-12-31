@@ -10,9 +10,9 @@ export type PageConf = GenericPageConf | PadSelectorPageConf | FxParamPageConf
 
 export type MakePageIndex = { [C in PageConf as C['type']]: MakePage<C> }
 
-export const makePageIndex = {
-  genericPage: makeGenericPage as MakePage<GenericPageConf>,
-  fxParamPage: makeFxParamPage as MakePage<FxParamPageConf>,
-  padSelectorPage: makePadSelectorPage as MakePage<PadSelectorPageConf>,
+export const makePageIndex: MakePageIndex = {
+  genericPage: makeGenericPage,
+  fxParamPage: makeFxParamPage,
+  padSelectorPage: makePadSelectorPage,
 } as const
 

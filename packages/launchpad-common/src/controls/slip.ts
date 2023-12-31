@@ -1,6 +1,5 @@
-import { ChannelControlDef, ControlComponent, getValue, setValue } from '@mixxx-launch/mixxx'
-import { MidiComponent } from '../device'
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
+import { ChannelControlDef, getValue, setValue } from '@mixxx-launch/mixxx'
+import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control, midi, control } from '../Control'
 import { modes, retainAttackMode } from '../ModifierSidebar'
 
 export type Type = {
@@ -42,8 +41,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   return {
     bindings: {
       control: {
-        type: ControlComponent,
-        target: deck.slip_enabled,
+        type: control(deck.slip_enabled),
         listeners: {
           update:
             ({ bindings, state, context: { device } }: Control<Type>) =>
@@ -58,8 +56,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         }
       },
       button: {
-        type: MidiComponent,
-        target: gridPosition,
+        type: midi(gridPosition),
         listeners: {
           midi: onMidi,
           mount:

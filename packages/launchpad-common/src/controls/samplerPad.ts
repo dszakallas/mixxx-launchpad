@@ -1,8 +1,8 @@
-import { ControlComponent, ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
+import { ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
-import { LaunchpadDevice, MidiComponent, parseRGBColor, RGBColor } from '../device'
+import { LaunchpadDevice, parseRGBColor, RGBColor } from '../device'
 import { modes } from '../ModifierSidebar'
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeSamplerControlTemplate, Control } from '../Control'
+import { ButtonBindingTemplate, ControlBindingTemplate, MakeSamplerControlTemplate, Control, midi, control } from '../Control'
 import { SamplerControlDef } from '@mixxx-launch/mixxx/src/Control'
 import { Theme } from '../App'
 
@@ -53,8 +53,7 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
     },
     bindings: {
       button: {
-        type: MidiComponent,
-        target: gridPosition,
+        type: midi(gridPosition),
         listeners: {
           midi:
             ({ context: { modifier }, state }: Control<Type>) =>
@@ -83,8 +82,7 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
       },
 
       playing: {
-        type: ControlComponent,
-        target: sampler.play_latched,
+        type: control(sampler.play_latched),
         listeners: {
           update:
             ({ context: { device }, bindings, state }: Control<Type>) =>
@@ -96,8 +94,7 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
       },
 
       loaded: {
-        type: ControlComponent,
-        target: sampler.track_loaded,
+        type: control(sampler.track_loaded),
         listeners: {
           update:
             ({ context: { device }, bindings, state }: Control<Type>) =>
@@ -109,8 +106,7 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
       },
 
       colorChanged: {
-        type: ControlComponent,
-        target: sampler.track_color,
+        type: control(sampler.track_color),
         listeners: {
           update:
             ({ context: { device }, bindings, state }: Control<Type>) =>

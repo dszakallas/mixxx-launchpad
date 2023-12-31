@@ -1,7 +1,7 @@
-import { ChannelControlDef, ControlComponent, ControlMessage } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
-import { LaunchpadDevice, MidiComponent } from '../device'
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
+import { LaunchpadDevice } from '../device'
+import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control, midi, control } from '../Control'
 import { modes } from '../ModifierSidebar'
 import { onAttack } from '../util'
 
@@ -31,10 +31,8 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   return {
     bindings: {
       samples: {
-        type: ControlComponent,
-        target: deck.track_samples,
+        type: control(deck.track_samples),
         listeners: {
-
           update:
             ({ bindings, context: { device } }: Control<Type>) =>
               ({ value }: ControlMessage) =>
@@ -42,8 +40,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         }
       },
       play: {
-        type: ControlComponent,
-        target: deck.play,
+        type: control(deck.play),
         listeners: {
           update:
             ({ bindings, context: { device } }: Control<Type>) =>
@@ -52,8 +49,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         }
       },
       button: {
-        type: MidiComponent,
-        target: gridPosition,
+        type: midi(gridPosition),
         listeners: {
           midi:
             ({ bindings, context: { modifier } }: Control<Type>) =>

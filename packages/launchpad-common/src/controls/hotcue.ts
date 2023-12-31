@@ -1,8 +1,8 @@
 import { range } from '@mixxx-launch/common'
-import { ChannelControlDef, ControlComponent, ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
-import { MidiComponent, parseRGBColor } from '../device'
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
+import { parseRGBColor } from '../device'
+import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control, midi, control } from '../Control'
 import { modes } from '../ModifierSidebar'
 import { Theme } from '../App'
 
@@ -73,22 +73,19 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0, gridPositi
     const dx = i % rows
     const dy = ~~(i / rows)
     bindings[`midi.${i}`] = {
-      type: MidiComponent,
-      target: [gridPosition[0] + dx, gridPosition[1] + dy],
+      type: midi([gridPosition[0] + dx, gridPosition[1] + dy]),
       listeners: {
         midi: onHotcueMidi(i),
       }
     }
     bindings[`cue.${i}`] = {
-      type: ControlComponent,
-      target: deck.hotcues[1 + i + start].enabled,
+      type: control(deck.hotcues[1 + i + start].enabled),
       listeners: {
         update: onHotcueEnabled(i),
       }
     }
     bindings[`color.${i}`] = {
-      type: ControlComponent,
-      target: deck.hotcues[1 + i + start].color,
+      type: control(deck.hotcues[1 + i + start].color),
       listeners: {
         update: onHotcueColorChanged(i),
       }

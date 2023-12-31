@@ -1,6 +1,6 @@
 import { Eq3KillType, Eq3Type, GainType, makeEq3, makeEq3Kill, makeGain } from "./deck"
 import { FxMeta3Type, FxMixType, FxSuperType, QuickFxSuperType, makeFxMeta3, makeFxMix, makeFxSuper, makeQuickFxSuper } from "./fx"
-import { MakeControlTemplate } from '@mixxx-launch/launch-common/src/Control'
+import { MakeControlTemplate } from '../Control'
 
 export type ControlTypeIndex = |
   Eq3Type |

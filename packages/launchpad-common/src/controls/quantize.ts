@@ -1,7 +1,6 @@
-import { ChannelControlDef, ControlComponent, ControlMessage } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
-import { MidiComponent } from '../device'
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
+import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control, midi, control } from '../Control'
 import { modes } from '../ModifierSidebar'
 import { onAttack } from '../util'
 
@@ -20,8 +19,7 @@ export type Type = {
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
   bindings: {
     quantize: {
-      type: ControlComponent,
-      target: deck.quantize,
+      type: control(deck.quantize),
       listeners: {
         update:
           ({ bindings, context: { device } }: Control<Type>) =>
@@ -32,8 +30,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       }
     },
     button: {
-      type: MidiComponent,
-      target: gridPosition,
+      type: midi(gridPosition),
       listeners: {
         midi:
           ({ bindings, context: { modifier } }: Control<Type>) =>

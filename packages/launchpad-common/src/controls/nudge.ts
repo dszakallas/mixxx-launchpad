@@ -1,8 +1,7 @@
 import { modes, retainAttackMode } from '../ModifierSidebar'
-import { ControlMessage, ControlComponent, ChannelControlDef } from '@mixxx-launch/mixxx'
+import { ControlMessage, ChannelControlDef } from '@mixxx-launch/mixxx'
 import { setValue, getValue } from '@mixxx-launch/mixxx'
-import { MidiComponent } from '../device'
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
+import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control, midi, control } from '../Control'
 
 export type Type = {
   type: 'nudge'
@@ -103,23 +102,20 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   return {
     bindings: {
       down: {
-        type: MidiComponent,
-        target: gridPosition,
+        type: midi(gridPosition),
         listeners: {
           midi: onNudgeMidi('down'),
         }
       },
       up: {
-        type: MidiComponent,
-        target: [gridPosition[0] + 1, gridPosition[1]],
+        type: midi([gridPosition[0] + 1, gridPosition[1]]),
         listeners: {
 
           midi: onNudgeMidi('up'),
         }
       },
       rate: {
-        type: ControlComponent,
-        target: deck.rate,
+        type: control(deck.rate),
         listeners: {
           update: onRate,
         }

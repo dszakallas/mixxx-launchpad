@@ -1,6 +1,6 @@
-import { ChannelControlDef, ControlComponent, ControlMessage, MidiComponent } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
+import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control, midi, control } from '../Control'
 import { modes } from '../ModifierSidebar'
 import { onAttack } from '../util'
 
@@ -41,15 +41,13 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, loops, rows }
     const dx = i % rows
     const dy = ~~(i / rows)
     bindings[`b.${i}`] = {
-      type: MidiComponent,
-      target: [gridPosition[0] + dx, gridPosition[1] + dy],
+      type: midi([gridPosition[0] + dx, gridPosition[1] + dy]),
       listeners: {
         midi: onMidi(loop),
       }
     }
     bindings[`c.${loop}`] = {
-      type: ControlComponent,
-      target: deck.beatloops[loop].enabled,
+      type: control(deck.beatloops[loop].enabled),
       listeners: {
         update: onUpdate(i),
       }

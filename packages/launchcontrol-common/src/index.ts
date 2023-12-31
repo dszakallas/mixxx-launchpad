@@ -1,7 +1,7 @@
 import { map, range } from '@mixxx-launch/common'
-import { Control as BaseControl } from '@mixxx-launch/launch-common/src/Control'
+import { Control as BaseControl, ControlTemplate } from '@mixxx-launch/launch-common/src/Control'
 import { Component, MidiControlDef } from "@mixxx-launch/mixxx"
-import { ControlContext, makeBindings } from './Control'
+import { ControlContext } from './Control'
 import { Eq3KillType, makeEq3Kill } from './controls/deck'
 import { FxEnablerType, FxSelectorType, makeFxEnabler, makeFxSelector } from './controls/fx'
 import { LaunchControlDevice } from './device'
@@ -48,17 +48,17 @@ const statelessFreePage = (makePage: MakePage): MakeComponent => (device: Launch
 
 const makeEq3KillLegacy = (device: LaunchControlDevice, template: number, row: number, column: number, deck: number) => {
   const eq3 = makeEq3Kill({ template, row, column, deck })
-  return new BaseControl<ControlContext, Eq3KillType>(makeBindings, eq3.bindings, eq3.state, { device })
+  return new BaseControl<ControlContext, Eq3KillType>(eq3.bindings, eq3.state, { device })
 }
 
 const makeFxEnablerLegacy = (device: LaunchControlDevice, template: number, row: number, column: number, deck: number) => {
-  const fxEnabler = makeFxEnabler({ template, row, column, deck })
-  return new BaseControl<ControlContext, FxEnablerType>(makeBindings, fxEnabler.bindings, fxEnabler.state, { device })
+  const fxEnabler: ControlTemplate<ControlContext, FxEnablerType> = makeFxEnabler({ template, row, column, deck })
+  return new BaseControl<ControlContext, FxEnablerType>(fxEnabler.bindings, fxEnabler.state, { device })
 }
 
 const makeFxSelectorLegacy = (device: LaunchControlDevice, template: number, row: number, column: number, deck: number) => {
   const fxSelector = makeFxSelector({ template, row, column, deck })
-  return new BaseControl<ControlContext, FxSelectorType>(makeBindings, fxSelector.bindings, fxSelector.state, { device })
+  return new BaseControl<ControlContext, FxSelectorType>(fxSelector.bindings, fxSelector.state, { device })
 }
 
 const pages = [{

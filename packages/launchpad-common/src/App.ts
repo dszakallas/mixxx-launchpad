@@ -4,9 +4,10 @@ import type { Modifier } from './ModifierSidebar'
 import { Component, MidiMessage } from '@mixxx-launch/mixxx'
 import { LaunchpadDevice, MidiComponent, RGBColor } from './device'
 import { Action } from '@mixxx-launch/mixxx/src/util'
-import { ControlContext, makePresetTemplate, Preset, PresetConf } from './Control'
+import { ControlContext } from './Control'
 import PlaylistSidebar from './PlaylistSidebar'
 import { posMod } from '@mixxx-launch/common'
+import { Preset, PresetConf, makePresetTemplate } from './Preset'
 
 export type PresetSize = 'short' | 'tall' | 'grande'
 

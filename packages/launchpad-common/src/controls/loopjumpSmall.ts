@@ -2,8 +2,7 @@ import { modes } from '../ModifierSidebar'
 import type { ChannelControlDef, MidiMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { onAttack } from '../util'
-import { MidiComponent } from '../device'
-import { ButtonBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
+import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
 
 export type Type = {
   type: 'loopjumpSmall'
@@ -26,8 +25,7 @@ const make: MakeDeckControlTemplate<Type> = ({ amount, gridPosition, deck }) => 
   return {
     bindings: {
       back: {
-        type: MidiComponent,
-        target: gridPosition,
+        type: midi(gridPosition),
         listeners: {
           midi: onMidi(-1),
           mount:
@@ -38,8 +36,7 @@ const make: MakeDeckControlTemplate<Type> = ({ amount, gridPosition, deck }) => 
         }
       },
       forth: {
-        type: MidiComponent,
-        target: [gridPosition[0] + 1, gridPosition[1]],
+        type: midi([gridPosition[0] + 1, gridPosition[1]]),
         listeners: {
           midi: onMidi(1),
           mount:

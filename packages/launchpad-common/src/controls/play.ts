@@ -1,9 +1,8 @@
-import { ChannelControlDef, ControlComponent, ControlMessage } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
-import { MidiComponent } from '../device'
-import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control } from '../Control'
 import { modes } from '../ModifierSidebar'
 import { onAttack } from '../util'
+import { ButtonBindingTemplate, ControlBindingTemplate, MakeDeckControlTemplate, Control, midi, control } from '../Control'
 
 export type Type = {
   type: 'play'
@@ -20,8 +19,7 @@ export type Type = {
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
   bindings: {
     playIndicator: {
-      type: ControlComponent,
-      target: deck.play_indicator,
+      type: control(deck.play_indicator),
       listeners: {
         update:
           ({ bindings, context: { device } }: Control<Type>) =>
@@ -35,8 +33,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       }
     },
     play: {
-      type: MidiComponent,
-      target: gridPosition,
+      type: midi(gridPosition),
       listeners: {
         midi:
           ({ context: { modifier } }: Control<Type>) =>

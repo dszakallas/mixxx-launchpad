@@ -1,8 +1,6 @@
-import { MakeControlTemplate } from '@mixxx-launch/launch-common/src/Control'
 import { MidiMessage, absoluteNonLin } from "@mixxx-launch/mixxx"
-import { ControlComponent, ControlMessage, getValue, root, setValue } from "@mixxx-launch/mixxx/src/Control"
-import { Control, ControlBindingTemplate, MidiBindingTemplate } from '../Control'
-import { LCMidiComponent } from "../device"
+import { ControlMessage, getValue, root, setValue } from "@mixxx-launch/mixxx/src/Control"
+import { Control, ControlBindingTemplate, MidiBindingTemplate, control, midi, MakeControlTemplate } from '../Control'
 import { channelColorPalette } from '../util'
 
 const eq3Channel = ['low', 'mid', 'hi']
@@ -28,8 +26,7 @@ export const makeEq3: MakeControlTemplate<Eq3Type> = ({ template, column, deck }
   const fxParams = root.equalizerRacks[0].effect_units[deck].effects[0].parameters
   eq3Channel.forEach((v, i) => {
     bindings[`knob.${v}`] = {
-      type: LCMidiComponent,
-      target: [template, `knob.${2-i}.${column}`],
+      type: midi(template, `knob.${2-i}.${column}`),
       listeners: {
         midi: ({ bindings }: Control<Eq3Type>) => ({ value }: MidiMessage) => {
           setValue(bindings[`val.${v}`].control, absoluteNonLin(value, 0, 1, 4))
@@ -38,8 +35,7 @@ export const makeEq3: MakeControlTemplate<Eq3Type> = ({ template, column, deck }
     }
 
     bindings[`kill.${v}`] = {
-      type: ControlComponent,
-      target: fxParams[i].button_value,
+      type: control(fxParams[i].button_value),
       listeners: {
         update: ({ context: { device }, bindings }: Control<Eq3Type>) => ({ value }: ControlMessage) => {
           device.sendColor(template, bindings[`knob.${v}`].led, device.colors[channelColorPalette[deck % 4][value ? 1 : 0]])
@@ -48,9 +44,7 @@ export const makeEq3: MakeControlTemplate<Eq3Type> = ({ template, column, deck }
     }
 
     bindings[`val.${v}`] = {
-      type: ControlComponent,
-      target: fxParams[i].value,
-      softTakeover: true
+      type: control(fxParams[i].value, true),
     }
   })
 
@@ -84,8 +78,7 @@ export const makeEq3Kill: MakeControlTemplate<Eq3KillType> = ({ template, row, c
 
   eq3KillChannel.forEach(([v, c], i) => {
     bindings[`pad.${v}`] = {
-      type: LCMidiComponent,
-      target: [template, `pad.${row}.${column + i}`, 'on'],
+      type: midi(template, `pad.${row}.${column + i}`, 'on'),
       listeners: {
         midi: ({ bindings }: Control<Eq3KillType>) => ({ value }: MidiMessage) => {
           if (value) {
@@ -96,8 +89,7 @@ export const makeEq3Kill: MakeControlTemplate<Eq3KillType> = ({ template, row, c
       }
     }
     bindings[`kill.${v}`] = {
-      type: ControlComponent,
-      target: c,
+      type: control(c),
       listeners: {
         update: ({ context: { device }, bindings }: Control<Eq3KillType>) => ({ value }: ControlMessage) => {
           device.sendColor(template, bindings[`pad.${v}`].led, value ? device.colors.hi_red : device.colors.black)
@@ -125,8 +117,7 @@ export type GainType = {
 export const makeGain: MakeControlTemplate<GainType> = ({ template, column, deck }) => ({
   bindings: {
     fader: {
-      type: LCMidiComponent,
-      target: [template, `fader.0.${column}`],
+      type: midi(template, `fader.0.${column}`),
       listeners: {
         midi: ({ bindings }: Control<GainType>) => ({ value }: MidiMessage) => {
           setValue(bindings.ctrl.control, value / 127)
@@ -134,9 +125,7 @@ export const makeGain: MakeControlTemplate<GainType> = ({ template, column, deck
       }
     },
     ctrl: {
-      type: ControlComponent,
-      target: root.channels[deck].volume,
-      softTakeover: true
+      type: control(root.channels[deck].volume, true),
     }
   }
 })
