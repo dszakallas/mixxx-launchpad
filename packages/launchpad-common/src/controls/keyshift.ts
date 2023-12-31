@@ -20,7 +20,7 @@ export type Type = {
   }
 }
 
-const colors = ['green', 'red'] as const
+const colors = ['green', 'red']
 
 const make: MakeDeckControlTemplate<Type> = ({ shifts, rows, gridPosition, deck }) => {
   const bindings: Type['bindings'] = {}
@@ -71,9 +71,8 @@ const make: MakeDeckControlTemplate<Type> = ({ shifts, rows, gridPosition, deck 
   shifts.forEach((_, i) => {
     const dx = i % rows
     const dy = ~~(i / rows)
-    const position = [gridPosition[0] + dx, gridPosition[1] + dy] as const
     bindings[i] = {
-      type: midi(position),
+      type: midi([gridPosition[0] + dx, gridPosition[1] + dy]),
       listeners: {
         midi: onMidi(i),
         mount:

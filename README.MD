@@ -412,14 +412,28 @@ make -j 4
 Afterward the `dist` folder will contain the files that need to be
 copied the Mixxx's controller folder.
 
-### Test
-
-We utilize a linter and the TypeScript typechecker to ensure some level of code safety and consistency.
-
-You can run them both with
+To compile specific controllers, use the `targets` variable:
 
 ```shell
-make test
+make -j 4 targets="launchpad-mk2 launchpad-mk1"
+```
+
+### Test
+
+We utilize eslint, TypeScript typechecker and prettier to ensure some level of code safety and consistency.
+
+You can run them individually with the following commands:
+
+```shell
+make check-eslint
+make check-types
+make check-format
+```
+
+To run them all:
+
+```shell
+make check-all
 ```
 
 ### Install
@@ -430,7 +444,7 @@ To install into the Mixxx resources folder, run
 make -j 4 install installDir=$MIXXX_SETTINGS_DIR
 ```
 
-where `$MIXXX_SETTINGS_DIR` is the [Mixxx settings directory](https://manual.mixxx.org/2.3/en/chapters/appendix/settings_directory.html#location) for your platform. The Makefile providers default values for macOS and Linux, so running
+where `$MIXXX_SETTINGS_DIR` is the [Mixxx settings directory](https://manual.mixxx.org/2.3/en/chapters/appendix/settings_directory.html#location) for your platform. The Makefile provides default values for macOS and Linux, so running
 
 ```shell
 make -j 4 install
@@ -438,12 +452,31 @@ make -j 4 install
 
 will work on these platforms if you didn't change the Mixxx default installation.
 
-These two tasks have watch counterparts making them rerun automatically on file changes. This is handy during development:
+# Development loop
+
+During development, it's desirable to reload the code into Mixxx on every change for a fast feedback loop.
+Some tasks have watch counterparts making them rerun automatically on file changes:
 
 ```shell
-make watch
-make watch_install
+make watch              # Recompile on changes
+make watch_install      # Reinstall on changes
+make watch_dev          # Run linter and typechecker on changes, then recompile if there were no errors
+make watch_dev_install  # Run linter and typechecker on changes, then reinstall if there were no errors
 ```
+
+I find the last one especially pleasant.
+
+Tip: you can use the `targets` and `installDir` variables with these targets too.
+
+# Contributing
+
+The code should pass CI checks, which is equivalent to running
+
+```shell
+make check-all
+```
+
+We use [lefthook](https://github.com/evilmartians/lefthook) to run precommit hooks.
 
 [babel]: https://babeljs.io/
 [rollup]: https://rollupjs.org

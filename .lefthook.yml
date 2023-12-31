@@ -1,0 +1,12 @@
+pre-commit:
+  parallel: true
+  commands:
+    eslint:
+      glob: '*.{js,ts}'
+      run: npm run eslint {staged_files}
+    prettier:
+      glob: '*.{js,ts,json,md,yml,yaml}'
+      run: npm run prettier -- --check {staged_files}
+    tsc:
+      glob: '*.{js,ts}'
+      run: npm run tsc -- -b

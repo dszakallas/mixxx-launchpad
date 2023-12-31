@@ -46,7 +46,7 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
       }
     } else {
       if (device.supportsRGBColors) {
-        device.sendRGBColor(bindings.button.control, color as RGBColor)
+        device.sendRGBColor(bindings.button.control, color)
       } else {
         device.sendColor(bindings.button.control, device.colors.hi_red)
       }
