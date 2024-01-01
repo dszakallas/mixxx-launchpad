@@ -1,33 +1,35 @@
-SHELL := $(shell which bash) -O globstar -O extglob -c
+SHELL := $(shell which bash)
 
 empty :=
 space := $(empty) $(empty)
 
-join-with = $(subst $(space),$1,$(strip $2))
+buildDir ?= ./dist
 
+join-with = $(subst $(space),$1,$(strip $2))
 device = $(call join-with,\ ,$(shell jq -r .device packages/$(1)/controller.json))
 manufacturer = $(call join-with,\ ,$(shell jq -r .manufacturer packages/$(1)/controller.json))
 path = "src"
-mapping = $(builddir)/$(call manufacturer,$(1))\ $(call device,$(1)).midi.xml
-script = $(builddir)/$(call manufacturer,$(1))-$(call device,$(1))-scripts.js
+mapping = $(buildDir)/$(call manufacturer,$(1))\ $(call device,$(1)).midi.xml
+script = $(buildDir)/$(call manufacturer,$(1))-$(call device,$(1))-scripts.js
 
 arch := $(shell uname)
 
-# List the default Resource directories of Mixxx on different architectures
 installDirDarwin := $(HOME)/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support/Mixxx
 installDirLinux := $(HOME)/.mixxx
 
+# version specifies the version of the release
+version ?= $(shell jq -r .version package.json)
+
+# targets specifies the controllers to build. Default: all
+targets ?= $(shell jq -r '.controllers | join (" ")' package.json)
+
+# installDir specifies the installation directory
 installDir ?= $(installDir$(arch))
 
 package := ./package.json
-builddir ?= ./dist
-version ?= $(shell jq -r .version package.json)
 
-scriptFiles = $(shell ls packages/*/!(node_modules)/**/*.ts)
-#scriptFiles = $(shell find . -name 'controller.json' -or -name '*.ts' -not -path "*/dist/*" -not -path "*/node_modules/*" -print | cut -d/ -f2- | xargs)
+scriptFiles = $(shell find . -name 'controller.json' -or -name '*.ts' -not -path "*/dist/*" -not -path "*/node_modules/*" -print | cut -d/ -f2- )
 mappingFiles = $(package) packages/$(1)/controller.json scripts/template.xml.ejs
-
-targets := $(shell jq -r '.controllers | join (" ")' package.json)
 
 define targetScriptRules
 $(call script,$(1)) : $(scriptFiles)
@@ -53,14 +55,14 @@ install : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target
 endef
 
 define releaseRule
-$(builddir)/mixxx-launchpad-$(version).zip : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) | $(builddir)
+$(buildDir)/mixxx-launchpad-$(version).zip : $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target))) | $(buildDir)
 	zip -j -9 $$@ $(foreach target,$(1),$(call mapping,$(target)) $(call script,$(target)))
 endef
 
 default : compile
 .PHONY : default
 
-$(builddir):
+$(buildDir) :
 	mkdir -p $@
 
 $(foreach target,$(targets),$(eval $(call targetScriptRules,$(target))))
@@ -69,7 +71,7 @@ $(eval $(call compileRule,$(targets)))
 $(eval $(call installRule,$(targets)))
 $(eval $(call releaseRule,$(targets)))
 
-release : $(builddir)/mixxx-launchpad-$(version).zip
+release : $(buildDir)/mixxx-launchpad-$(version).zip
 .PHONY : release
 
 check-eslint :
@@ -87,13 +89,6 @@ check-format :
 check-all : check-eslint check-types check-format
 .PHONY : check-all
 
-watch :
-	@echo Stop watching with Ctrl-C
-	@sleep 1 # Wait a bit so users can read
-	@$(MAKE)
-	@trap exit SIGINT; fswatch -o $(scriptFiles) $(mappingFiles) | while read; do $(MAKE); done
-.PHONY : watch
-
 dev : check-eslint check-types
 	@$(MAKE)
 .PHONY : dev
@@ -105,7 +100,7 @@ dev_install : check-eslint check-types
 watchables := compile dev install dev_install
 
 define watchRule
-watch_$(1):
+watch_$(1) :
 	@echo Stop watching with Ctrl-C
 	@sleep 1 # Wait a bit so users can read
 	@$(MAKE) $(1) || true
@@ -119,5 +114,5 @@ watch : watch_compile
 .PHONY : watch
 
 clean :
-	rm -rf $(builddir) tmp
+	rm -rf $(buildDir) tmp
 .PHONY : clean

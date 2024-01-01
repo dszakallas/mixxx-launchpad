@@ -2,15 +2,18 @@
   "name": "@mixxx-launch/project",
   "version": "0.0.0-development",
   "type": "module",
-  "description": "Novation Launchpad mapping for Mixxx",
+  "description": "Novation Launch controller mappings for Mixxx",
   "homepage": "https://github.com/dszakallas/mixxx-launchpad",
   "scripts": {
     "check-eslint": "eslint .",
     "check-types": "tsc -b",
     "check-format": "prettier --check .",
     "which": "which",
-    "format": "prettier -w .",
-    "semantic-release": "semantic-release"
+    "reformat": "prettier -w .",
+    "semantic-release": "semantic-release",
+    "eslint": "eslint",
+    "prettier": "prettier",
+    "tsc": "tsc"
   },
   "author": "Midiparse",
   "license": "MIT",

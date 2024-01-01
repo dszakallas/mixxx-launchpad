@@ -106,7 +106,7 @@ const pages = [
   },
 ] as const
 
-const padSelectorPage = {
+const padSelectorPage: PadSelectorPageConf = {
   type: 'padSelectorPage',
   initialSelection: 0,
   pads: [
@@ -135,7 +135,7 @@ const padSelectorPage = {
       ])
     }),
   ],
-} as PadSelectorPageConf
+}
 
 const makeApp = (device: LaunchControlDevice) =>
   makeContainer([makePager(pages, 16)(device), makePager([padSelectorPage])(device)])

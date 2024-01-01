@@ -81,7 +81,7 @@ export const makeEq3Kill: MakeControlTemplate<Eq3KillType> = ({ template, row, c
   const eq3KillChannel = [
     ...['low', 'mid', 'hi'].map((v, i) => [v, fxParams[2 - i].button_value] as const),
     ['qfx', root.quickEffectRacks[0].effect_units[deck].enabled] as const,
-  ] as const
+  ]
 
   eq3KillChannel.forEach(([v, c], i) => {
     bindings[`pad.${v}`] = {

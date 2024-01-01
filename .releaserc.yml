@@ -16,7 +16,7 @@ plugins:
           - pr
           - branch
   - - '@semantic-release/exec'
-    - prepareCmd: make release builddir=dist/release version=${nextRelease.version}
+    - prepareCmd: make release buildDir=dist/release version=${nextRelease.version}
   - - '@semantic-release/github'
     - assets:
         - path: dist/release/*.zip

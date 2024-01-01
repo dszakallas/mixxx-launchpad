@@ -16,7 +16,7 @@ export type Type = {
   }
 }
 
-const SMALL_SAMPLES = 125 as const
+const SMALL_SAMPLES = 125
 
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   const map = {

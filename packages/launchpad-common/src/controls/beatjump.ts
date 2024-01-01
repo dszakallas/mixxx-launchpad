@@ -21,7 +21,7 @@ export type Type = {
   bindings: { [k: number]: ButtonBindingTemplate<Type> }
 }
 
-const colors = ['green', 'red'] as const
+const colors = ['green', 'red']
 
 const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertical = false }) => {
   const bindings: Type['bindings'] = {}

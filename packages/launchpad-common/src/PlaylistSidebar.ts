@@ -3,10 +3,10 @@ import type { MidiMessage, ControlDef } from '@mixxx-launch/mixxx'
 import { LaunchpadDevice, MidiComponent } from './device'
 import { ControlComponent, ControlMessage, getValue, masterControlDef } from '@mixxx-launch/mixxx/src/Control'
 
-const longInterval = 240 as const
-const mediumInterval = 120 as const
-const shortInterval = 60 as const
-const minInterval = 30 as const
+const longInterval = 240
+const mediumInterval = 120
+const shortInterval = 60
+const minInterval = 30
 
 const autoscrolled = (binding: Component) => {
   let started: number | null = null
@@ -35,13 +35,13 @@ const autoscrolled = (binding: Component) => {
       started = started as number
       if (interval > minInterval) {
         const current = Date.now()
-        if (interval === longInterval && current - (started as number) > 1500) {
+        if (interval === longInterval && current - started > 1500) {
           interval = mediumInterval
           timer.restart(interval)
-        } else if (interval === mediumInterval && current - (started as number) > 3000) {
+        } else if (interval === mediumInterval && current - started > 3000) {
           interval = shortInterval
           timer.restart(interval)
-        } else if (interval === shortInterval && current - (started as number) > 6000) {
+        } else if (interval === shortInterval && current - started > 6000) {
           interval = minInterval
           timer.restart(interval)
         }
