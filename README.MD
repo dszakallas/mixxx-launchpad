@@ -452,7 +452,7 @@ make -j 4 install
 
 will work on these platforms if you didn't change the Mixxx default installation.
 
-# Development loop
+### Development loop
 
 During development, it's desirable to reload the code into Mixxx on every change for a fast feedback loop.
 Some tasks have watch counterparts making them rerun automatically on file changes:
@@ -468,7 +468,7 @@ I find the last one especially pleasant.
 
 Tip: you can use the `targets` and `installDir` variables with these targets too.
 
-# Contributing
+### Contributing
 
 The code should pass CI checks, which is equivalent to running
 
