@@ -52,7 +52,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         },
       },
       out: {
-        type: midi(gridPosition),
+        type: midi([gridPosition[0] + 1, gridPosition[1]]),
         listeners: {
           midi: onMidi('out'),
         },
