@@ -9,7 +9,7 @@ import {
   setValue,
 } from '@mixxx-launch/mixxx/src/Control'
 import { absoluteLin } from '@mixxx-launch/mixxx/src/util'
-import { LaunchControlDevice, MidiComponent } from '../device'
+import { LaunchControlDevice, MidiComponent, toMidiControlDef } from '../device'
 
 export const makeFxParamPage = (_conf: FxParamPageConf, template: number, device: LaunchControlDevice) =>
   new FxParamPage(device, template)
@@ -38,17 +38,17 @@ export class FxParamPage extends Component {
 
     const drawPrevLed = () => {
       if (this._selectedEffectUnit > 0) {
-        sendShortMsg(device.controls[`${this._template}.up`], device.colors.hi_red)
+        sendShortMsg(toMidiControlDef(device.physicalControls['up'], this._template), device.colors.hi_red)
       } else {
-        sendShortMsg(device.controls[`${this._template}.up`], device.colors.black)
+        sendShortMsg(toMidiControlDef(device.physicalControls['up'], this._template), device.colors.black)
       }
     }
 
     const drawNextLed = () => {
       if (this._selectedEffectUnit < 3) {
-        sendShortMsg(device.controls[`${this._template}.down`], device.colors.hi_red)
+        sendShortMsg(toMidiControlDef(device.physicalControls['down'], this._template), device.colors.hi_red)
       } else {
-        sendShortMsg(device.controls[`${this._template}.down`], device.colors.black)
+        sendShortMsg(toMidiControlDef(device.physicalControls['down'], this._template), device.colors.black)
       }
     }
 
@@ -122,10 +122,6 @@ export class FxParamPage extends Component {
   }
 }
 
-const toEffectKnobRange = (value: number) => {
-  return absoluteLin(value, 0, 1)
-}
-
 class FxComponent extends Component {
   effectDef: EffectDef
 
@@ -136,6 +132,7 @@ class FxComponent extends Component {
   private _device: LaunchControlDevice
   private _params: EffectParameterDef[]
   private _buttonParams: EffectParameterDef[]
+  private _template: number
 
   constructor(device: LaunchControlDevice, template: number, row: number, effectDef: EffectDef) {
     super()
@@ -153,11 +150,13 @@ class FxComponent extends Component {
 
     this._midiComponents = []
 
+    this._template = template
+
     for (const i of range(8)) {
       const midiComponent = new MidiComponent(device, template, `knob.${row}.${7 - i}`)
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
         if (i < this._params.length) {
-          setValue(this._params[i].value, toEffectKnobRange(value))
+          setValue(this._params[i].value, absoluteLin(value, 0, 1))
         } else if (i < this._params.length + this._buttonParams.length) {
           setValue(this._buttonParams[i - this._params.length].button_value, Math.round(value - 127))
         }
@@ -173,8 +172,8 @@ class FxComponent extends Component {
     this._buttonParams = array(map((i) => this.effectDef.parameters[i], range(numButtonParams)))
 
     for (const i of range(8)) {
-      const ledName = this._midiComponents[i].control.name.replace('knob', 'led')
-      const ledControl = this._device.controls[ledName]
+      const ledName = this._midiComponents[i].physicalControlName.replace('knob', 'led')
+      const ledControl = toMidiControlDef(this._device.physicalControls[ledName], this._template)
       if (i < this._params.length) {
         sendShortMsg(ledControl, this._device.colors.lo_green)
       } else if (i < this._params.length + this._buttonParams.length) {

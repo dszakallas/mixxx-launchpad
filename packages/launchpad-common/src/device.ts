@@ -13,6 +13,7 @@ export const parseRGBColor = (number: number): RGBColor | null => {
 }
 
 export abstract class LaunchpadDevice extends MidiDevice {
+  abstract controls: { [key: string]: MidiControlDef }
   abstract colors: { [key: string]: number }
 
   abstract supportsRGBColors: boolean
@@ -32,6 +33,13 @@ export abstract class LaunchpadDevice extends MidiDevice {
 
   onMount() {
     super.onMount()
+
+    Object.values(this.controls).forEach((c) => {
+      this.registerControl(c, (_channel, control, value, _status) => {
+        const message = { value, control }
+        this.emit(c.name, message)
+      })
+    })
   }
 
   onUnmount() {
