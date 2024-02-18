@@ -9,4 +9,4 @@ pre-commit:
       run: bunx prettier --check {staged_files}
     tsc:
       glob: '*.{js,ts}'
-      run: bunx tsc -b
+      run: bunx tsc-files --noEmit {staged_files}

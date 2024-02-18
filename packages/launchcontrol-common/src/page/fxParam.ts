@@ -8,6 +8,7 @@ import {
   root,
   setValue,
 } from '@mixxx-launch/mixxx/src/Control'
+import { absoluteLin } from '@mixxx-launch/mixxx/src/util'
 import { LaunchControlDevice, MidiComponent } from '../device'
 
 export const makeFxParamPage = (_conf: FxParamPageConf, template: number, device: LaunchControlDevice) =>
@@ -122,7 +123,7 @@ export class FxParamPage extends Component {
 }
 
 const toEffectKnobRange = (value: number) => {
-  return value / 63.5 - 1
+  return absoluteLin(value, 0, 1)
 }
 
 class FxComponent extends Component {
