@@ -1,7 +1,8 @@
-import def from '../controls'
-import { MidiControlDef, sendShortMsg, sendSysexMsg } from '@mixxx-launch/mixxx'
-import { convertControlDef, useDevice, LaunchControlDevice } from '@mixxx-launch/launchcontrol-common'
+import { physicalControls } from '../controls'
+import { sendShortMsg, sendSysexMsg } from '@mixxx-launch/mixxx'
+import { useDevice, LaunchControlDevice, ControllerControlDef } from '@mixxx-launch/launchcontrol-common'
 import { range } from '@mixxx-launch/common'
+import { PhysicalMidiControlDef, toMidiControlDef } from '@mixxx-launch/launchcontrol-common/src/device'
 
 const colors = {
   black: 12,
@@ -52,17 +53,25 @@ const leds = Object.assign(
 const templateChangeSysexPreamble = [240, 0, 32, 41, 2, 17, 119] as const
 const colorChangeSysexPreamble = [240, 0, 32, 41, 2, 17, 120] as const
 
+const convertControlDef = (name: string, [opcode, midino]: ControllerControlDef): PhysicalMidiControlDef => ({
+  name,
+  opcode,
+  midino,
+})
+
 class LaunchControlXLMK2Device extends LaunchControlDevice {
-  controls: { [key: string]: MidiControlDef }
+  physicalControls: { [key: string]: PhysicalMidiControlDef }
   colors: { [key: string]: number }
   leds: { [key: string]: number }
   numTemplates = 16
 
   constructor() {
     super()
-    this.controls = Object.fromEntries(
-      Object.entries(def().controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
+    this.physicalControls = Object.fromEntries(
+      physicalControls.map(([k, v]) => [k, convertControlDef(k as string, v as [number, number])]),
     )
+    console.log(JSON.stringify(physicalControls))
+    console.log(JSON.stringify(this.physicalControls))
     this.leds = leds
     this.colors = colors
   }
@@ -72,7 +81,7 @@ class LaunchControlXLMK2Device extends LaunchControlDevice {
   }
 
   resetTemplate(template: number): void {
-    sendShortMsg(this.controls[`${template}.reset`], 0)
+    sendShortMsg(toMidiControlDef(this.physicalControls['reset'], template), 0)
   }
 
   changeTemplate(template: number): void {
