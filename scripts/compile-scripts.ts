@@ -1,8 +1,6 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 import { readFile, writeFile } from 'node:fs/promises'
-import { exec } from 'node:child_process'
-import { promisify } from 'node:util'
 import { resolve, dirname, basename } from 'node:path'
 
 import mkdirp from 'mkdirp'
@@ -13,23 +11,13 @@ import babel from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
 import json from '@rollup/plugin-json'
 
-const execAsync = promisify(exec)
+import { gitSHA, gitTagAlwaysDirty, getPackage, getDevice } from './util'
 
 if (process.argv.length !== 4) {
   throw Error('Usage: target outFile')
 }
 
 const [tgt, outFile] = process.argv.slice(-2)
-
-const gitSHA = async () => {
-  const { stdout } = await execAsync('git rev-parse HEAD')
-  return stdout.trim()
-}
-
-const gitTagAlwaysDirty = async () => {
-  const { stdout } = await execAsync('git describe --tags --always --dirty')
-  return stdout.trim()
-}
 
 const getBundleHeader = async () => `/* eslint-disable */
 /*
@@ -43,18 +31,20 @@ const getBundleHeader = async () => `/* eslint-disable */
  * Commit hash: ${await gitSHA()}
  */`
 
-const [tgtPkg, controller, cache] = await Promise.all([
-  readFile(resolve('packages', tgt, 'package.json')).then(JSON.parse),
-  readFile(resolve('packages', tgt, 'controller.json')).then(JSON.parse),
-  readFile(`tmp/${tgt}.cache.json`).then(
-    (cache) => JSON.parse(cache),
+const tmp = 'tmp'
+
+const [device, tgtPkg, cache] = await Promise.all([
+  getDevice(tgt),
+  getPackage(tgt),
+  readFile(`${tmp}/${tgt}.cache.json`).then(
+    (cache) => JSON.parse(cache.toString()),
     (_err) => null,
   ),
   mkdirp(dirname(resolve(outFile))),
 ])
 
 const input = resolve('packages', tgt, tgtPkg.main)
-const global = controller.global
+const global = device.global
 
 const bundle = await rollup({
   cache,
@@ -76,14 +66,14 @@ const bundle = await rollup({
     }),
   ],
 })
-await mkdirp('tmp')
+await mkdirp(tmp)
 await Promise.all([
-  writeFile(`tmp/${tgt}.cache.json`, JSON.stringify(bundle.cache)),
+  writeFile(`${tmp}/${tgt}.cache.json`, JSON.stringify(bundle.cache)),
   bundle.write({
     //strict: false, // FIXME: see https://github.com/mixxxdj/mixxx/pull/1795#discussion_r251744258
     format: 'iife',
     name: global,
     file: resolve(outFile),
-    banner: getBundleHeader(),
+    banner: await getBundleHeader(),
   }),
 ])

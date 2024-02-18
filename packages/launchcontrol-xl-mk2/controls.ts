@@ -1,6 +1,4 @@
-#!/usr/bin/env node
-
-const range = (n) => [...Array(n).keys()]
+const range = (n: number) => [...Array(n).keys()]
 
 const CC = 0xb
 const NoteOn = 0x9
@@ -11,6 +9,7 @@ const Sets = {
     set: [0x0d, 0x1d, 0x31],
     n: 8,
     nPerRow: 1,
+    transpose: false,
     type: CC,
   },
   // the leds are in a different order than the knobs, also they use NoteOn instead of CC
@@ -26,12 +25,14 @@ const Sets = {
     set: [0x4d],
     n: 8,
     nPerRow: 1,
+    transpose: false,
     type: CC,
   },
   pad: {
     set: [0x29, 0x39, 0x49, 0x59],
     n: 4,
     nPerRow: 2,
+    transpose: false,
     type: Note,
   },
 }
@@ -60,9 +61,9 @@ const board = Object.fromEntries(
 
 const page = Object.assign({}, sidebar, board, { reset: [CC, 0x0] })
 
-const toStatus = (opcode, channel) => opcode * 16 + channel
+const toStatus = (opcode: number, channel: number) => opcode * 16 + channel
 
-const makePage = (i) => {
+const makePage = (i: number) => {
   return Object.entries(page).flatMap(([name, [type, ctrl]]) => {
     if (typeof type === 'number') {
       return [[`${i}.${name}`, [toStatus(type, i), ctrl]]]
@@ -76,12 +77,7 @@ const makePage = (i) => {
   })
 }
 
-const def = {
-  device: 'LaunchControl XL MK2',
-  manufacturer: 'Novation',
-  global: 'NLCXL2',
+export default () => ({
   sysex: true,
   controls: Object.fromEntries(range(16).flatMap((n) => makePage(n))),
-}
-
-console.log(JSON.stringify(def))
+})
