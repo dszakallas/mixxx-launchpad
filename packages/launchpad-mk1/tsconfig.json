@@ -4,6 +4,6 @@
     "composite": true,
     "outDir": "dist"
   },
-  "include": ["controller.json", "src"],
+  "include": ["controls.ts", "src"],
   "references": [{ "path": "../launchpad-common" }]
 }

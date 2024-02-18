@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "esModuleInterop": true,
+    "target": "node16",
+    "module": "es2022",
+    "moduleResolution": "node"
+  },
+  "extends": "../tsconfig.json"
+}

@@ -1,4 +1,4 @@
-import def from '../controller.json'
+import def from '../controls'
 import { MidiControlDef, sendShortMsg, sendSysexMsg } from '@mixxx-launch/mixxx'
 import { convertControlDef, useDevice, LaunchControlDevice } from '@mixxx-launch/launchcontrol-common'
 import { range } from '@mixxx-launch/common'
@@ -61,7 +61,7 @@ class LaunchControlXLMK2Device extends LaunchControlDevice {
   constructor() {
     super()
     this.controls = Object.fromEntries(
-      Object.entries(def.controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
+      Object.entries(def().controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
     )
     this.leds = leds
     this.colors = colors
