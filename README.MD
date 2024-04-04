@@ -396,7 +396,7 @@ The multi-project build is managed with npm workspaces. Clone the repo and
 install the dependencies:
 
 ```shell
-git clone https://github.com/szdavid92/mixxx-launchpad
+git clone https://github.com/dszakallas/mixxx-launchpad
 cd mixxx-launchpad
 bun install
 ```
