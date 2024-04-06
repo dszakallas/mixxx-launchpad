@@ -7,7 +7,7 @@ import { Action } from '@mixxx-launch/mixxx/src/util'
 import { ControlContext } from './Control'
 import PlaylistSidebar from './PlaylistSidebar'
 import { posMod } from '@mixxx-launch/common'
-import { Preset, PresetConf, makePresetTemplate } from './Preset'
+import { Preset, PresetConf, makePresetTemplate, PresetState } from './Preset'
 
 export type PresetSize = 'short' | 'tall' | 'grande'
 
@@ -66,11 +66,21 @@ const onMidi = (layout: App, channel: number, modifier: Modifier) =>
 
 const buttons = ['up', 'down', 'left', 'right', 'session', 'user1', 'user2', 'mixer'] as const
 
+// We need an identifier for each block to save/restore its state
+// We want each deck to get a separate identifier. Also, the preset templates should be unique for each deck.
+// We can use the PresetSize and index to identify the preset template, and the channel to identify the deck.
+// Therefore SavedPresetStateKey = {PresetSize}_{index}_{channel}
+type SavedPresetStateKey = `${PresetSize}_${number}_${number}`
+
+const makePresetStateKey = (presetSize: PresetSize, index: number, channel: number): SavedPresetStateKey =>
+  `${presetSize}_${index}_${channel}`
+
 export default class App extends Component {
   conf: LayoutConf
   bindings: [MidiComponent, Action<MidiMessage>][]
   modifier: ModifierSidebar
   presets: { [P in PresetSize]: readonly PresetConf[] }
+  savedPresetStates: { [key: SavedPresetStateKey]: PresetState }
   playlistSidebar: PlaylistSidebar
 
   // state variables
@@ -96,6 +106,7 @@ export default class App extends Component {
     this.chord = []
     this.layout = {}
     this.mountedPresets = {}
+    this.savedPresetStates = {}
   }
 
   getLayout() {
@@ -107,14 +118,14 @@ export default class App extends Component {
   }
 
   updateLayout(diff: Diff) {
-    const removedChannels = diff[0].map((block) => block.channel)
-    removedChannels.forEach((ch) => {
+    diff[0].forEach((block) => {
+      const ch = block.channel
       delete this.layout[ch]
       this.device.clearColor(this.bindings[ch][0].control)
       this.mountedPresets[ch].unmount()
+      this.savedPresetStates[makePresetStateKey(block.size, block.index, ch)] = this.mountedPresets[ch].state
     })
-    const addedBlocks = diff[1]
-    addedBlocks.forEach((block) => {
+    diff[1].forEach((block) => {
       this.layout[block.channel] = block
       if (block.index) {
         this.device.sendColor(this.bindings[block.channel][0].control, this.device.colors.hi_orange)
@@ -134,6 +145,10 @@ export default class App extends Component {
       )
 
       const preset = new Preset(ctx, presetTemplate)
+      const presetState = this.savedPresetStates[makePresetStateKey(block.size, block.index, block.channel)]
+      if (presetState) {
+        preset.state = presetState
+      }
       this.mountedPresets[block.channel] = preset
       this.mountedPresets[block.channel].mount()
     })
