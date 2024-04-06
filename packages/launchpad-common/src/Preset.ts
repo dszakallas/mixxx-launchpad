@@ -74,8 +74,12 @@ export const makePresetTemplate = (
   }
 }
 
-type PresetTemplate = {
+export type PresetTemplate = {
   controls: ControlTemplate<ControlContext, ControlType>[]
+}
+
+export type PresetState = {
+  controlStates: any[]
 }
 
 export class Preset extends Component {
@@ -92,6 +96,18 @@ export class Preset extends Component {
     super.onMount()
     for (const control of this.controls) {
       control.mount()
+    }
+  }
+
+  set state(presetState: PresetState) {
+    for (const i in this.controls) {
+      this.controls[i].state = presetState.controlStates[i]
+    }
+  }
+
+  get state(): PresetState {
+    return {
+      controlStates: this.controls.map((c) => c.state),
     }
   }
 

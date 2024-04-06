@@ -14,9 +14,10 @@ export type Type = {
     gridPosition: [number, number]
     jumps: readonly [number, number][]
     vertical?: boolean
+    bounce?: boolean
   }
   state: {
-    mode: boolean
+    bounce: boolean
     pressing: number | null
     diff: number
     set: number
@@ -24,7 +25,7 @@ export type Type = {
   }
 }
 
-const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertical = false }) => {
+const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertical = false, bounce = false }) => {
   const bindings: Type['bindings'] = {}
   const onMidi =
     (k: number, j: [number, number], d: number) =>
@@ -33,7 +34,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertic
         modes(
           mode,
           () => {
-            if (!state.mode) {
+            if (!state.bounce) {
               if (value) {
                 setValue(deck.loop_move, j[state.set] * d)
               }
@@ -61,7 +62,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertic
           () => {
             if (value) {
               state.set = posMod(state.set + 1, 2)
-              const prefix = state.mode ? 'lo' : 'hi'
+              const prefix = state.bounce ? 'lo' : 'hi'
               for (let b = 0; b < spec.length; ++b) {
                 device.sendColor(bindings[b].control, device.colors[`${prefix}_${state.color[state.set]}`])
               }
@@ -69,8 +70,8 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertic
           },
           () => {
             if (value) {
-              state.mode = !state.mode
-              const prefix = state.mode ? 'lo' : 'hi'
+              state.bounce = !state.bounce
+              const prefix = state.bounce ? 'lo' : 'hi'
               for (let b = 0; b < spec.length; ++b) {
                 device.sendColor(bindings[b].control, device.colors[`${prefix}_${state.color[state.set]}`])
               }
@@ -82,7 +83,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertic
     (k: number) =>
     ({ context: { device }, bindings, state }: Control<Type>) =>
     () => {
-      const prefix = state.mode ? 'lo' : 'hi'
+      const prefix = state.bounce ? 'lo' : 'hi'
       device.sendColor(bindings[k].control, device.colors[`${prefix}_${state.color[state.set]}`])
     }
   const spec = jumps.flatMap((j) => [
@@ -106,7 +107,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertic
   return {
     bindings,
     state: {
-      mode: false,
+      bounce: bounce,
       pressing: null,
       diff: 0,
       set: 0,
