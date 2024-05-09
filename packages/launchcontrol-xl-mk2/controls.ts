@@ -61,21 +61,22 @@ const board = Object.fromEntries(
 
 const page = Object.assign({}, sidebar, board, { reset: [CC, 0x0] })
 
-const toStatus = (opcode: number, channel: number) => opcode * 16 + channel
+const toStatus = (opcode: number, channel: number) => (opcode << 4) + channel
 
-const makePage = (i: number) => {
-  return Object.entries(page).flatMap(([name, [type, ctrl]]) => {
-    if (typeof type === 'number') {
-      return [[`${i}.${name}`, [toStatus(type, i), ctrl]]]
-    } else {
-      const [on, off] = type
-      return [
-        [`${i}.${name}.on`, [toStatus(on, i), ctrl]],
-        [`${i}.${name}.off`, [toStatus(off, i), ctrl]],
-      ]
-    }
-  })
-}
+export const physicalControls = Object.entries(page).flatMap(([name, [type, ctrl]]) => {
+  if (typeof type === 'number') {
+    return [[name, [type, ctrl]]]
+  } else {
+    const [on, off] = type
+    return [
+      [`${name}.on`, [on, ctrl]],
+      [`${name}.off`, [off, ctrl]],
+    ]
+  }
+})
+
+const makePage = (i: number) =>
+  physicalControls.map(([name, [opcode, ctrl]]) => [`${i}.${name}`, [toStatus(opcode as number, i), ctrl]])
 
 export default () => ({
   sysex: true,
