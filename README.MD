@@ -476,8 +476,6 @@ The code should pass CI checks, which is equivalent to running
 make check-all
 ```
 
-We use [lefthook](https://github.com/evilmartians/lefthook) to run precommit hooks.
-
 [babel]: https://babeljs.io/
 [rollup]: https://rollupjs.org
 [standalone]: https://github.com/substack/node-browserify#usage
