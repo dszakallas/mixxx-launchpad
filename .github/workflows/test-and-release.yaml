@@ -9,10 +9,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup bun
-        uses: oven-sh/setup-bun@v1
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v26
+      - uses: cachix/cachix-action@v14
+        with:
+          name: devenv
+      - name: Install devenv.sh
+        run: nix profile install nixpkgs#devenv
       - name: Get bun cache directory
         id: bun-cache-dir
         run: |
@@ -25,13 +28,12 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      - name: Install dependencies
-        run: |
-          bun install
       - name: Check code quality
+        shell: devenv shell bash -- -e {0}
         run: |
           make check-all
       - name: Compile
+        shell: devenv shell bash -- -e {0}
         run: make
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -44,10 +46,13 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref_type == 'branch' && github.ref_name == 'master'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup bun
-        uses: oven-sh/setup-bun@v1
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v26
+      - uses: cachix/cachix-action@v14
+        with:
+          name: devenv
+      - name: Install devenv.sh
+        run: nix profile install nixpkgs#devenv
       - name: Get bun cache directory
         id: bun-cache-dir
         run: |
@@ -60,15 +65,13 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      - name: Install dependencies
-        run: |
-          bun install
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
           name: mixxx-launchpad-${{ github.sha }}-${{ github.run_id }}
           path: dist
       - name: Create release
+        shell: devenv shell bash -- -e {0}
         run: bunx semantic-release
         env:
           GITHUB_TOKEN: ${{ github.token }}
