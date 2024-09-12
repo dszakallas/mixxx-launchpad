@@ -24,7 +24,7 @@ jobs:
         shell: devenv shell bash -- -e {0}
         run: make
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mixxx-launchpad-${{ github.sha }}-${{ github.run_id }}
           path: dist
@@ -42,7 +42,7 @@ jobs:
       - name: Install devenv.sh
         run: nix profile install nixpkgs#devenv
       - name: Download artifact
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v4
         with:
           name: mixxx-launchpad-${{ github.sha }}-${{ github.run_id }}
           path: dist
