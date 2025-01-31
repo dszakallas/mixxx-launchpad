@@ -32,7 +32,7 @@ jobs:
   release:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref_type == 'branch' && github.ref_name == 'master'
+    if: github.ref_type == 'branch' && github.ref_name == 'main'
     steps:
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v26
