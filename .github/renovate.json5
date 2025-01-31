@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>dszakallas/renovate-config//default.json5",
+    ":automergeBranch",
+    ":skipStatusChecks",
+  ],
+  "packageRules": [
+    // automerge
+    {
+      "description": ["Auto-merge GitHub Actions for minor and patch"],
+      "matchManagers": ["github-actions"],
+      "matchDatasources": ["github-tags"],
+      "automerge": true,
+      "automergeType": "branch",
+      "matchUpdateTypes": ["minor", "patch"]
+    }
+  ]
+}
