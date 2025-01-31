@@ -24,7 +24,7 @@
   pre-commit.hooks.prettier = {
     enable = true;
     entry = "bunx prettier -w";
-    files = "\\.(ts|js|json|ya?ml|md)$";
+    files = "\\.(ts|js|json5?|ya?ml|md)$";
   };
 
   # See full reference at https://devenv.sh/reference/options/
