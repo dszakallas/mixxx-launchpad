@@ -48,6 +48,7 @@
     "packages/launchpad-mk1",
     "packages/launchpad-mk2",
     "packages/launchpad-mini-mk3",
+    "packages/launchpad-x",
     "packages/launchcontrol-common",
     "packages/launchcontrol-xl-mk2"
   ],
