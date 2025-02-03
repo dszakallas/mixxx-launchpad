@@ -1,0 +1,13 @@
+{
+  "name": "@mixxx-launch/launchpad-x",
+  "author": "Christian Neumann",
+  "description": "Novation Launchpad X mapping for Mixxx",
+  "homepage": "https://github.com/dszakallas/mixxx-launchpad",
+  "private": true,
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@babel/runtime-corejs3": "^7.21.0",
+    "@mixxx-launch/launchpad-common": "1.0.0"
+  }
+}
