@@ -3,10 +3,10 @@
     "davids-devenvs": {
       "flake": false,
       "locked": {
-        "lastModified": 1739639904,
+        "lastModified": 1739641808,
         "owner": "dszakallas",
         "repo": "devenvs",
-        "rev": "8f679680a5438577bd1fbfa29750ae744969a0ae",
+        "rev": "390b15ed60aeceb81230c68af8443f1817feab7b",
         "type": "github"
       },
       "original": {
