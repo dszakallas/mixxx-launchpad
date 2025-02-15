@@ -1,7 +1,17 @@
-{ pkgs, lib, config, inputs, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  inputs,
+  ...
+}:
 
 {
-  packages = with pkgs; [ fswatch jq gnumake ];
+  packages = with pkgs; [
+    fswatch
+    jq
+    gnumake
+  ];
 
   languages.javascript = {
     enable = true;
@@ -16,16 +26,14 @@
   };
 
   # https://devenv.sh/pre-commit-hooks/
-  pre-commit.hooks.eslint = {
+  git-hooks.hooks.eslint = {
     enable = true;
     entry = "bunx eslint";
     files = "\\.(ts|js)$";
   };
-  pre-commit.hooks.prettier = {
+  git-hooks.hooks.prettier = {
     enable = true;
     entry = "bunx prettier -w";
     files = "\\.(ts|js|json5?|ya?ml|md)$";
   };
-
-  # See full reference at https://devenv.sh/reference/options/
 }
