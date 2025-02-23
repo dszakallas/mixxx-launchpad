@@ -3,7 +3,7 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve, dirname, basename } from 'node:path'
 
-import mkdirp from 'mkdirp'
+import { mkdirp } from 'mkdirp'
 
 import { rollup } from 'rollup'
 import nodeResolve from '@rollup/plugin-node-resolve'

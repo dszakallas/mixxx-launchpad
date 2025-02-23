@@ -4,7 +4,7 @@ import { resolve, dirname, join } from 'node:path'
 import { readFile, writeFile } from 'node:fs/promises'
 
 import ejs from 'ejs'
-import mkdirp from 'mkdirp'
+import { mkdirp } from 'mkdirp'
 
 import { gitSHA, gitTagAlwaysDirty, getControls, getPackage, getDevice } from './util'
 
