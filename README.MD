@@ -21,15 +21,12 @@ Flexible and customizable controller mapping for Novation Launch[Pad|Control] fa
 ## Supported controllers
 
 - Launchpad Mini Mk3
+- Launchpad X
 - Launchpad Mk2
 - Launchpad Mk1
 - LaunchControl XL MK2 (experimental)
 
 ## Controller setup instructions
-
-### Launchpad Mini Mk3
-
-Mini Mk3 has to be put in "Programmer" mode to get MIDI access to all 9x9 instead of only inner 8x8 in "Live" mode. Push and hold "Session" for about a second, "LED" screen shows up, then push "Stop Solo Mute" button, "Programmer" shows up.
 
 ### LaunchControl XL MK2
 
