@@ -30,7 +30,7 @@ Flexible and customizable [Mixxx](https://mixxx.org) controller mappings for the
 
 ### LaunchControl XL MK2
 
-Support is experimental, under active development and any existing mapping may change in future versions. Feedback
+Support is experimental, and any existing mapping may change in future versions. Feedback
 and PRs are welcome.
 
 ## How to get started
