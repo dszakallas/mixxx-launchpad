@@ -7,7 +7,7 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.21.0",
+    "@babel/runtime-corejs3": "^7.27.0",
     "@mixxx-launch/launchpad-common": "1.0.0"
   }
 }

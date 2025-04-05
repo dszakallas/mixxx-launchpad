@@ -61,8 +61,13 @@ const bundle = await rollup({
       exclude: ['node_modules/@babel/runtime/**'],
       extensions: ['.ts', '.js'],
       include: resolve('packages', '**', '*.ts'),
-      configFile: resolve('babel.config.js'),
       babelHelpers: 'runtime',
+      targets: { node: '10.0' },
+      presets: ['@babel/preset-typescript', ['@babel/preset-env', { modules: false }]],
+      plugins: [
+        ['@babel/plugin-transform-arrow-functions'], // work around Qt bug in arrow functions https://bugreports.qt.io/browse/QTBUG-95677
+        ['@babel/plugin-transform-runtime', { corejs: 3, regenerator: false, absoluteRuntime: true }],
+      ],
     }),
   ],
 })
