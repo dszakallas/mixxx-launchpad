@@ -17,3 +17,4 @@ export const map = function* <T, U>(f: (x: T) => U, n: Generator<T>): Generator<
 }
 
 export * from './Lazy'
+export { default as Bpm } from './Bpm'
