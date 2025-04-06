@@ -30,7 +30,7 @@ export const lazyArray = <T>(lazies: (Lazy<T> | T)[]): T[] =>
   new Proxy(lazies, {
     get: function (target: (Lazy<T> | T)[], prop: PropertyKey): unknown {
       if (typeof prop === 'string' && Number.isInteger(Number(prop)) && isLazy(target[+prop])) {
-        return target[+prop]
+        return (target[+prop] as Lazy<unknown>).value
       } else if (typeof prop === 'string' || typeof prop === 'symbol') {
         return (target as any)[prop] // eslint-disable-line
       }
