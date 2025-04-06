@@ -383,7 +383,7 @@ This is now done automatically during script initialization, so you shouldn't ha
 ## Building from source
 
 The code is written in TypeScript, transpiled with [babel] and bundled into a single iife module with [rollup]. There are certain transforms and polyfills which are required to get it working with Mixxx's bundled interpreter.
-The controller mapping is generated from this [template] with [ejs], using metadata about the controller placed in [`info.json`](./packages/launchpad-mk2/info.json).
+The controller mapping is generated from this [template] with [ejs], using metadata about the controller placed in [`devices.json`](./devices.json).
 
 ### Compile
 
