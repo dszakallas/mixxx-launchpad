@@ -1,18 +1,7 @@
 import type { MidiMessage } from '@mixxx-launch/mixxx'
 import { Component } from '@mixxx-launch/common/component'
-
 import { LaunchpadDevice, MidiComponent } from './device'
-
-export enum ModifierState {
-  None = 0,
-  Shift = 1,
-  Ctrl = 2,
-  ShiftCtrl = 3,
-}
-
-export interface Modifier {
-  getState(): ModifierState
-}
+import { ModifierState, Modifier } from '@mixxx-launch/common/modifier'
 
 export default class ModifierSidebar extends Component implements Modifier {
   shift: MidiComponent
@@ -66,22 +55,6 @@ export default class ModifierSidebar extends Component implements Modifier {
 
   getState() {
     return this.state
-  }
-}
-
-export const modes = (ctx: ModifierState, n?: () => void, c?: () => void, s?: () => void, cs?: () => void) => {
-  switch (ctx) {
-    case ModifierState.ShiftCtrl:
-      cs && cs() // eslint-disable-line
-      break
-    case ModifierState.Shift:
-      s && s() // eslint-disable-line
-      break
-    case ModifierState.Ctrl:
-      c && c() // eslint-disable-line
-      break
-    default:
-      n && n() // eslint-disable-line
   }
 }
 

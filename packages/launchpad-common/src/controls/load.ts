@@ -9,7 +9,7 @@ import {
   midi,
   control,
 } from '../Control'
-import { modes } from '../ModifierSidebar'
+import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '../util'
 
 export type Type = {

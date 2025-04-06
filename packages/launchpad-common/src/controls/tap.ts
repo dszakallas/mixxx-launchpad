@@ -1,4 +1,4 @@
-import { modes } from '../ModifierSidebar'
+import { modes } from '@mixxx-launch/common/modifier'
 import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import Bpm from '../Bpm'

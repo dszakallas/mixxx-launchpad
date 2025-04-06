@@ -1,4 +1,4 @@
-import { modes } from '../ModifierSidebar'
+import { modes } from '@mixxx-launch/common/modifier'
 import type { ChannelControlDef, MidiMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { onAttack } from '../util'

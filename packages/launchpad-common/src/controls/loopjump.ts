@@ -1,7 +1,8 @@
 import { posMod } from '@mixxx-launch/common'
 import { ChannelControlDef, setValue } from '@mixxx-launch/mixxx'
 import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
-import { modes, retainAttackMode } from '../ModifierSidebar'
+import { modes } from '@mixxx-launch/common/modifier'
+import { retainAttackMode } from '../ModifierSidebar'
 
 export type Type = {
   type: 'loopjump'

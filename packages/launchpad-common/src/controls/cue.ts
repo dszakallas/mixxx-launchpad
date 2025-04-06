@@ -1,3 +1,4 @@
+import { modes } from '@mixxx-launch/common/modifier'
 import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 
@@ -9,7 +10,7 @@ import {
   midi,
   control,
 } from '../Control'
-import { modes, retainAttackMode } from '../ModifierSidebar'
+import { retainAttackMode } from '../ModifierSidebar'
 
 export type Type = {
   type: 'cue'

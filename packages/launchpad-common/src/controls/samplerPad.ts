@@ -1,7 +1,7 @@
+import { modes } from '@mixxx-launch/common/modifier'
 import { ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { LaunchpadDevice, parseRGBColor, RGBColor } from '../device'
-import { modes } from '../ModifierSidebar'
 import {
   ButtonBindingTemplate,
   ControlBindingTemplate,

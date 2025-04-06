@@ -1,4 +1,4 @@
-import { modes, retainAttackMode } from '../ModifierSidebar'
+import { modes } from '@mixxx-launch/common/modifier'
 import { ControlMessage, ChannelControlDef } from '@mixxx-launch/mixxx'
 import { setValue, getValue } from '@mixxx-launch/mixxx'
 import {
@@ -9,6 +9,7 @@ import {
   midi,
   control,
 } from '../Control'
+import { retainAttackMode } from '../ModifierSidebar'
 
 export type Type = {
   type: 'nudge'
