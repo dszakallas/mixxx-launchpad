@@ -7,5 +7,9 @@
   "license": "MIT",
   "dependencies": {
     "eventemitter3": "~5.0.0"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./lazy": "./src/lazy.ts"
   }
 }

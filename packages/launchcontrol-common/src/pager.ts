@@ -1,4 +1,4 @@
-import { lazy, Lazy } from '@mixxx-launch/common'
+import { lazy, Lazy } from '@mixxx-launch/common/lazy'
 import { Component } from '@mixxx-launch/mixxx'
 import { LaunchControlDevice } from './device'
 import { PageConf, makePageIndex } from './page'
