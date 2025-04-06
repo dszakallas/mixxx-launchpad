@@ -11,7 +11,7 @@ export type GenericPageConf = {
 export const makeGenericPage = (p: GenericPageConf, template: number, device: LaunchControlDevice) =>
   new Container(
     p.controls.map((c) => {
-      const ct = index[c.type](Object.assign({ template }, c.params) as unknown as any)
-      return new BaseControl(ct.bindings, ct.state as unknown as any, { device })
+      const ct = index[c.type](Object.assign({ template }, c.params) as unknown as any) // eslint-disable-line
+      return new BaseControl(ct.bindings, ct.state as unknown as any, { device }) // eslint-disable-line
     }),
   )
