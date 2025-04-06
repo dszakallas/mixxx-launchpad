@@ -2,7 +2,7 @@ import { modes, Modifier } from '@mixxx-launch/common/modifier'
 import ModifierSidebar from './ModifierSidebar'
 
 import { MidiMessage, retainAttackMode } from '@mixxx-launch/common/midi'
-import { Component } from '@mixxx-launch/common/component'
+import { Container } from '@mixxx-launch/common/component'
 import { LaunchpadDevice, MidiComponent, RGBColor } from './device'
 import { Action } from '@mixxx-launch/mixxx/src/util'
 import { ControlContext } from './Control'
@@ -76,7 +76,7 @@ type SavedPresetStateKey = `${PresetSize}_${number}_${number}`
 const makePresetStateKey = (presetSize: PresetSize, index: number, channel: number): SavedPresetStateKey =>
   `${presetSize}_${index}_${channel}`
 
-export default class App extends Component {
+export default class App extends Container {
   conf: LayoutConf
   bindings: [MidiComponent, Action<MidiMessage>][]
   modifier: ModifierSidebar
@@ -91,12 +91,14 @@ export default class App extends Component {
   device: LaunchpadDevice
 
   constructor(device: LaunchpadDevice, conf: LayoutConf) {
-    super()
+    const modifier = new ModifierSidebar(device)
+    const playlistSidebar = new PlaylistSidebar(device)
+    super([modifier, playlistSidebar])
+    this.modifier = modifier
+    this.playlistSidebar = playlistSidebar
 
     this.conf = conf
     this.device = device
-    this.modifier = new ModifierSidebar(device)
-    this.playlistSidebar = new PlaylistSidebar(device)
 
     this.bindings = buttons.map((v, i) => {
       const binding = new MidiComponent(this.device, this.device.controls[v])
@@ -193,8 +195,7 @@ export default class App extends Component {
   }
 
   onMount() {
-    this.modifier.mount()
-    this.playlistSidebar.mount()
+    super.onMount()
     this.bindings.forEach(([binding, midi]) => {
       binding.mount()
       binding.on('midi', midi)
@@ -211,8 +212,7 @@ export default class App extends Component {
       binding.removeListener('midi', midi)
       binding.unmount()
     })
-    this.playlistSidebar.unmount()
-    this.modifier.unmount()
+    super.onUnmount()
   }
 }
 
