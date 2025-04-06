@@ -3,9 +3,11 @@ import { Component } from '@mixxx-launch/common/component'
 
 import { LaunchpadDevice, MidiComponent } from './device'
 
-export type ModifierState = {
-  ctrl: boolean
-  shift: boolean
+export enum ModifierState {
+  None = 0,
+  Shift = 1,
+  Ctrl = 2,
+  ShiftCtrl = 3,
 }
 
 export interface Modifier {
@@ -15,7 +17,7 @@ export interface Modifier {
 export default class ModifierSidebar extends Component implements Modifier {
   shift: MidiComponent
   ctrl: MidiComponent
-  state: { shift: boolean; ctrl: boolean }
+  state: ModifierState
   shiftListener: (_: MidiMessage) => void
   ctrlListener: (_: MidiMessage) => void
 
@@ -24,10 +26,7 @@ export default class ModifierSidebar extends Component implements Modifier {
     this.shift = new MidiComponent(device, device.controls.solo)
     this.ctrl = new MidiComponent(device, device.controls.arm)
 
-    this.state = {
-      shift: false,
-      ctrl: false,
-    }
+    this.state = ModifierState.None
 
     const makeListener = (button: MidiComponent) => (message: MidiMessage) => {
       const { value } = message
@@ -36,12 +35,13 @@ export default class ModifierSidebar extends Component implements Modifier {
       } else {
         device.clearColor(button.control)
       }
+
       if (button.control.name === device.controls.solo.name) {
-        this.state.shift = !!value
-        this.emit('shift', value)
+        this.state ^= ModifierState.Shift
+        this.emit('update', this.state)
       } else {
-        this.state.ctrl = !!value
-        this.emit('ctrl', value)
+        this.state ^= ModifierState.Ctrl
+        this.emit('update', this.state)
       }
     }
     this.shiftListener = makeListener(this.shift)
@@ -70,26 +70,27 @@ export default class ModifierSidebar extends Component implements Modifier {
 }
 
 export const modes = (ctx: ModifierState, n?: () => void, c?: () => void, s?: () => void, cs?: () => void) => {
-  if (ctx.shift && ctx.ctrl) {
-    cs && cs() // eslint-disable-line
-  } else if (ctx.shift) {
-    s && s() // eslint-disable-line
-  } else if (ctx.ctrl) {
-    c && c() // eslint-disable-line
-  } else {
-    n && n() // eslint-disable-line
+  switch (ctx) {
+    case ModifierState.ShiftCtrl:
+      cs && cs() // eslint-disable-line
+      break
+    case ModifierState.Shift:
+      s && s() // eslint-disable-line
+      break
+    case ModifierState.Ctrl:
+      c && c() // eslint-disable-line
+      break
+    default:
+      n && n() // eslint-disable-line
   }
 }
 
 export const retainAttackMode = (modifier: Modifier, cb: (ms: ModifierState, mm: MidiMessage) => void) => {
-  let state = {
-    shift: false,
-    ctrl: false,
-  }
+  let state = ModifierState.None
 
   return function (data: MidiMessage) {
     if (data.value) {
-      state = Object.assign(state, modifier.getState())
+      state = modifier.getState()
     }
     return cb(state, data)
   }
