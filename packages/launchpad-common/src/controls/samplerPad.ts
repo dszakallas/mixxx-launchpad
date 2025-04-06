@@ -1,5 +1,5 @@
 import { modes } from '@mixxx-launch/common/modifier'
-import { ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
+import { ControlMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { LaunchpadDevice, parseRGBColor, RGBColor } from '../device'
 import {
@@ -12,6 +12,7 @@ import {
 } from '../Control'
 import { SamplerControlDef } from '@mixxx-launch/mixxx/src/Control'
 import { Theme } from '../App'
+import { MidiMessage } from '@mixxx-launch/common/midi'
 
 export type Type = {
   type: 'samplerPad'

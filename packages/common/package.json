@@ -12,6 +12,7 @@
     ".": "./src/index.ts",
     "./lazy": "./src/Lazy.ts",
     "./component": "./src/Component.ts",
-    "./modifier": "./src/Modifier.ts"
+    "./modifier": "./src/Modifier.ts",
+    "./midi": "./src/Midi.ts"
   }
 }

@@ -1,7 +1,8 @@
 import { modes } from '@mixxx-launch/common/modifier'
 import { range } from '@mixxx-launch/common'
-import { ChannelControlDef, ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
+import { MidiMessage } from '@mixxx-launch/common/midi'
 import { parseRGBColor } from '../device'
 import {
   ButtonBindingTemplate,

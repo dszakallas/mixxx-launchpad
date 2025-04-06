@@ -1,4 +1,4 @@
-import type { MidiMessage } from '@mixxx-launch/mixxx'
+import type { MidiMessage } from '@mixxx-launch/common/midi'
 import { Component } from '@mixxx-launch/common/component'
 import { LaunchpadDevice, MidiComponent } from './device'
 import { ModifierState, Modifier } from '@mixxx-launch/common/modifier'

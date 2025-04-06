@@ -1,4 +1,5 @@
-import { MidiControlDef, MidiDevice, sendShortMsg, MidiComponent as mixxxMidiComponent } from '@mixxx-launch/mixxx'
+import { MidiControlDef } from '@mixxx-launch/common/midi'
+import { MidiDevice, sendShortMsg, MidiComponent as mixxxMidiComponent } from '@mixxx-launch/mixxx'
 
 export type RGBColor = [number, number, number]
 

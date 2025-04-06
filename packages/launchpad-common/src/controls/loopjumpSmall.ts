@@ -1,5 +1,6 @@
 import { modes } from '@mixxx-launch/common/modifier'
-import type { ChannelControlDef, MidiMessage } from '@mixxx-launch/mixxx'
+import { MidiMessage } from '@mixxx-launch/common/midi'
+import type { ChannelControlDef } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { onAttack } from '../util'
 import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'

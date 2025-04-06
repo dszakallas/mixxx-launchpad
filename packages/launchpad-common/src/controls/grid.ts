@@ -1,7 +1,8 @@
-import type { ChannelControlDef, MidiMessage } from '@mixxx-launch/mixxx'
+import type { ChannelControlDef } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
+import { MidiMessage } from '@mixxx-launch/common/midi'
 
 export type Type = {
   type: 'grid'

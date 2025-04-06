@@ -1,5 +1,6 @@
 import { Modifier } from '@mixxx-launch/common/modifier'
-import { ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
+import { ControlMessage } from '@mixxx-launch/mixxx'
+import { MidiMessage } from '@mixxx-launch/common/midi'
 import {
   Control as BaseControl,
   ControlType as BaseControlType,

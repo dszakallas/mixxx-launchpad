@@ -1,4 +1,4 @@
-import { MidiMessage } from '@mixxx-launch/mixxx'
+import { MidiMessage } from '@mixxx-launch/common/midi'
 
 export const onAttack =
   (handler: (m: MidiMessage) => void): ((m: MidiMessage) => void) =>

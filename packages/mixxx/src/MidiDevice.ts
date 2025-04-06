@@ -1,16 +1,6 @@
 import { hexFormat } from '@mixxx-launch/common'
 import { Component } from '@mixxx-launch/common/component'
-
-export type MidiControlDef = {
-  status: number
-  midino: number
-  name: string
-}
-
-export type MidiMessage = {
-  value: number
-  control: MidiControlDef
-}
+import { MidiControlDef, MidiMessage } from '@mixxx-launch/common/midi'
 
 export type RawMidiMessageTask = (channel: number, control: number, value: number, status: number) => void
 export type SysexTask = (data: number[]) => void
