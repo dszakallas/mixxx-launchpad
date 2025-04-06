@@ -1,6 +1,6 @@
 import { array, map, range } from '@mixxx-launch/common'
 import { MidiMessage } from '@mixxx-launch/common/midi'
-import { Component } from '@mixxx-launch/common/component'
+import { Component, Container } from '@mixxx-launch/common/component'
 import { sendShortMsg } from '@mixxx-launch/mixxx'
 
 import {
@@ -21,107 +21,95 @@ export type FxParamPageConf = {
   type: 'fxParamPage'
 }
 
-export class FxParamPage extends Component {
+export class FxParamPage extends Container {
   private _device: LaunchControlDevice
   private _template: number
-  private _children: Component[]
-  private _selectors: Component[]
+  private _fxs: Component[]
+  private _nextEffectUnit: MidiComponent
+  private _prevEffectUnit: MidiComponent
   private _selectedEffectUnit: number
 
   constructor(device: LaunchControlDevice, template: number) {
-    super()
-    this._device = device
-    this._template = template
-    this._children = []
-    this._selectors = []
-
-    const prevEffectUnit = new MidiComponent(device, this._template, 'up')
-
-    this._selectedEffectUnit = 0
-
-    const drawPrevLed = () => {
-      if (this._selectedEffectUnit > 0) {
-        sendShortMsg(device.controls[`${this._template}.up`], device.colors.hi_red)
-      } else {
-        sendShortMsg(device.controls[`${this._template}.up`], device.colors.black)
-      }
-    }
-
-    const drawNextLed = () => {
-      if (this._selectedEffectUnit < 3) {
-        sendShortMsg(device.controls[`${this._template}.down`], device.colors.hi_red)
-      } else {
-        sendShortMsg(device.controls[`${this._template}.down`], device.colors.black)
-      }
-    }
-
-    prevEffectUnit.addListener('mount', () => {
-      drawPrevLed()
-    })
-
-    prevEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
-      if (value) {
-        if (this._selectedEffectUnit > 0) {
-          this._selectedEffectUnit -= 1
-          drawPrevLed()
-          drawNextLed()
-          this.changeEffectUnit()
-        }
-      }
-    })
-
-    this._selectors.push(prevEffectUnit)
-
-    const nextEffectUnit = new MidiComponent(device, this._template, 'down')
-
-    nextEffectUnit.addListener('mount', () => {
-      drawNextLed()
-    })
-
-    nextEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
-      if (value) {
-        if (this._selectedEffectUnit < 3) {
-          this._selectedEffectUnit += 1
-          drawPrevLed()
-          drawNextLed()
-          this.changeEffectUnit()
-        }
-      }
-    })
-
-    this._selectors.push(nextEffectUnit)
+    const fxs = []
+    const selectedEffectUnit = 0
+    const prevEffectUnit = new MidiComponent(device, template, 'up')
+    const nextEffectUnit = new MidiComponent(device, template, 'down')
 
     const unit = 0
 
     for (const i of range(3)) {
-      const component = new FxComponent(device, this._template, i, root.effectRacks[0].effect_units[unit].effects[i])
-      this._children.push(component)
+      const component = new FxComponent(device, template, i, root.effectRacks[0].effect_units[unit].effects[i])
+      fxs.push(component)
     }
+    super([prevEffectUnit, nextEffectUnit, ...fxs])
+    this._selectedEffectUnit = selectedEffectUnit
+    this._device = device
+    this._template = template
+    this._fxs = fxs
+    this._prevEffectUnit = prevEffectUnit
+    this._nextEffectUnit = nextEffectUnit
   }
 
-  changeEffectUnit() {
+  private changeEffectUnit() {
     for (const i of range(3)) {
-      this._children[i].unmount()
-      this._children[i] = new FxComponent(
+      this._fxs[i].unmount()
+      this._fxs[i] = new FxComponent(
         this._device,
         this._template,
         i,
         root.effectRacks[0].effect_units[this._selectedEffectUnit].effects[i],
       )
-      this._children[i].mount()
+      this._fxs[i].mount()
+    }
+  }
+
+  private drawPrevLed() {
+    if (this._selectedEffectUnit > 0) {
+      sendShortMsg(this._device.controls[`${this._template}.up`], this._device.colors.hi_red)
+    } else {
+      sendShortMsg(this._device.controls[`${this._template}.up`], this._device.colors.black)
+    }
+  }
+
+  private drawNextLed() {
+    if (this._selectedEffectUnit < 3) {
+      sendShortMsg(this._device.controls[`${this._template}.down`], this._device.colors.hi_red)
+    } else {
+      sendShortMsg(this._device.controls[`${this._template}.down`], this._device.colors.black)
     }
   }
 
   onMount() {
     super.onMount()
-    this._children.forEach((child) => child.mount())
-    this._selectors.forEach((child) => child.mount())
+    this._prevEffectUnit.addListener('mount', this.drawPrevLed.bind(this))
+    this._prevEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
+      if (value) {
+        if (this._selectedEffectUnit > 0) {
+          this._selectedEffectUnit -= 1
+          this.drawPrevLed()
+          this.drawNextLed()
+          this.changeEffectUnit()
+        }
+      }
+    })
+
+    this._nextEffectUnit.addListener('mount', this.drawNextLed.bind(this))
+    this._nextEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
+      if (value) {
+        if (this._selectedEffectUnit < 3) {
+          this._selectedEffectUnit += 1
+          this.drawPrevLed()
+          this.drawNextLed()
+          this.changeEffectUnit()
+        }
+      }
+    })
   }
 
   onUnmount() {
-    this._children.forEach((child) => child.unmount())
-    this._selectors.forEach((child) => child.unmount())
     super.onUnmount()
+    this._prevEffectUnit.removeAllListeners()
+    this._nextEffectUnit.removeAllListeners()
   }
 }
 
@@ -129,7 +117,11 @@ const toEffectKnobRange = (value: number) => {
   return absoluteLin(value, 0, 1)
 }
 
-class FxComponent extends Component {
+const toEffectButtonRange = (value: number) => {
+  return Number(value - 64 > 0)
+}
+
+class FxComponent extends Container {
   effectDef: EffectDef
 
   private _loadedComponent: ControlComponent
@@ -141,32 +133,23 @@ class FxComponent extends Component {
   private _buttonParams: EffectParameterDef[]
 
   constructor(device: LaunchControlDevice, template: number, row: number, effectDef: EffectDef) {
-    super()
-    this.effectDef = effectDef
+    const loaded = new ControlComponent(effectDef.loaded)
+    const enabled = new ControlComponent(effectDef.enabled)
+    const midiComponents = []
+    for (const i of range(8)) {
+      const midiComponent = new MidiComponent(device, template, `knob.${row}.${7 - i}`)
+      midiComponents.push(midiComponent)
+    }
 
+    super([loaded, enabled, ...midiComponents])
+    this.effectDef = effectDef
     this._device = device
     this._params = []
     this._buttonParams = []
 
-    this._loadedComponent = new ControlComponent(this.effectDef.loaded)
-    this._loadedComponent.addListener('update', this.onChange.bind(this))
-
-    this._enabledComponent = new ControlComponent(this.effectDef.enabled)
-    this._enabledComponent.addListener('update', this.onChange.bind(this))
-
-    this._midiComponents = []
-
-    for (const i of range(8)) {
-      const midiComponent = new MidiComponent(device, template, `knob.${row}.${7 - i}`)
-      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
-        if (i < this._params.length) {
-          setValue(this._params[i].value, toEffectKnobRange(value))
-        } else if (i < this._params.length + this._buttonParams.length) {
-          setValue(this._buttonParams[i - this._params.length].button_value, Math.round(value - 127))
-        }
-      })
-      this._midiComponents.push(midiComponent)
-    }
+    this._loadedComponent = loaded
+    this._enabledComponent = enabled
+    this._midiComponents = midiComponents
   }
 
   onChange() {
@@ -189,20 +172,30 @@ class FxComponent extends Component {
   }
 
   onMount() {
-    super.onMount()
-    this._loadedComponent.mount()
-    this._enabledComponent.mount()
-    for (const midiComponent of this._midiComponents) {
-      midiComponent.mount()
+    this._loadedComponent.addListener('update', this.onChange.bind(this))
+    this._enabledComponent.addListener('update', this.onChange.bind(this))
+    for (let i = 0; i < this._midiComponents.length; i++) {
+      const midiComponent = this._midiComponents[i]
+      midiComponent.addListener('midi', ({ value }: MidiMessage) => {
+        if (i < this._params.length) {
+          setValue(this._params[this._params.length - i - 1].value, toEffectKnobRange(value))
+        } else if (i < this._params.length + this._buttonParams.length) {
+          setValue(
+            this._buttonParams[this._buttonParams.length - (i - this._params.length) - 1].button_value,
+            toEffectButtonRange(value),
+          )
+        }
+      })
     }
+    super.onMount()
   }
 
   onUnmount() {
-    for (const midiComponent of this._midiComponents) {
-      midiComponent.unmount()
-    }
-    this._enabledComponent.unmount()
-    this._loadedComponent.unmount()
     super.onUnmount()
+    for (const midiComponent of this._midiComponents) {
+      midiComponent.removeAllListeners()
+    }
+    this._loadedComponent.removeAllListeners()
+    this._enabledComponent.removeAllListeners()
   }
 }

@@ -9,5 +9,4 @@ export const channelColorPalette = [
 ] as const
 
 export type MakeComponent = (device: LaunchControlDevice) => Component
-
 export const makeContainer = (children: Component[]) => new Container(children)
