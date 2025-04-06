@@ -5,8 +5,8 @@
     "noImplicitThis": true,
     "esModuleInterop": true,
     "target": "es2022",
-    "module": "es2022",
-    "moduleResolution": "node",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "resolveJsonModule": true
   },
   "include": [],
