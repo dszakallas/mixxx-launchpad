@@ -1,7 +1,7 @@
 import { modes } from '@mixxx-launch/common/modifier'
 import { ControlMessage, ChannelControlDef } from '@mixxx-launch/mixxx'
 import { setValue, getValue } from '@mixxx-launch/mixxx'
-import { onAttack } from '../util'
+import { onAttack } from '@mixxx-launch/common/midi'
 import {
   ButtonBindingTemplate,
   ControlBindingTemplate,

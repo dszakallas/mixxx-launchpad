@@ -1,8 +1,7 @@
 import type { ChannelControlDef } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
-import { onAttack } from '../util'
-import { MidiMessage } from '@mixxx-launch/common/midi'
+import { MidiMessage, onAttack } from '@mixxx-launch/common/midi'
 
 export type Type = {
   type: 'loopMultiply'
