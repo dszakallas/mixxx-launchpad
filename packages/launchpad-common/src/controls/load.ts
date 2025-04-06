@@ -9,8 +9,8 @@ import {
   midi,
   control,
 } from '../Control'
-import { modes } from '../ModifierSidebar'
-import { onAttack } from '../util'
+import { modes } from '@mixxx-launch/common/modifier'
+import { onAttack } from '@mixxx-launch/common/midi'
 
 export type Type = {
   type: 'load'

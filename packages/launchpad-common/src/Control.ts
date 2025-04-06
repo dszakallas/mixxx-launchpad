@@ -1,4 +1,6 @@
-import { ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
+import { Modifier } from '@mixxx-launch/common/modifier'
+import { ControlMessage } from '@mixxx-launch/mixxx'
+import { MidiMessage } from '@mixxx-launch/common/midi'
 import {
   Control as BaseControl,
   ControlType as BaseControlType,
@@ -7,7 +9,6 @@ import {
 
 import { ControlComponent, ControlDef } from '@mixxx-launch/mixxx/src/Control'
 import { LaunchpadDevice, MidiComponent } from './device'
-import { Modifier } from './ModifierSidebar'
 
 // constraint types with Launchpad specific Context
 export type ControlContext = {

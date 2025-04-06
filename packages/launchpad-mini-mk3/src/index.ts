@@ -1,6 +1,7 @@
 import { convertControlDef, LaunchpadDevice, RGBColor, useDevice } from '@mixxx-launch/launchpad-common'
 import def from '../controls'
-import { MidiControlDef, sendSysexMsg } from '@mixxx-launch/mixxx'
+import { MidiControlDef } from '@mixxx-launch/common/midi'
+import { sendSysexMsg } from '@mixxx-launch/mixxx'
 
 const colors = {
   black: 0,

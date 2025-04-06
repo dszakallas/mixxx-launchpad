@@ -1,6 +1,8 @@
 import { array, map, range } from '@mixxx-launch/common'
+import { MidiMessage } from '@mixxx-launch/common/midi'
 import { Component } from '@mixxx-launch/common/component'
-import { MidiMessage, sendShortMsg } from '@mixxx-launch/mixxx'
+import { sendShortMsg } from '@mixxx-launch/mixxx'
+
 import {
   ControlComponent,
   EffectDef,

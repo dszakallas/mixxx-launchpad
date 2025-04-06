@@ -1,7 +1,7 @@
 import config from './config'
 import App from './App'
 
-import { MidiControlDef } from '@mixxx-launch/mixxx'
+import { MidiControlDef } from '@mixxx-launch/common/midi'
 import { LaunchpadDevice } from './device'
 
 export const useDevice = (device: LaunchpadDevice) => {

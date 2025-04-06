@@ -8,7 +8,6 @@ export {
 } from './Control'
 export type { ChannelControlDef, ControlDef, ControlHandle, ControlMessage } from './Control'
 export { MidiComponent, MidiDevice, sendShortMsg, sendSysexMsg } from './MidiDevice'
-export type { MidiControlDef, MidiMessage } from './MidiDevice'
 export { Timer } from './Timer'
 
 export { absoluteNonLin } from './util'

@@ -1,7 +1,8 @@
 import def from '../controls'
-import { MidiControlDef, sendShortMsg, sendSysexMsg } from '@mixxx-launch/mixxx'
+import { sendShortMsg, sendSysexMsg } from '@mixxx-launch/mixxx'
 import { convertControlDef, useDevice, LaunchControlDevice } from '@mixxx-launch/launchcontrol-common'
 import { range } from '@mixxx-launch/common'
+import { MidiControlDef } from '@mixxx-launch/common/midi'
 
 const colors = {
   black: 12,

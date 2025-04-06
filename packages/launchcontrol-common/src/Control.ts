@@ -1,4 +1,5 @@
-import { ControlComponent, ControlDef, ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
+import { MidiMessage } from '@mixxx-launch/common/midi'
+import { ControlComponent, ControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { MidiComponent, LaunchControlDevice, OnOff } from './device'
 import {
   ControlType as BaseControlType,

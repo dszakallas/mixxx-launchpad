@@ -1,4 +1,4 @@
-import { ChannelControlDef, ControlMessage, MidiMessage } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
 import {
   ButtonBindingTemplate,
@@ -8,8 +8,9 @@ import {
   midi,
   control,
 } from '../Control'
-import { modes } from '../ModifierSidebar'
-import { onAttack } from '../util'
+import { modes } from '@mixxx-launch/common/modifier'
+import { onAttack } from '@mixxx-launch/common/midi'
+import { MidiMessage } from '@mixxx-launch/common/midi'
 
 export type Type = {
   type: 'pfl'

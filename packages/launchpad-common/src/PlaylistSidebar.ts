@@ -1,6 +1,7 @@
 import { Component } from '@mixxx-launch/common/component'
 import { playListControlDef, Timer, setValue } from '@mixxx-launch/mixxx'
-import type { MidiMessage, ControlDef } from '@mixxx-launch/mixxx'
+import type { MidiMessage } from '@mixxx-launch/common/midi'
+import type { ControlDef } from '@mixxx-launch/mixxx'
 import { LaunchpadDevice, MidiComponent } from './device'
 import { ControlComponent, ControlMessage, getValue, masterControlDef } from '@mixxx-launch/mixxx/src/Control'
 

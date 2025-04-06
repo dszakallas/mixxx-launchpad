@@ -1,3 +1,4 @@
+import { modes } from '@mixxx-launch/common/modifier'
 import { ChannelControlDef, getValue, setValue } from '@mixxx-launch/mixxx'
 import {
   ButtonBindingTemplate,
@@ -7,7 +8,7 @@ import {
   midi,
   control,
 } from '../Control'
-import { modes, retainAttackMode } from '../ModifierSidebar'
+import { retainAttackMode } from '@mixxx-launch/common/midi'
 
 export type Type = {
   type: 'slip'

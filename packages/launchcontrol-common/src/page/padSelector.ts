@@ -1,6 +1,6 @@
 import { lazy, Lazy } from '@mixxx-launch/common/lazy'
 import { Component } from '@mixxx-launch/common/component'
-import { MidiMessage } from '@mixxx-launch/mixxx'
+import { MidiMessage } from '@mixxx-launch/common/midi'
 import { MakeComponent } from '../util'
 import { LaunchControlDevice, MidiComponent } from '../device'
 
