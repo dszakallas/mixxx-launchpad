@@ -517,6 +517,10 @@ export const setValue = (control: ControlDef, value: number): void => {
   return engine.setValue(control.group, control.name, value)
 }
 
+export const setParameter = (control: ControlDef, value: number): void => {
+  return engine.setParameter(control.group, control.name, value)
+}
+
 export const softTakeover = (control: ControlDef, enable: boolean): void => {
   return engine.softTakeover(control.group, control.name, enable)
 }
@@ -549,37 +553,38 @@ export class ControlComponent extends Component {
   control: ControlDef
   private _handle?: ControlHandle
   private _softTakeover?: boolean
-
-  constructor(control: ControlDef, softTakeover?: boolean) {
+  private _passive?: boolean
+  constructor(control: ControlDef, softTakeover?: boolean, passive?: boolean) {
     super()
     this.control = control
     this._handle = undefined
     this._softTakeover = softTakeover
+    this._passive = passive
   }
 
   onMount() {
-    if (!this._handle) {
+    if (!this._handle && !this._passive) {
       this._handle = connect(this.control, (data: ControlMessage) => {
         this.emit('update', data)
       })
-      if (this._softTakeover != null) {
-        softTakeover(this.control, this._softTakeover)
-      }
       const initialMessage = {
         control: this.control,
         value: getValue(this.control),
       }
       this.emit('update', initialMessage)
     }
+    if (this._softTakeover) {
+      softTakeover(this.control, this._softTakeover)
+    }
   }
 
   onUnmount() {
     if (this._handle) {
-      if (this._softTakeover != null) {
-        softTakeOverIgnoreNextValue(this.control)
-      }
       disconnect(this._handle)
       this._handle = undefined
+    }
+    if (this._softTakeover) {
+      softTakeOverIgnoreNextValue(this.control)
     }
   }
 }

@@ -26,8 +26,6 @@ export class Component extends EventEmitter {
   onUnmount() {}
 }
 
-export const makeContainer = (children: Component[]) => new Container(children)
-
 export class Container extends Component {
   children: Component[]
 

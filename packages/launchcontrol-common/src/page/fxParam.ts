@@ -1,17 +1,9 @@
-import { array, map, range } from '@mixxx-launch/common'
+import { array, map, range, absoluteLin } from '@mixxx-launch/common'
 import { MidiMessage } from '@mixxx-launch/common/midi'
 import { Component, Container } from '@mixxx-launch/common/component'
 import { sendShortMsg } from '@mixxx-launch/mixxx'
 
-import {
-  ControlComponent,
-  EffectDef,
-  EffectParameterDef,
-  getValue,
-  root,
-  setValue,
-} from '@mixxx-launch/mixxx/src/Control'
-import { absoluteLin } from '@mixxx-launch/mixxx/src/util'
+import { ControlComponent, EffectDef, getValue, root, setParameter } from '@mixxx-launch/mixxx/src/Control'
 import { LaunchControlDevice, MidiComponent } from '../device'
 
 export const makeFxParamPage = (_conf: FxParamPageConf, template: number, device: LaunchControlDevice) =>
@@ -80,7 +72,6 @@ export class FxParamPage extends Container {
   }
 
   onMount() {
-    super.onMount()
     this._prevEffectUnit.addListener('mount', this.drawPrevLed.bind(this))
     this._prevEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
       if (value) {
@@ -104,6 +95,7 @@ export class FxParamPage extends Container {
         }
       }
     })
+    super.onMount()
   }
 
   onUnmount() {
@@ -113,11 +105,11 @@ export class FxParamPage extends Container {
   }
 }
 
-const toEffectKnobRange = (value: number) => {
+const toNormalized = (value: number) => {
   return absoluteLin(value, 0, 1)
 }
 
-const toEffectButtonRange = (value: number) => {
+const toBinary = (value: number) => {
   return Number(value - 64 > 0)
 }
 
@@ -129,23 +121,31 @@ class FxComponent extends Container {
   private _midiComponents: MidiComponent[]
 
   private _device: LaunchControlDevice
-  private _params: EffectParameterDef[]
-  private _buttonParams: EffectParameterDef[]
+  private _paramControls: ControlComponent[]
+  private _buttonParamControls: ControlComponent[]
 
   constructor(device: LaunchControlDevice, template: number, row: number, effectDef: EffectDef) {
     const loaded = new ControlComponent(effectDef.loaded)
     const enabled = new ControlComponent(effectDef.enabled)
+    const numParams = getValue(effectDef.num_parameters)
+    const numButtonParams = getValue(effectDef.num_button_parameters)
+    const paramControls = array(
+      map((i) => new ControlComponent(effectDef.parameters[i].value, true, true), range(numParams)),
+    )
+    const buttonParamControls = array(
+      map((i) => new ControlComponent(effectDef.parameters[i].button_value, true, true), range(numButtonParams)),
+    )
     const midiComponents = []
     for (const i of range(8)) {
       const midiComponent = new MidiComponent(device, template, `knob.${row}.${7 - i}`)
       midiComponents.push(midiComponent)
     }
 
-    super([loaded, enabled, ...midiComponents])
+    super([loaded, enabled, ...midiComponents, ...paramControls, ...buttonParamControls])
     this.effectDef = effectDef
     this._device = device
-    this._params = []
-    this._buttonParams = []
+    this._paramControls = paramControls
+    this._buttonParamControls = buttonParamControls
 
     this._loadedComponent = loaded
     this._enabledComponent = enabled
@@ -153,17 +153,12 @@ class FxComponent extends Container {
   }
 
   onChange() {
-    const numParams = getValue(this.effectDef.num_parameters)
-    const numButtonParams = getValue(this.effectDef.num_button_parameters)
-    this._params = array(map((i) => this.effectDef.parameters[i], range(numParams)))
-    this._buttonParams = array(map((i) => this.effectDef.parameters[i], range(numButtonParams)))
-
     for (const i of range(8)) {
       const ledName = this._midiComponents[i].control.name.replace('knob', 'led')
       const ledControl = this._device.controls[ledName]
-      if (i < this._params.length) {
+      if (i < this._paramControls.length) {
         sendShortMsg(ledControl, this._device.colors.lo_green)
-      } else if (i < this._params.length + this._buttonParams.length) {
+      } else if (i < this._paramControls.length + this._buttonParamControls.length) {
         sendShortMsg(ledControl, this._device.colors.lo_red)
       } else {
         sendShortMsg(ledControl, this._device.colors.black)
@@ -177,12 +172,12 @@ class FxComponent extends Container {
     for (let i = 0; i < this._midiComponents.length; i++) {
       const midiComponent = this._midiComponents[i]
       midiComponent.addListener('midi', ({ value }: MidiMessage) => {
-        if (i < this._params.length) {
-          setValue(this._params[this._params.length - i - 1].value, toEffectKnobRange(value))
-        } else if (i < this._params.length + this._buttonParams.length) {
-          setValue(
-            this._buttonParams[this._buttonParams.length - (i - this._params.length) - 1].button_value,
-            toEffectButtonRange(value),
+        if (i < this._paramControls.length) {
+          setParameter(this._paramControls[this._paramControls.length - i - 1].control, toNormalized(value))
+        } else if (i < this._paramControls.length + this._buttonParamControls.length) {
+          setParameter(
+            this._buttonParamControls[this._buttonParamControls.length - (i - this._paramControls.length) - 1].control,
+            toBinary(value),
           )
         }
       })
