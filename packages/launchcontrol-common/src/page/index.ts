@@ -1,4 +1,4 @@
-import { Component } from '@mixxx-launch/mixxx'
+import { Component } from '@mixxx-launch/common/component'
 import { LaunchControlDevice } from '../device'
 import { FxParamPageConf, makeFxParamPage } from './fxParam'
 import { GenericPageConf, makeGenericPage } from './generic'

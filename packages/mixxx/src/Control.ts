@@ -1,9 +1,10 @@
 import { Action } from './util'
 
-import Component from './Component'
+import { Component } from '@mixxx-launch/common/component'
+import { lazy, lazyArray } from '@mixxx-launch/common/lazy'
 
 import type { Connection } from './mixxx'
-import { array, lazy, lazyArray, map, range } from '@mixxx-launch/common'
+import { array, map, range } from '@mixxx-launch/common'
 
 export type ControlDef = {
   group: string

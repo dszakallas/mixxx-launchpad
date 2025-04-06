@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3'
 
-export default class Component extends EventEmitter {
+export class Component extends EventEmitter {
   mounted: boolean = false
 
   constructor() {

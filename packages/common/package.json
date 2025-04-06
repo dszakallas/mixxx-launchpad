@@ -10,6 +10,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./lazy": "./src/lazy.ts"
+    "./lazy": "./src/Lazy.ts",
+    "./component": "./src/Component.ts"
   }
 }

@@ -1,4 +1,4 @@
-import Component from './Component'
+import { Component } from '@mixxx-launch/common/component'
 import { Action } from './util'
 
 type TimerState = {

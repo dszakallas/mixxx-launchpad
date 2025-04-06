@@ -1,5 +1,5 @@
 import type { MidiMessage } from '@mixxx-launch/mixxx'
-import { Component } from '@mixxx-launch/mixxx'
+import { Component } from '@mixxx-launch/common/component'
 
 import { LaunchpadDevice, MidiComponent } from './device'
 

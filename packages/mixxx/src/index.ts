@@ -1,4 +1,3 @@
-export { default as Component } from './Component'
 export {
   channelControlDefs,
   ControlComponent,

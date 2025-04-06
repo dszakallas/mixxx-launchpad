@@ -1,6 +1,7 @@
 import { map, range } from '@mixxx-launch/common'
+import { Component } from '@mixxx-launch/common/component'
 import { Control as BaseControl, ControlTemplate } from '@mixxx-launch/launch-common/src/Control'
-import { Component, MidiControlDef } from '@mixxx-launch/mixxx'
+import { MidiControlDef } from '@mixxx-launch/mixxx'
 import { ControlContext } from './Control'
 import { Eq3KillType, makeEq3Kill } from './controls/deck'
 import { FxEnablerType, FxSelectorType, makeFxEnabler, makeFxSelector } from './controls/fx'

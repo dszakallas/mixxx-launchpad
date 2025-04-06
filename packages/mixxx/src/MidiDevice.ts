@@ -1,5 +1,5 @@
 import { hexFormat } from '@mixxx-launch/common'
-import Component from './Component'
+import { Component } from '@mixxx-launch/common/component'
 
 export type MidiControlDef = {
   status: number

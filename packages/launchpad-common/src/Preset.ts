@@ -1,4 +1,5 @@
-import { ChannelControlDef, Component, getValue } from '@mixxx-launch/mixxx'
+import { Component } from '@mixxx-launch/common/component'
+import { ChannelControlDef, getValue } from '@mixxx-launch/mixxx'
 import { ControlTypeIndex } from './controls'
 import { Theme } from './App'
 import { array, map, range } from '@mixxx-launch/common'

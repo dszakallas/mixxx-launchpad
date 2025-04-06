@@ -1,5 +1,5 @@
 import { lazy, Lazy } from '@mixxx-launch/common/lazy'
-import { Component } from '@mixxx-launch/mixxx'
+import { Component } from '@mixxx-launch/common/component'
 import { LaunchControlDevice } from './device'
 import { PageConf, makePageIndex } from './page'
 

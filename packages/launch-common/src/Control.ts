@@ -1,4 +1,4 @@
-import { Component } from '@mixxx-launch/mixxx'
+import { Component } from '@mixxx-launch/common/component'
 
 export type BindingTemplate<Ctx> = {
   type: (ctx: Ctx) => Component
