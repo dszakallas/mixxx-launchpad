@@ -1,7 +1,7 @@
 import { modes } from '@mixxx-launch/common/modifier'
 import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
-import Bpm from '../Bpm'
+import { Bpm } from '@mixxx-launch/common'
 import { onAttack } from '@mixxx-launch/common/midi'
 import {
   ButtonBindingTemplate,
