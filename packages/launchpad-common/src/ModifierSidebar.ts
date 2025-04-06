@@ -71,13 +71,13 @@ export default class ModifierSidebar extends Component implements Modifier {
 
 export const modes = (ctx: ModifierState, n?: () => void, c?: () => void, s?: () => void, cs?: () => void) => {
   if (ctx.shift && ctx.ctrl) {
-    cs && cs()
+    cs && cs() // eslint-disable-line
   } else if (ctx.shift) {
-    s && s()
+    s && s() // eslint-disable-line
   } else if (ctx.ctrl) {
-    c && c()
+    c && c() // eslint-disable-line
   } else {
-    n && n()
+    n && n() // eslint-disable-line
   }
 }
 

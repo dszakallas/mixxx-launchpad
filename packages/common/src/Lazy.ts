@@ -28,22 +28,26 @@ export type LazyObject<T extends { [k: string]: unknown }> = {
 
 export const lazyArray = <T>(lazies: (Lazy<T> | T)[]): T[] =>
   new Proxy(lazies, {
-    get: function (target: Lazy<T>[], prop: PropertyKey): unknown {
+    get: function (target: (Lazy<T> | T)[], prop: PropertyKey): unknown {
       if (typeof prop === 'string' && Number.isInteger(Number(prop)) && isLazy(target[+prop])) {
-        return target[+prop].value
-      } else {
-        return target[prop]
+        return target[+prop]
+      } else if (typeof prop === 'string' || typeof prop === 'symbol') {
+        return (target as any)[prop] // eslint-disable-line
       }
+      return undefined
     },
   }) as T[]
 
-export const lazyObject = <T extends { [k: string]: unknown }>(obj: LazyObject<T>): T =>
+export const lazyObject = <T extends { [k: string | symbol]: unknown }>(obj: LazyObject<T>): T =>
   new Proxy(obj, {
     get(target: LazyObject<T>, prop: PropertyKey) {
-      const value = target[prop]
-      if (isLazy(value)) {
-        return value.value
+      if (prop in target) {
+        const value = target[prop as keyof T]
+        if (isLazy(value)) {
+          return value.value
+        }
+        return value
       }
-      return value
+      return undefined
     },
   }) as T

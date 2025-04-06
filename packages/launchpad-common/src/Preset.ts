@@ -38,6 +38,7 @@ const makeDeckPresetTemplate = (
 ): PresetTemplate => ({
   controls: conf.deck.map(({ pos, control: { type, params } }) =>
     makeControlTemplateIndex[type](
+      // eslint-disable-next-line
       Object.assign({ theme, gridPosition: tr(gridPosition, pos), deck }, params) as unknown as any,
     ),
   ),
@@ -79,7 +80,7 @@ export type PresetTemplate = {
 }
 
 export type PresetState = {
-  controlStates: any[]
+  controlStates: any[] // eslint-disable-line
 }
 
 export class Preset extends Component {

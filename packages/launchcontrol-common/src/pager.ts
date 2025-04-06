@@ -20,6 +20,7 @@ export class Pager extends Component {
     this._device = device
     this._selected = 0
     this.repeat = repeat || pages.length
+    // eslint-disable-next-line
     this.pages = pages.map((page, i) => lazy(() => makePageIndex[page.type](page as unknown as any, i, this._device)))
   }
 

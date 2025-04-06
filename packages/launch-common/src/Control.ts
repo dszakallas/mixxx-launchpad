@@ -3,7 +3,7 @@ import { Component } from '@mixxx-launch/mixxx'
 export type BindingTemplate<Ctx> = {
   type: (ctx: Ctx) => Component
   listeners?: {
-    [_: string]: (control: any) => (...args: any[]) => void
+    [_: string]: (control: any) => (...args: any[]) => void // eslint-disable-line
   }
 }
 
