@@ -25,3 +25,26 @@ export class Component extends EventEmitter {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onUnmount() {}
 }
+
+export class Container extends Component {
+  children: Component[]
+
+  constructor(children: Component[]) {
+    super()
+    this.children = children
+  }
+
+  onMount() {
+    super.onMount()
+    for (const child of this.children) {
+      child.mount()
+    }
+  }
+
+  onUnmount() {
+    for (let i = this.children.length - 1; i >= 0; i--) {
+      this.children[i].unmount()
+    }
+    super.onUnmount()
+  }
+}

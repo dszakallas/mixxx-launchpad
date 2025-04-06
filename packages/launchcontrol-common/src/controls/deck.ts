@@ -1,5 +1,5 @@
 import { MidiMessage } from '@mixxx-launch/common/midi'
-import { absoluteNonLin } from '@mixxx-launch/mixxx'
+import { absoluteNonLin } from '@mixxx-launch/common'
 import { ControlMessage, getValue, root, setValue } from '@mixxx-launch/mixxx/src/Control'
 import { Control, ControlBindingTemplate, MidiBindingTemplate, control, midi, MakeControlTemplate } from '../Control'
 import { channelColorPalette } from '../util'

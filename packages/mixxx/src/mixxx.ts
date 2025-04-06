@@ -10,6 +10,7 @@ export type Connection = {
 export type Engine = {
   getValue(group: string, name: string): number
   setValue(group: string, name: string, value: number): void
+  setParameter(group: string, name: string, value: number): void
   beginTimer(intervalMs: number, cb: TimerCallback): number
   stopTimer(handle: number): void
   makeConnection(group: string, name: string, callback: ControlCallback): Connection

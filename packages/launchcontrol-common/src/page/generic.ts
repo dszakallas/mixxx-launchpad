@@ -1,7 +1,7 @@
 import { Control as BaseControl } from '@mixxx-launch/launch-common/src/Control'
 import { ControlConf, index } from '../controls'
 import { LaunchControlDevice } from '../device'
-import { Container } from '../util'
+import { Container } from '@mixxx-launch/common/component'
 
 export type GenericPageConf = {
   type: 'genericPage'
