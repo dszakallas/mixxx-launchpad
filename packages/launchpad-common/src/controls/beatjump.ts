@@ -3,7 +3,7 @@ import { ChannelControlDef, setValue } from '@mixxx-launch/mixxx'
 
 import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
-import { retainAttackMode } from '../ModifierSidebar'
+import { retainAttackMode } from '@mixxx-launch/common/midi'
 
 export type Type = {
   type: 'beatjump'

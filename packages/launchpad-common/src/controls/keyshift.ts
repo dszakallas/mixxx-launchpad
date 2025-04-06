@@ -3,7 +3,7 @@ import { ChannelControlDef, getValue, setValue } from '@mixxx-launch/mixxx'
 import { LaunchpadDevice } from '../device'
 import { modes } from '@mixxx-launch/common/modifier'
 import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
-import { retainAttackMode } from '../ModifierSidebar'
+import { retainAttackMode } from '@mixxx-launch/common/midi'
 
 export type Type = {
   type: 'keyshift'

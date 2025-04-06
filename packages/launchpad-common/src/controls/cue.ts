@@ -10,7 +10,7 @@ import {
   midi,
   control,
 } from '../Control'
-import { retainAttackMode } from '../ModifierSidebar'
+import { retainAttackMode } from '@mixxx-launch/common/midi'
 
 export type Type = {
   type: 'cue'

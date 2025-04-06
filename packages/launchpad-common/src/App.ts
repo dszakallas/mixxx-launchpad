@@ -1,7 +1,7 @@
 import { modes, Modifier } from '@mixxx-launch/common/modifier'
-import ModifierSidebar, { retainAttackMode } from './ModifierSidebar'
+import ModifierSidebar from './ModifierSidebar'
 
-import { MidiMessage } from '@mixxx-launch/common/midi'
+import { MidiMessage, retainAttackMode } from '@mixxx-launch/common/midi'
 import { Component } from '@mixxx-launch/common/component'
 import { LaunchpadDevice, MidiComponent, RGBColor } from './device'
 import { Action } from '@mixxx-launch/mixxx/src/util'
