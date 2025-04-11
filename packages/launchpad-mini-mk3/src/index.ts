@@ -30,8 +30,10 @@ enum LightingType {
   RGB,
 }
 
+const modeChangeSysexPreamble = [240, 0, 32, 41, 2, 13, 14] as const
+
 const selectMode = (mode: DeviceMode) => {
-  sendSysexMsg([240, 0, 32, 41, 2, 13, 14, mode, 247])
+  sendSysexMsg([...modeChangeSysexPreamble, mode, 247])
 }
 
 class LaunchpadMiniMK3Device extends LaunchpadDevice {
@@ -49,12 +51,22 @@ class LaunchpadMiniMK3Device extends LaunchpadDevice {
   }
 
   onMount() {
-    selectMode(DeviceMode.Programmer)
+    this.addListener('sysex', (data) => {
+      if (data.length == 9 && modeChangeSysexPreamble[6] == data[6] && DeviceMode.Programmer == data[7]) {
+        this.emit('ready', true)
+      }
+    })
     super.onMount()
+    selectMode(DeviceMode.Programmer)
   }
 
   sendRGBColor(control: MidiControlDef, color: RGBColor) {
     sendSysexMsg([240, 0, 32, 41, 2, 13, 3, LightingType.RGB, control.midino, ...color.map((x) => ~~(x / 2)), 247])
+  }
+
+  onUnmount() {
+    this.removeAllListeners()
+    super.onUnmount()
   }
 }
 
