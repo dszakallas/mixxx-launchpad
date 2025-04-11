@@ -70,4 +70,4 @@ class LaunchpadMiniMK3Device extends LaunchpadDevice {
   }
 }
 
-export default useDevice(new LaunchpadMiniMK3Device())
+export default useDevice(new LaunchpadMiniMK3Device(), 'ready')
