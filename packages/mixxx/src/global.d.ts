@@ -1,7 +1,7 @@
-import { Engine, Midi } from './mixxx'
-
+import api from './api'
 declare global {
-  const engine: Engine
-  const midi: Midi
-  const script: any // eslint-disable-line
+  const engine: typeof api.engine
+  const midi: typeof api.midi
+  const controller: typeof api.controller
+  const colorMapper: typeof api.ColorMapper
 }
