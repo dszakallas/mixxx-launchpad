@@ -9,3 +9,4 @@ export {
 export type { ChannelControlDef, ControlDef, ControlHandle, ControlMessage } from './Control'
 export { MidiComponent, MidiDevice, sendShortMsg, sendSysexMsg } from './MidiDevice'
 export { Timer } from './Timer'
+export { parseRGBColor } from './util'

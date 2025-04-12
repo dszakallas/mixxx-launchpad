@@ -3,19 +3,20 @@ import { getValue, setValue } from '@mixxx-launch/mixxx'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeDeckControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'play'
   bindings: {
     playIndicator: ControlBindingTemplate<Type>
-    play: ButtonBindingTemplate<Type>
+    play: PadBindingTemplate<Type>
   }
   params: {
     deck: ChannelControlDef
@@ -29,18 +30,18 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.play_indicator),
       listeners: {
         update:
-          ({ bindings, context: { device } }: Control<Type>) =>
+          ({ bindings }: Control<Type>) =>
           ({ value }: ControlMessage) => {
             if (value) {
-              device.sendColor(bindings.play.control, device.colors.hi_red)
+              bindings.play.sendColor(Color.RedHi)
             } else if (!value) {
-              device.clearColor(bindings.play.control)
+              bindings.play.clearColor()
             }
           },
       },
     },
     play: {
-      type: midi(gridPosition),
+      type: cellPad(gridPosition),
       listeners: {
         midi: ({ context: { modifier } }: Control<Type>) =>
           onAttack(() => {

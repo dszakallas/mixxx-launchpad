@@ -1,30 +1,28 @@
-import { convertControlDef, LaunchpadDevice, RGBColor, useDevice } from '@mixxx-launch/launchpad-common'
+import { convertControlDef, LaunchpadDevice, useDevice } from '@mixxx-launch/launchpad-common'
 import def from '../controls'
 import { sendSysexMsg } from '@mixxx-launch/mixxx'
 import { MidiControlDef } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
+import { RGBColor } from '@mixxx-launch/common/color'
 
 const colors = {
-  black: 0,
-
-  lo_red: 7,
-  hi_red: 5,
-  lo_green: 19,
-  hi_green: 17,
-  lo_amber: 43,
-  hi_amber: 41,
-  hi_orange: 84,
-  lo_orange: 61,
-  hi_yellow: 13,
-  lo_yellow: 15,
-
-  lo_white: 15,
-  hi_white: 13,
+  [Color.Black]: 0,
+  [Color.RedLow]: 7,
+  [Color.RedHi]: 5,
+  [Color.GreenLow]: 19,
+  [Color.GreenHi]: 17,
+  [Color.AmberLow]: 43,
+  [Color.AmberHi]: 41,
+  [Color.OrangeHi]: 84,
+  [Color.OrangeLow]: 61,
+  [Color.YellowHi]: 13,
+  [Color.YellowLow]: 15,
 }
 
 class LaunchpadMK2Device extends LaunchpadDevice {
   supportsRGBColors: boolean
   controls: { [key: string]: MidiControlDef }
-  colors: { [key: string]: number }
+  colors: { [key in Color]: number }
 
   constructor() {
     super()

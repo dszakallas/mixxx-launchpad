@@ -5,11 +5,10 @@ import {
   Control as BaseControl,
   ControlType as BaseControlType,
   MakeControlTemplate,
-} from '@mixxx-launch/launch-common/src/Control'
+} from '@mixxx-launch/launch-common'
 
-import { ControlComponent, ControlDef } from '@mixxx-launch/mixxx/src/Control'
-import { LaunchpadDevice, MidiComponent } from './device'
-
+import { ControlComponent, ControlDef } from '@mixxx-launch/mixxx'
+import { Pad, LaunchpadDevice } from './device'
 // constraint types with Launchpad specific Context
 export type ControlContext = {
   modifier: Modifier
@@ -32,17 +31,17 @@ export type ControlBindingTemplate<C extends ControlType> = {
   }
 }
 
-export type ButtonKey = readonly [number, number]
+export type Cell = readonly [number, number]
 
-const nameOf = (x: number, y: number) => `${7 - y},${x}`
+const cellToName = (x: number, y: number) => `${7 - y},${x}`
 
-export const midi = (key: ButtonKey) => (ctx: ControlContext) =>
-  new MidiComponent(ctx.device, ctx.device.controls[nameOf(...key)])
+export const cellPad = (cell: Cell) => (ctx: ControlContext) =>
+  new Pad(ctx.device, ctx.device.controls[cellToName(...cell)])
 
 export const control = (control: ControlDef) => (_ctx: ControlContext) => new ControlComponent(control)
 
-export type ButtonBindingTemplate<C extends ControlType> = {
-  type: (ctx: ControlContext) => MidiComponent
+export type PadBindingTemplate<C extends ControlType> = {
+  type: (ctx: ControlContext) => Pad
   listeners: {
     midi?: (c: Control<C>) => (message: MidiMessage) => void
     mount?: (c: Control<C>) => () => void
@@ -51,5 +50,5 @@ export type ButtonBindingTemplate<C extends ControlType> = {
 }
 
 export type BindingTemplates<C extends ControlType> = {
-  [K: string]: ButtonBindingTemplate<C> | ControlBindingTemplate<C>
+  [K: string]: PadBindingTemplate<C> | ControlBindingTemplate<C>
 }

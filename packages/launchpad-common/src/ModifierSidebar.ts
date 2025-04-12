@@ -1,28 +1,29 @@
 import type { MidiMessage } from '@mixxx-launch/common/midi'
 import { Component } from '@mixxx-launch/common/component'
-import { LaunchpadDevice, MidiComponent } from './device'
+import { LaunchpadDevice, Pad } from './device'
 import { ModifierState, Modifier } from '@mixxx-launch/common/modifier'
+import { Color } from '@mixxx-launch/launch-common'
 
 export default class ModifierSidebar extends Component implements Modifier {
-  shift: MidiComponent
-  ctrl: MidiComponent
+  shift: Pad
+  ctrl: Pad
   state: ModifierState
   shiftListener: (_: MidiMessage) => void
   ctrlListener: (_: MidiMessage) => void
 
   constructor(device: LaunchpadDevice) {
     super()
-    this.shift = new MidiComponent(device, device.controls.solo)
-    this.ctrl = new MidiComponent(device, device.controls.arm)
+    this.shift = new Pad(device, device.controls.solo)
+    this.ctrl = new Pad(device, device.controls.arm)
 
     this.state = ModifierState.None
 
-    const makeListener = (button: MidiComponent) => (message: MidiMessage) => {
+    const makeListener = (button: Pad) => (message: MidiMessage) => {
       const { value } = message
       if (value) {
-        device.sendColor(button.control, device.colors.hi_red)
+        button.sendColor(Color.RedHi)
       } else {
-        device.clearColor(button.control)
+        button.clearColor()
       }
 
       if (button.control.name === device.controls.solo.name) {

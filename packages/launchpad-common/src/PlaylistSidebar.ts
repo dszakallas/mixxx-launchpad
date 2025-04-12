@@ -1,9 +1,10 @@
-import { Component } from '@mixxx-launch/common/component'
+import { Component, Container } from '@mixxx-launch/common/component'
 import { playListControlDef, Timer, setValue } from '@mixxx-launch/mixxx'
 import type { MidiMessage } from '@mixxx-launch/common/midi'
 import type { ControlDef } from '@mixxx-launch/mixxx'
-import { LaunchpadDevice, MidiComponent } from './device'
+import { LaunchpadDevice, Pad } from './device'
 import { ControlComponent, ControlMessage, getValue, masterControlDef } from '@mixxx-launch/mixxx/src/Control'
+import { Color } from '@mixxx-launch/launch-common'
 
 const longInterval = 240
 const mediumInterval = 120
@@ -56,55 +57,50 @@ const autoscrolled = (binding: Component) => {
   return binding
 }
 
-export default class PlaylistSidebar extends Component {
-  buttons: MidiComponent[]
-  controls: ControlComponent[]
-
+export default class PlaylistSidebar extends Container {
   constructor(device: LaunchpadDevice) {
-    super()
+    const pads = [
+      new Pad(device, device.controls.vol),
+      new Pad(device, device.controls.pan),
+      new Pad(device, device.controls.snda),
+      new Pad(device, device.controls.sndb),
+      new Pad(device, device.controls.stop),
+      new Pad(device, device.controls.trkon),
+    ]
+
+    const controls = [new ControlComponent(masterControlDef.maximize_library)]
 
     const onScroll = (control: ControlDef) => () => {
       setValue(control, 1)
     }
 
     const onMidi =
-      (control: ControlDef, color: number = device.colors.hi_yellow) =>
+      (control: ControlDef, color: Color = Color.YellowHi) =>
       (message: MidiMessage) => {
         if (message.value) {
           setValue(control, 1)
-          device.sendColor(message.control, device.colors.hi_red)
+          device.sendColor(message.control, Color.RedHi)
         } else {
           device.sendColor(message.control, color)
         }
       }
 
     const onMount =
-      (color: number = device.colors.hi_yellow) =>
-      (button: MidiComponent) => {
-        device.sendColor(button.control, color)
+      (color: Color = Color.YellowHi) =>
+      (button: Pad) => {
+        button.sendColor(color)
       }
 
-    const onUnmount = (button: MidiComponent) => {
-      device.clearColor(button.control)
+    const onUnmount = (button: Pad) => {
+      button.clearColor()
     }
 
-    const btns = [
-      new MidiComponent(device, device.controls.vol),
-      new MidiComponent(device, device.controls.pan),
-      new MidiComponent(device, device.controls.snda),
-      new MidiComponent(device, device.controls.sndb),
-      new MidiComponent(device, device.controls.stop),
-      new MidiComponent(device, device.controls.trkon),
-    ]
-
-    const controls = [new ControlComponent(masterControlDef.maximize_library)]
-
-    const prevPlaylist = autoscrolled(btns[0])
-    const nextPlaylist = autoscrolled(btns[1])
-    const toggleItem = btns[2]
-    const prevTrack = autoscrolled(btns[3])
-    const nextTrack = autoscrolled(btns[4])
-    const toggleLibrary = btns[5]
+    const prevPlaylist = autoscrolled(pads[0])
+    const nextPlaylist = autoscrolled(pads[1])
+    const toggleItem = pads[2]
+    const prevTrack = autoscrolled(pads[3])
+    const nextTrack = autoscrolled(pads[4])
+    const toggleLibrary = pads[5]
     const toggleLibraryControl = controls[0]
 
     prevPlaylist.on('scroll', onScroll(playListControlDef.SelectPrevPlaylist))
@@ -127,15 +123,15 @@ export default class PlaylistSidebar extends Component {
     nextTrack.on('mount', onMount())
     nextTrack.on('unmount', onUnmount)
 
-    toggleItem.on('midi', onMidi(playListControlDef.ToggleSelectedSidebarItem, device.colors.hi_green))
-    toggleItem.on('mount', onMount(device.colors.hi_green))
+    toggleItem.on('midi', onMidi(playListControlDef.ToggleSelectedSidebarItem, Color.GreenHi))
+    toggleItem.on('mount', onMount(Color.GreenHi))
     toggleItem.on('unmount', onUnmount)
 
     toggleLibraryControl.on('update', (m: ControlMessage) => {
       if (m.value) {
-        device.sendColor(toggleLibrary.control, device.colors.hi_red)
+        toggleLibrary.sendColor(Color.RedHi)
       } else {
-        device.sendColor(toggleLibrary.control, device.colors.hi_green)
+        toggleLibrary.sendColor(Color.GreenHi)
       }
     })
 
@@ -148,19 +144,6 @@ export default class PlaylistSidebar extends Component {
 
     toggleLibrary.on('unmount', onUnmount)
 
-    this.buttons = btns
-    this.controls = controls
-  }
-
-  override onMount() {
-    super.onMount()
-    this.buttons.forEach((button) => button.mount())
-    this.controls.forEach((control) => control.mount())
-  }
-
-  override onUnmount() {
-    this.controls.forEach((control) => control.unmount())
-    this.buttons.forEach((button) => button.unmount())
-    super.onUnmount()
+    super([...pads, ...controls])
   }
 }

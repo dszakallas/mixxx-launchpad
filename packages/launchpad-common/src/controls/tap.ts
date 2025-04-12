@@ -4,18 +4,19 @@ import { setValue } from '@mixxx-launch/mixxx'
 import { Bpm } from '@mixxx-launch/common'
 import { onAttack } from '@mixxx-launch/common/midi'
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeDeckControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'tap'
   bindings: {
-    tap: ButtonBindingTemplate<Type>
+    tap: PadBindingTemplate<Type>
     beat: ControlBindingTemplate<Type>
   }
   params: {
@@ -32,7 +33,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   return {
     bindings: {
       tap: {
-        type: midi(gridPosition),
+        type: cellPad(gridPosition),
         listeners: {
           midi: ({ context: { modifier } }: Control<Type>) =>
             onAttack(() => {
@@ -50,12 +51,12 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         type: control(deck.beat_active),
         listeners: {
           update:
-            ({ context: { device }, bindings }: Control<Type>) =>
+            ({ bindings }: Control<Type>) =>
             ({ value }: ControlMessage) => {
               if (value) {
-                device.sendColor(bindings.tap.control, device.colors.hi_red)
+                bindings.tap.sendColor(Color.RedHi)
               } else {
-                device.clearColor(bindings.tap.control)
+                bindings.tap.clearColor()
               }
             },
         },

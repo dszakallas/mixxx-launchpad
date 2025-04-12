@@ -1,15 +1,16 @@
 import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeDeckControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'key'
@@ -18,7 +19,7 @@ export type Type = {
     gridPosition: [number, number]
   }
   bindings: {
-    button: ButtonBindingTemplate<Type>
+    button: PadBindingTemplate<Type>
     keylock: ControlBindingTemplate<Type>
   }
   state: Record<string, unknown>
@@ -28,7 +29,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
   state: {},
   bindings: {
     button: {
-      type: midi(gridPosition),
+      type: cellPad(gridPosition),
       listeners: {
         midi: ({ context: { modifier }, bindings }: Control<Type>) =>
           onAttack(() => {
@@ -54,12 +55,12 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.keylock),
       listeners: {
         update:
-          ({ context: { device }, bindings }: Control<Type>) =>
+          ({ bindings }: Control<Type>) =>
           ({ value }: ControlMessage) => {
             if (value) {
-              device.sendColor(bindings.button.control, device.colors.hi_red)
+              bindings.button.sendColor(Color.RedHi)
             } else {
-              device.clearColor(bindings.button.control)
+              bindings.button.clearColor()
             }
           },
       },

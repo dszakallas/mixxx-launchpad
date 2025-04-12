@@ -1,22 +1,23 @@
 import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeDeckControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
 import { MidiMessage } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'pfl'
   bindings: {
     pfl: ControlBindingTemplate<Type>
-    button: ButtonBindingTemplate<Type>
+    button: PadBindingTemplate<Type>
   }
   params: {
     deck: ChannelControlDef
@@ -30,15 +31,13 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.pfl),
       listeners: {
         update:
-          ({ context: { device }, bindings }: Control<Type>) =>
+          ({ bindings }: Control<Type>) =>
           ({ value }: ControlMessage) =>
-            value
-              ? device.sendColor(bindings.button.control, device.colors.hi_green)
-              : device.clearColor(bindings.button.control),
+            value ? bindings.button.sendColor(Color.GreenHi) : bindings.button.clearColor(),
       },
     },
     button: {
-      type: midi(gridPosition),
+      type: cellPad(gridPosition),
       listeners: {
         midi: ({ context: { modifier }, bindings }: Control<Type>) =>
           onAttack((_: MidiMessage) =>

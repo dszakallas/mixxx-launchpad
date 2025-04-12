@@ -5,6 +5,7 @@ import { sendShortMsg } from '@mixxx-launch/mixxx'
 
 import { ControlComponent, EffectDef, getValue, root, setParameter } from '@mixxx-launch/mixxx/src/Control'
 import { LaunchControlDevice, MidiComponent } from '../device'
+import { Color } from '@mixxx-launch/launch-common'
 
 export const makeFxParamPage = (_conf: FxParamPageConf, template: number, device: LaunchControlDevice) =>
   new FxParamPage(device, template)
@@ -57,17 +58,17 @@ export class FxParamPage extends Container {
 
   private drawPrevLed() {
     if (this._selectedEffectUnit > 0) {
-      sendShortMsg(this._device.controls[`${this._template}.up`], this._device.colors.hi_red)
+      sendShortMsg(this._device.controls[`${this._template}.up`], this._device.colors[Color.RedHi])
     } else {
-      sendShortMsg(this._device.controls[`${this._template}.up`], this._device.colors.black)
+      sendShortMsg(this._device.controls[`${this._template}.up`], this._device.colors[Color.Black])
     }
   }
 
   private drawNextLed() {
     if (this._selectedEffectUnit < 3) {
-      sendShortMsg(this._device.controls[`${this._template}.down`], this._device.colors.hi_red)
+      sendShortMsg(this._device.controls[`${this._template}.down`], this._device.colors[Color.RedHi])
     } else {
-      sendShortMsg(this._device.controls[`${this._template}.down`], this._device.colors.black)
+      sendShortMsg(this._device.controls[`${this._template}.down`], this._device.colors[Color.Black])
     }
   }
 
@@ -157,11 +158,11 @@ class FxComponent extends Container {
       const ledName = this._midiComponents[i].control.name.replace('knob', 'led')
       const ledControl = this._device.controls[ledName]
       if (i < this._paramControls.length) {
-        sendShortMsg(ledControl, this._device.colors.lo_green)
+        sendShortMsg(ledControl, this._device.colors[Color.GreenLow])
       } else if (i < this._paramControls.length + this._buttonParamControls.length) {
-        sendShortMsg(ledControl, this._device.colors.lo_red)
+        sendShortMsg(ledControl, this._device.colors[Color.RedLow])
       } else {
-        sendShortMsg(ledControl, this._device.colors.black)
+        sendShortMsg(ledControl, this._device.colors[Color.Black])
       }
     }
   }

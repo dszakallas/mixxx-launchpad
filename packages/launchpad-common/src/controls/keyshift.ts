@@ -1,9 +1,9 @@
 import { posMod } from '@mixxx-launch/common'
 import { ChannelControlDef, getValue, setValue } from '@mixxx-launch/mixxx'
-import { LaunchpadDevice } from '../device'
 import { modes } from '@mixxx-launch/common/modifier'
-import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
+import { PadBindingTemplate, MakeDeckControlTemplate, Control, cellPad } from '../Control'
 import { retainAttackMode } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'keyshift'
@@ -13,7 +13,7 @@ export type Type = {
     shifts: readonly [number, number][]
     rows: number
   }
-  bindings: { [i: number]: ButtonBindingTemplate<Type> }
+  bindings: { [i: number]: PadBindingTemplate<Type> }
   state: {
     on: number
     base: number
@@ -21,30 +21,27 @@ export type Type = {
   }
 }
 
-const colors = ['green', 'red']
+const colors = [
+  { off: Color.GreenLow, on: Color.GreenHi },
+  { off: Color.RedLow, on: Color.RedHi },
+]
 
 const make: MakeDeckControlTemplate<Type> = ({ shifts, rows, gridPosition, deck }) => {
   const bindings: Type['bindings'] = {}
 
-  const temporaryChange = (
-    i: number,
-    value: number,
-    bindings: Control<Type>['bindings'],
-    state: Type['state'],
-    device: LaunchpadDevice,
-  ) => {
+  const temporaryChange = (i: number, value: number, bindings: Control<Type>['bindings'], state: Type['state']) => {
     if (value) {
       const base = state.on === -1 ? getValue(deck.key) : state.base
       if (state.on !== -1) {
-        device.sendColor(bindings[state.on].control, device.colors[`lo_${colors[state.set]}`])
+        bindings[state.on].sendColor(colors[state.set].off)
       }
-      device.sendColor(bindings[i].control, device.colors[`hi_${colors[state.set]}`])
+      bindings[i].sendColor(colors[state.set].on)
       setValue(deck.key, ((base + shifts[i][state.set]) % 12) + 12)
       state.on = i
       state.base = base
     } else {
       if (state.on === i) {
-        device.sendColor(bindings[i].control, device.colors[`lo_${colors[state.set]}`])
+        bindings[i].sendColor(colors[state.set].off)
         setValue(deck.key, state.base)
         state.on = -1
       }
@@ -53,16 +50,16 @@ const make: MakeDeckControlTemplate<Type> = ({ shifts, rows, gridPosition, deck 
 
   const onMidi =
     (i: number) =>
-    ({ context: { modifier, device }, bindings, state }: Control<Type>) =>
+    ({ bindings, state, context: { modifier } }: Control<Type>) =>
       retainAttackMode(modifier, (mode, { value }) => {
         modes(
           mode,
-          () => temporaryChange(i, value, bindings, state, device),
+          () => temporaryChange(i, value, bindings, state),
           () => {
             if (value) {
               state.set = posMod(state.set + 1, 2)
               for (let i = 0; i < shifts.length; ++i) {
-                device.sendColor(bindings[i].control, device.colors[`lo_${colors[state.set]}`])
+                bindings[i].sendColor(Color.YellowLow)
               }
             }
           },
@@ -73,13 +70,13 @@ const make: MakeDeckControlTemplate<Type> = ({ shifts, rows, gridPosition, deck 
     const dx = i % rows
     const dy = ~~(i / rows)
     bindings[i] = {
-      type: midi([gridPosition[0] + dx, gridPosition[1] + dy]),
+      type: cellPad([gridPosition[0] + dx, gridPosition[1] + dy]),
       listeners: {
         midi: onMidi(i),
         mount:
-          ({ context: { device }, bindings, state }: Control<Type>) =>
+          ({ bindings, state }: Control<Type>) =>
           () => {
-            device.sendColor(bindings[i].control, device.colors[`lo_${colors[state.set]}`])
+            bindings[i].sendColor(colors[state.set].off)
           },
       },
     }

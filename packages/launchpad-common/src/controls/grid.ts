@@ -1,14 +1,15 @@
 import type { ChannelControlDef } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
-import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
+import { PadBindingTemplate, MakeDeckControlTemplate, Control, cellPad } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { MidiMessage } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'grid'
   bindings: {
-    back: ButtonBindingTemplate<Type>
-    forth: ButtonBindingTemplate<Type>
+    back: PadBindingTemplate<Type>
+    forth: PadBindingTemplate<Type>
   }
   state: Record<string, unknown>
   params: {
@@ -30,19 +31,19 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   }
   const onGrid =
     (dir: 'back' | 'forth') =>
-    ({ context: { device, modifier }, bindings }: Control<Type>) =>
+    ({ bindings, context: { modifier } }: Control<Type>) =>
     ({ value }: MidiMessage) => {
       if (!value) {
-        device.clearColor(bindings[dir].control)
+        bindings[dir].clearColor()
       } else {
         modes(
           modifier.getState(),
           () => {
-            device.sendColor(bindings[dir].control, device.colors.hi_yellow)
+            bindings[dir].sendColor(Color.YellowHi)
             setValue(steps[dir].normal, 1)
           },
           () => {
-            device.sendColor(bindings[dir].control, device.colors.hi_amber)
+            bindings[dir].sendColor(Color.AmberHi)
             setValue(steps[dir].ctrl, 1)
           },
         )
@@ -51,13 +52,13 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   return {
     bindings: {
       back: {
-        type: midi(gridPosition),
+        type: cellPad(gridPosition),
         listeners: {
           midi: onGrid('back'),
         },
       },
       forth: {
-        type: midi([gridPosition[0] + 1, gridPosition[1]]),
+        type: cellPad([gridPosition[0] + 1, gridPosition[1]]),
         listeners: {
           midi: onGrid('forth'),
         },

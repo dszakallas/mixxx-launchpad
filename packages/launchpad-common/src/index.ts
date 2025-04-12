@@ -19,4 +19,4 @@ export const convertControlDef = (name: string, [status, midino]: ControllerCont
   midino,
 })
 
-export { RGBColor, LaunchpadDevice, MidiComponent } from './device'
+export { LaunchpadDevice, Pad } from './device'

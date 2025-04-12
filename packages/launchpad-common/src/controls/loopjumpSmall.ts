@@ -2,13 +2,14 @@ import { modes } from '@mixxx-launch/common/modifier'
 import { MidiMessage, onAttack } from '@mixxx-launch/common/midi'
 import type { ChannelControlDef } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
-import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
+import { PadBindingTemplate, MakeDeckControlTemplate, Control, cellPad } from '../Control'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'loopjumpSmall'
   bindings: {
-    back: ButtonBindingTemplate<Type>
-    forth: ButtonBindingTemplate<Type>
+    back: PadBindingTemplate<Type>
+    forth: PadBindingTemplate<Type>
   }
   params: {
     deck: ChannelControlDef
@@ -25,24 +26,24 @@ const make: MakeDeckControlTemplate<Type> = ({ amount, gridPosition, deck }) => 
   return {
     bindings: {
       back: {
-        type: midi(gridPosition),
+        type: cellPad(gridPosition),
         listeners: {
           midi: onMidi(-1),
           mount:
-            ({ context: { device }, bindings }: Control<Type>) =>
+            ({ bindings }: Control<Type>) =>
             () => {
-              device.sendColor(bindings.back.control, device.colors.hi_yellow)
+              bindings.back.sendColor(Color.YellowHi)
             },
         },
       },
       forth: {
-        type: midi([gridPosition[0] + 1, gridPosition[1]]),
+        type: cellPad([gridPosition[0] + 1, gridPosition[1]]),
         listeners: {
           midi: onMidi(1),
           mount:
-            ({ context: { device }, bindings }: Control<Type>) =>
+            ({ bindings }: Control<Type>) =>
             () => {
-              device.sendColor(bindings.forth.control, device.colors.hi_yellow)
+              bindings.forth.sendColor(Color.YellowHi)
             },
         },
       },

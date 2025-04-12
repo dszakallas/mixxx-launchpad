@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3'
 
-export default class Bpm extends EventEmitter {
+export class Bpm extends EventEmitter {
   tapTime: number
   taps: number[]
   max: number

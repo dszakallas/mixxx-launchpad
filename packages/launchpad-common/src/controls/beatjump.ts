@@ -1,9 +1,10 @@
 import { posMod } from '@mixxx-launch/common'
 import { ChannelControlDef, setValue } from '@mixxx-launch/mixxx'
 
-import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
+import { PadBindingTemplate, MakeDeckControlTemplate, Control, cellPad } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { retainAttackMode } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'beatjump'
@@ -20,10 +21,13 @@ export type Type = {
     diff: number
     set: number
   }
-  bindings: { [k: number]: ButtonBindingTemplate<Type> }
+  bindings: { [k: number]: PadBindingTemplate<Type> }
 }
 
-const colors = ['green', 'red']
+const colors = [
+  { off: Color.GreenLow, on: Color.GreenHi },
+  { off: Color.RedLow, on: Color.RedHi },
+]
 
 const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertical = false, bounce = false }) => {
   const bindings: Type['bindings'] = {}
@@ -34,7 +38,7 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
 
   const onMidi =
     (k: number, j: [number, number], d: number) =>
-    ({ bindings, state, context: { modifier, device } }: Control<Type>) =>
+    ({ bindings, state, context: { modifier } }: Control<Type>) =>
       retainAttackMode(modifier, (mode, { value }) => {
         modes(
           mode,
@@ -48,14 +52,14 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
                 const currentJump = j[state.set] * d
                 setValue(deck.beatjump, currentJump)
                 if (state.pressing != null) {
-                  device.sendColor(bindings[state.pressing].control, device.colors[`lo_${colors[state.set]}`])
+                  bindings[state.pressing].sendColor(colors[state.set].off)
                 }
-                device.sendColor(bindings[k].control, device.colors[`hi_${colors[state.set]}`])
+                bindings[k].sendColor(colors[state.set].on)
                 state.pressing = k
                 state.diff = state.diff + currentJump
               } else {
                 if (state.pressing === k) {
-                  device.sendColor(bindings[k].control, device.colors[`lo_${colors[state.set]}`])
+                  bindings[k].sendColor(colors[state.set].off)
                   state.pressing = null
                   setValue(deck.beatjump, -state.diff)
                   state.diff = 0
@@ -66,18 +70,18 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
           () => {
             if (value) {
               state.set = posMod(state.set + 1, 2)
-              const prefix = state.bounce ? 'lo' : 'hi'
+              const prefix = state.bounce ? 'off' : 'on'
               for (let b = 0; b < spec.length; ++b) {
-                device.sendColor(bindings[b].control, device.colors[`${prefix}_${colors[state.set]}`])
+                bindings[b].sendColor(colors[state.set][prefix])
               }
             }
           },
           () => {
             if (value) {
               state.bounce = !state.bounce
-              const prefix = state.bounce ? 'lo' : 'hi'
+              const prefix = state.bounce ? 'off' : 'on'
               for (let b = 0; b < spec.length; ++b) {
-                device.sendColor(bindings[b].control, device.colors[`${prefix}_${colors[state.set]}`])
+                bindings[b].sendColor(colors[state.set][prefix])
               }
             }
           },
@@ -85,16 +89,16 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
       })
   const onMount =
     (k: number) =>
-    ({ bindings, state, context: { device } }: Control<Type>) =>
+    ({ bindings, state }: Control<Type>) =>
     () => {
-      const prefix = state.bounce ? 'lo' : 'hi'
+      const prefix = state.bounce ? 'off' : 'on'
 
-      device.sendColor(bindings[k].control, device.colors[`${prefix}_${colors[state.set]}`])
+      bindings[k].sendColor(colors[state.set][prefix])
     }
 
   spec.forEach(([jump, dir], i) => {
     bindings[i] = {
-      type: midi(
+      type: cellPad(
         vertical
           ? [gridPosition[0] + (i % 2), gridPosition[1] + ~~(i / 2)]
           : [gridPosition[0] + ~~(i / 2), gridPosition[1] + (i % 2)],

@@ -3,19 +3,20 @@ import { sendShortMsg, sendSysexMsg } from '@mixxx-launch/mixxx'
 import { convertControlDef, useDevice, LaunchControlDevice } from '@mixxx-launch/launchcontrol-common'
 import { range } from '@mixxx-launch/common'
 import { MidiControlDef } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 const colors = {
-  black: 12,
-  lo_red: 13,
-  hi_red: 15,
-  lo_orange: 30,
-  hi_orange: 47,
-  lo_amber: 29,
-  hi_amber: 63,
-  lo_yellow: 45,
-  hi_yellow: 62,
-  lo_green: 28,
-  hi_green: 60,
+  [Color.Black]: 12,
+  [Color.RedLow]: 13,
+  [Color.RedHi]: 15,
+  [Color.OrangeLow]: 30,
+  [Color.OrangeHi]: 47,
+  [Color.AmberLow]: 29,
+  [Color.AmberHi]: 63,
+  [Color.YellowLow]: 45,
+  [Color.YellowHi]: 62,
+  [Color.GreenLow]: 28,
+  [Color.GreenHi]: 60,
 }
 
 const leds = Object.assign(
@@ -55,7 +56,7 @@ const colorChangeSysexPreamble = [240, 0, 32, 41, 2, 17, 120] as const
 
 class LaunchControlXLMK2Device extends LaunchControlDevice {
   controls: { [key: string]: MidiControlDef }
-  colors: { [key: string]: number }
+  colors: { [key in Color]: number }
   leds: { [key: string]: number }
   numTemplates = 16
 
@@ -68,8 +69,8 @@ class LaunchControlXLMK2Device extends LaunchControlDevice {
     this.colors = colors
   }
 
-  sendColor(template: number, ledIndex: number, color: number): void {
-    sendSysexMsg([...colorChangeSysexPreamble, template, ledIndex, color, 247])
+  sendColor(template: number, ledIndex: number, color: Color): void {
+    sendSysexMsg([...colorChangeSysexPreamble, template, ledIndex, this.colors[color], 247])
   }
 
   resetTemplate(template: number): void {
