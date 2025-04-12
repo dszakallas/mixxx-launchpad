@@ -4,9 +4,9 @@ import App from './App'
 import { MidiControlDef } from '@mixxx-launch/common/midi'
 import { LaunchpadDevice } from './device'
 
-export const useDevice = (device: LaunchpadDevice) => {
+export const useDevice = (device: LaunchpadDevice, inited: string = 'mount') => {
   const app = new App(device, config)
-  device.addListener('mount', app.mount.bind(app))
+  device.addListener(inited, app.mount.bind(app))
   device.addListener('unmount', app.unmount.bind(app))
   return device
 }
