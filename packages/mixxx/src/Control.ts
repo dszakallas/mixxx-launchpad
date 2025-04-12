@@ -3,7 +3,7 @@ import { Action } from './util'
 import { Component } from '@mixxx-launch/common/component'
 import { lazy, lazyArray } from '@mixxx-launch/common/lazy'
 
-import type { Connection } from './mixxx'
+import { ScriptConnection, engine } from './api'
 import { array, map, range } from '@mixxx-launch/common'
 
 export type ControlDef = {
@@ -529,7 +529,7 @@ export const softTakeOverIgnoreNextValue = (control: ControlDef): void => {
   return engine.softTakeoverIgnoreNextValue(control.group, control.name)
 }
 
-export type ControlHandle = Connection
+export type ControlHandle = ScriptConnection
 
 export type ControlMessage = {
   value: number
@@ -540,7 +540,7 @@ const connect = (control: ControlDef, cb: Action<ControlMessage>): ControlHandle
   const { group, name } = control
   return engine.makeConnection(group, name, function (value: number) {
     cb({ value, control })
-  })
+  }) as ScriptConnection // Not much we can do if it returns undefined.
 }
 
 const disconnect = (handle: ControlHandle): void => {

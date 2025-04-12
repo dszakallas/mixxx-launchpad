@@ -1,3 +1,5 @@
+import { engine } from './api'
+
 import { Component } from '@mixxx-launch/common/component'
 import { Action } from './util'
 
