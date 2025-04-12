@@ -27,7 +27,7 @@ export abstract class MidiDevice extends Component {
     this.unmount()
   }
 
-  onMount() {
+  override onMount() {
     super.onMount()
     const _this = this as unknown as RawMidiMessageTaskRegistry
     Object.values(this.controls).forEach((control) => {
@@ -49,7 +49,7 @@ export abstract class MidiDevice extends Component {
     }
   }
 
-  onUnmount() {
+  override onUnmount() {
     super.onUnmount()
   }
 }
@@ -69,12 +69,12 @@ export class MidiComponent<D extends MidiDevice> extends Component {
     }
   }
 
-  onMount() {
+  override onMount() {
     super.onMount()
     this._device.on(this.control.name, this._cb)
   }
 
-  onUnmount() {
+  override onUnmount() {
     this._device.removeListener(this.control.name, this._cb)
     super.onUnmount()
   }

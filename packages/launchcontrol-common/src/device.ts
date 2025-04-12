@@ -42,7 +42,7 @@ export abstract class LaunchControlDevice extends MidiDevice {
     }
   }
 
-  onMount() {
+  override onMount() {
     super.onMount()
     for (const i of range(this.numTemplates)) {
       this.resetTemplate(i)
@@ -51,7 +51,7 @@ export abstract class LaunchControlDevice extends MidiDevice {
     this.changeTemplate(0)
   }
 
-  onUnmount() {
+  override onUnmount() {
     this.removeListener('sysex', this.handleSysex.bind(this))
     for (const i of range(this.numTemplates)) {
       this.resetTemplate(i)

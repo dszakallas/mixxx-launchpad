@@ -34,7 +34,7 @@ export class Timer extends Component {
     }
   }
 
-  onUnmount() {
+  override onUnmount() {
     this.end()
     super.onUnmount()
   }

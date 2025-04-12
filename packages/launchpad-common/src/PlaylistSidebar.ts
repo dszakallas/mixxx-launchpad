@@ -152,13 +152,13 @@ export default class PlaylistSidebar extends Component {
     this.controls = controls
   }
 
-  onMount() {
+  override onMount() {
     super.onMount()
     this.buttons.forEach((button) => button.mount())
     this.controls.forEach((control) => control.mount())
   }
 
-  onUnmount() {
+  override onUnmount() {
     this.controls.forEach((control) => control.unmount())
     this.buttons.forEach((button) => button.unmount())
     super.onUnmount()

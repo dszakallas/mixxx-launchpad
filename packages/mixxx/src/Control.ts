@@ -562,7 +562,7 @@ export class ControlComponent extends Component {
     this._passive = passive
   }
 
-  onMount() {
+  override onMount() {
     if (!this._handle && !this._passive) {
       this._handle = connect(this.control, (data: ControlMessage) => {
         this.emit('update', data)
@@ -578,7 +578,7 @@ export class ControlComponent extends Component {
     }
   }
 
-  onUnmount() {
+  override onUnmount() {
     if (this._handle) {
       disconnect(this._handle)
       this._handle = undefined

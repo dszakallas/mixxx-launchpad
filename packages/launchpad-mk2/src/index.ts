@@ -35,7 +35,7 @@ class LaunchpadMK2Device extends LaunchpadDevice {
     this.supportsRGBColors = true
   }
 
-  onMount() {
+  override onMount() {
     super.onMount()
   }
 

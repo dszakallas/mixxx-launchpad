@@ -71,7 +71,7 @@ export class FxParamPage extends Container {
     }
   }
 
-  onMount() {
+  override onMount() {
     this._prevEffectUnit.addListener('mount', this.drawPrevLed.bind(this))
     this._prevEffectUnit.addListener('midi', ({ value }: MidiMessage) => {
       if (value) {
@@ -98,7 +98,7 @@ export class FxParamPage extends Container {
     super.onMount()
   }
 
-  onUnmount() {
+  override onUnmount() {
     super.onUnmount()
     this._prevEffectUnit.removeAllListeners()
     this._nextEffectUnit.removeAllListeners()
@@ -166,7 +166,7 @@ class FxComponent extends Container {
     }
   }
 
-  onMount() {
+  override onMount() {
     this._loadedComponent.addListener('update', this.onChange.bind(this))
     this._enabledComponent.addListener('update', this.onChange.bind(this))
     for (let i = 0; i < this._midiComponents.length; i++) {
@@ -185,7 +185,7 @@ class FxComponent extends Container {
     super.onMount()
   }
 
-  onUnmount() {
+  override onUnmount() {
     super.onUnmount()
     for (const midiComponent of this._midiComponents) {
       midiComponent.removeAllListeners()

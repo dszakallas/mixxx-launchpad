@@ -37,7 +37,7 @@ export default class ModifierSidebar extends Component implements Modifier {
     this.ctrlListener = makeListener(this.ctrl)
   }
 
-  onMount() {
+  override onMount() {
     this.shift.mount()
     this.ctrl.mount()
 
@@ -45,7 +45,7 @@ export default class ModifierSidebar extends Component implements Modifier {
     this.ctrl.on('midi', this.ctrlListener)
   }
 
-  onUnmount() {
+  override onUnmount() {
     this.shift.removeListener('midi', this.shiftListener)
     this.ctrl.removeListener('midi', this.ctrlListener)
 
