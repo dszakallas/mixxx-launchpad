@@ -31,17 +31,17 @@ export abstract class LaunchpadDevice extends MidiDevice {
     super()
   }
 
-  onMount() {
+  override onMount() {
     super.onMount()
   }
 
-  onUnmount() {
+  override onUnmount() {
     super.onUnmount()
   }
 }
 
 export class MidiComponent extends mixxxMidiComponent<LaunchpadDevice> {
-  onUnmount() {
+  override onUnmount() {
     // TODO: find better place for clearing color on onMount
     this._device.clearColor(this.control)
     super.onUnmount()

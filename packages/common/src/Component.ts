@@ -1,47 +1,69 @@
 import EventEmitter from 'eventemitter3'
 
 export class Component extends EventEmitter {
-  mounted: boolean = false
+  private _mounted: boolean = false
 
   constructor() {
     super()
   }
 
+  /**
+   * Whether the component is mounted.
+   *
+   * @readonly
+   * @type {boolean}
+   */
+  get mounted() {
+    return this._mounted
+  }
+
+  /**
+   * Mount the component. Call only if the component is not mounted.
+   */
   mount() {
     this.onMount()
+    this._mounted = true
     this.emit('mount', this)
-    this.mounted = true
   }
 
+  /**
+   * Unmount the component. Call only if the component is mounted.
+   */
   unmount() {
     this.onUnmount()
+    this._mounted = false
     this.emit('unmount', this)
-    this.mounted = false
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onMount() {}
+  /**
+   * Called when the component is mounted. You should override in subclasses
+   * to add your own logic.
+   */
+  protected onMount() {}
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onUnmount() {}
+  /**
+   * Called when the component is unmounted. You should override in subclasses
+   * to add your own logic.
+   */
+  protected onUnmount() {}
 }
 
 export class Container extends Component {
-  children: Component[]
+  private children: Component[]
 
   constructor(children: Component[]) {
     super()
     this.children = children
   }
 
-  onMount() {
+  override onMount() {
     super.onMount()
     for (const child of this.children) {
       child.mount()
     }
   }
 
-  onUnmount() {
+  override onUnmount() {
     for (let i = this.children.length - 1; i >= 0; i--) {
       this.children[i].unmount()
     }

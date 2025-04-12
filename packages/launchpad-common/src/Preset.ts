@@ -94,7 +94,7 @@ export class Preset extends Component {
     })
   }
 
-  onMount() {
+  override onMount() {
     super.onMount()
     for (const control of this.controls) {
       control.mount()
@@ -113,7 +113,7 @@ export class Preset extends Component {
     }
   }
 
-  onUnmount() {
+  override onUnmount() {
     for (const control of this.controls) {
       control.unmount()
     }

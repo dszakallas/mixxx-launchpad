@@ -194,7 +194,7 @@ export default class App extends Container {
     this.device.sendColor(this.bindings[channel][0].control, this.device.colors.hi_red)
   }
 
-  onMount() {
+  override onMount() {
     super.onMount()
     this.bindings.forEach(([binding, midi]) => {
       binding.mount()
@@ -205,7 +205,7 @@ export default class App extends Container {
     this.updateLayout(diff)
   }
 
-  onUnmount() {
+  override onUnmount() {
     const diff = reorganize(this.getLayout(), [])
     this.updateLayout(diff)
     this.bindings.forEach(([binding, midi]) => {

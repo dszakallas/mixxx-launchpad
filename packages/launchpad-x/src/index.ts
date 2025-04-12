@@ -48,7 +48,7 @@ class LaunchpadXDevice extends LaunchpadDevice {
     this.supportsRGBColors = true
   }
 
-  onMount() {
+  override onMount() {
     selectMode(DeviceMode.Programmer)
     super.onMount()
   }

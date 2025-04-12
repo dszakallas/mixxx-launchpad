@@ -53,7 +53,7 @@ export class Control<Ctx, C extends ControlType<Ctx>> extends Component {
     this.context = context
   }
 
-  onMount() {
+  override onMount() {
     super.onMount()
 
     Object.keys(this.bindings).forEach((k) => {
@@ -70,7 +70,7 @@ export class Control<Ctx, C extends ControlType<Ctx>> extends Component {
     Object.values(this.bindings).forEach((b) => b.mount())
   }
 
-  onUnmount() {
+  override onUnmount() {
     const bs = Object.values(this.bindings)
     bs.forEach((b) => b.unmount())
     bs.forEach((b) => b.removeAllListeners())

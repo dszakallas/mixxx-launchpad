@@ -37,7 +37,7 @@ export class Pager extends Component {
     }
   }
 
-  onMount() {
+  override onMount() {
     super.onMount()
     this.onTemplate(this._device.template)
     if (this._selected != null) {
@@ -46,7 +46,7 @@ export class Pager extends Component {
     this._device.addListener('template', this.onTemplate.bind(this))
   }
 
-  onUnmount() {
+  override onUnmount() {
     this._device.removeListener('template', this.onTemplate.bind(this))
     if (this._selected != null) {
       this.pages[this._selected].value.unmount()
