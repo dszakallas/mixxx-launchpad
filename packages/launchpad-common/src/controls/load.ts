@@ -1,23 +1,23 @@
 import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
-import { LaunchpadDevice } from '../device'
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeDeckControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'load'
   bindings: {
     samples: ControlBindingTemplate<Type>
     play: ControlBindingTemplate<Type>
-    button: ButtonBindingTemplate<Type>
+    button: PadBindingTemplate<Type>
   }
   params: {
     deck: ChannelControlDef
@@ -26,18 +26,13 @@ export type Type = {
 }
 
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
-  const onStateChanged = (
-    loaded: number,
-    playing: number,
-    bindings: Control<Type>['bindings'],
-    device: LaunchpadDevice,
-  ) => {
+  const onStateChanged = (loaded: number, playing: number, bindings: Control<Type>['bindings']) => {
     if (loaded && playing) {
-      device.sendColor(bindings.button.control, device.colors.lo_red)
+      bindings.button.sendColor(Color.RedLow)
     } else if (loaded) {
-      device.sendColor(bindings.button.control, device.colors.lo_yellow)
+      bindings.button.sendColor(Color.YellowLow)
     } else {
-      device.sendColor(bindings.button.control, device.colors.lo_green)
+      bindings.button.sendColor(Color.GreenLow)
     }
   }
   return {
@@ -46,22 +41,22 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         type: control(deck.track_samples),
         listeners: {
           update:
-            ({ bindings, context: { device } }: Control<Type>) =>
+            ({ bindings }: Control<Type>) =>
             ({ value }: ControlMessage) =>
-              onStateChanged(value, getValue(bindings.play.control), bindings, device),
+              onStateChanged(value, getValue(bindings.play.control), bindings),
         },
       },
       play: {
         type: control(deck.play),
         listeners: {
           update:
-            ({ bindings, context: { device } }: Control<Type>) =>
+            ({ bindings }: Control<Type>) =>
             ({ value }: ControlMessage) =>
-              onStateChanged(getValue(bindings.samples.control), value, bindings, device),
+              onStateChanged(getValue(bindings.samples.control), value, bindings),
         },
       },
       button: {
-        type: midi(gridPosition),
+        type: cellPad(gridPosition),
         listeners: {
           midi: ({ bindings, context: { modifier } }: Control<Type>) =>
             onAttack(() => {

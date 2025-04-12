@@ -1,15 +1,16 @@
 import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeDeckControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'beatloop'
@@ -20,7 +21,7 @@ export type Type = {
     rows: number
   }
   bindings: {
-    [k: `b.${string}`]: ButtonBindingTemplate<Type>
+    [k: `b.${string}`]: PadBindingTemplate<Type>
     [k: `c.${string}`]: ControlBindingTemplate<Type>
   }
 }
@@ -37,18 +38,17 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, loops, rows }
 
   const onUpdate =
     (i: number) =>
-    ({ context, bindings }: Control<Type>) =>
+    ({ bindings }: Control<Type>) =>
     ({ value }: ControlMessage) => {
-      const { device } = context
-      const color = value ? device.colors.hi_red : device.colors.lo_red
-      device.sendColor(bindings[`b.${i}`].control, color)
+      const color = value ? Color.RedHi : Color.RedLow
+      bindings[`b.${i}`].sendColor(color)
     }
 
   loops.forEach((loop, i) => {
     const dx = i % rows
     const dy = ~~(i / rows)
     bindings[`b.${i}`] = {
-      type: midi([gridPosition[0] + dx, gridPosition[1] + dy]),
+      type: cellPad([gridPosition[0] + dx, gridPosition[1] + dy]),
       listeners: {
         midi: onMidi(loop),
       },

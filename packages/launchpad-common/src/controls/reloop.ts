@@ -1,20 +1,21 @@
 import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeDeckControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'reloop'
   bindings: {
-    button: ButtonBindingTemplate<Type>
+    button: PadBindingTemplate<Type>
     control: ControlBindingTemplate<Type>
   }
   params: {
@@ -26,7 +27,7 @@ export type Type = {
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
   bindings: {
     button: {
-      type: midi(gridPosition),
+      type: cellPad(gridPosition),
       listeners: {
         midi: ({ context: { modifier } }: Control<Type>) =>
           onAttack(() => {
@@ -42,12 +43,12 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.loop_enabled),
       listeners: {
         update:
-          ({ context: { device }, bindings }: Control<Type>) =>
+          ({ bindings }: Control<Type>) =>
           ({ value }: ControlMessage) => {
             if (value) {
-              device.sendColor(bindings.button.control, device.colors.hi_green)
+              bindings.button.sendColor(Color.GreenHi)
             } else {
-              device.sendColor(bindings.button.control, device.colors.lo_green)
+              bindings.button.sendColor(Color.GreenLow)
             }
           },
       },

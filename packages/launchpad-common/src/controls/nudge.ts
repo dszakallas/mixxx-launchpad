@@ -2,20 +2,21 @@ import { modes } from '@mixxx-launch/common/modifier'
 import { ControlMessage, ChannelControlDef } from '@mixxx-launch/mixxx'
 import { setValue, getValue } from '@mixxx-launch/mixxx'
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeDeckControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
 import { retainAttackMode } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'nudge'
   bindings: {
-    up: ButtonBindingTemplate<Type>
-    down: ButtonBindingTemplate<Type>
+    up: PadBindingTemplate<Type>
+    down: PadBindingTemplate<Type>
     rate: ControlBindingTemplate<Type>
   }
   state: {
@@ -43,7 +44,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
 
   const onNudgeMidi =
     (dir: 'up' | 'down') =>
-    ({ context: { modifier, device }, bindings, state }: Control<Type>) =>
+    ({ bindings, state, context: { modifier } }: Control<Type>) =>
       retainAttackMode(modifier, (mode, { value }) => {
         if (value) {
           state[dir] = true
@@ -53,19 +54,19 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
             modes(
               mode,
               () => {
-                device.sendColor(bindings[dir].control, device.colors.hi_yellow)
+                bindings[dir].sendColor(Color.YellowHi)
                 setValue(deck[`rate_temp_${dir}`], 1)
               },
               () => {
-                device.sendColor(bindings[dir].control, device.colors.hi_red)
+                bindings[dir].sendColor(Color.RedHi)
                 setValue(deck[`rate_perm_${dir}`], 1)
               },
               () => {
-                device.sendColor(bindings[dir].control, device.colors.lo_yellow)
+                bindings[dir].sendColor(Color.YellowLow)
                 setValue(deck[`rate_temp_${dir}_small`], 1)
               },
               () => {
-                device.sendColor(bindings[dir].control, device.colors.lo_red)
+                bindings[dir].sendColor(Color.RedLow)
                 setValue(deck[`rate_perm_${dir}_small`], 1)
               },
             )
@@ -73,9 +74,9 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         } else {
           state[dir] = false
           if (getDirection(getValue(bindings.rate.control)) === dir) {
-            device.sendColor(bindings[dir].control, device.colors.lo_orange)
+            bindings[dir].sendColor(Color.OrangeLow)
           } else {
-            device.clearColor(bindings[dir].control)
+            bindings[dir].clearColor()
           }
           modes(
             mode,
@@ -87,36 +88,36 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
       })
 
   const onRate =
-    ({ context: { device }, bindings, state }: Control<Type>) =>
+    ({ bindings, state }: Control<Type>) =>
     ({ value }: ControlMessage) => {
-      let up = device.colors.black
-      let down = device.colors.black
+      let up = Color.Black
+      let down = Color.Black
       const rate = getDirection(value)
       if (rate === 'down') {
-        down = device.colors.lo_orange
+        down = Color.OrangeLow
       } else if (rate === 'up') {
-        up = device.colors.lo_orange
+        up = Color.OrangeLow
       }
 
       if (!state.down) {
-        device.sendColor(bindings.down.control, down)
+        bindings.down.sendColor(down)
       }
 
       if (!state.up) {
-        device.sendColor(bindings.up.control, up)
+        bindings.up.sendColor(up)
       }
     }
 
   return {
     bindings: {
       down: {
-        type: midi(gridPosition),
+        type: cellPad(gridPosition),
         listeners: {
           midi: onNudgeMidi('down'),
         },
       },
       up: {
-        type: midi([gridPosition[0] + 1, gridPosition[1]]),
+        type: cellPad([gridPosition[0] + 1, gridPosition[1]]),
         listeners: {
           midi: onNudgeMidi('up'),
         },

@@ -1,13 +1,14 @@
 import type { ChannelControlDef } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
-import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
+import { PadBindingTemplate, MakeDeckControlTemplate, Control, cellPad } from '../Control'
 import { MidiMessage, onAttack } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'loopMultiply'
   bindings: {
-    halve: ButtonBindingTemplate<Type>
-    double: ButtonBindingTemplate<Type>
+    halve: PadBindingTemplate<Type>
+    double: PadBindingTemplate<Type>
   }
   params: {
     deck: ChannelControlDef
@@ -18,23 +19,23 @@ export type Type = {
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   const onMount =
     (k: 'halve' | 'double') =>
-    ({ context: { device }, bindings }: Control<Type>) =>
+    ({ bindings }: Control<Type>) =>
     () => {
-      device.sendColor(bindings[k].control, device.colors.lo_yellow)
+      bindings[k].sendColor(Color.YellowLow)
     }
   const onMidi = (k: 'double' | 'halve') => (_: Control<Type>) =>
     onAttack((_: MidiMessage) => setValue(deck[`loop_${k}`], 1))
   return {
     bindings: {
       halve: {
-        type: midi(gridPosition),
+        type: cellPad(gridPosition),
         listeners: {
           mount: onMount('halve'),
           midi: onMidi('halve'),
         },
       },
       double: {
-        type: midi([gridPosition[0] + 1, gridPosition[1]]),
+        type: cellPad([gridPosition[0] + 1, gridPosition[1]]),
         listeners: {
           mount: onMount('double'),
           midi: onMidi('double'),

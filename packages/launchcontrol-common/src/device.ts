@@ -1,8 +1,9 @@
 import { range } from '@mixxx-launch/common'
+import { Color } from '@mixxx-launch/launch-common'
 import { MidiComponent as BaseMidiComponent, MidiDevice } from '@mixxx-launch/mixxx'
 
 export abstract class LaunchControlDevice extends MidiDevice {
-  abstract colors: { [key: string]: number }
+  abstract colors: { [key in Color]: number }
   abstract numTemplates: number
 
   // LaunchControl control names follow the pattern "${template}.${controlKey}[.(on|off)]" where the last
@@ -84,7 +85,7 @@ export class MidiComponent extends BaseMidiComponent<LaunchControlDevice> {
 
   onUnmount() {
     // This prevents flickering of LEDs when switching templates.
-    this._device.sendColor(this.template, this.led, this._device.colors.black)
+    this._device.sendColor(this.template, this.led, this._device.colors[Color.Black])
     super.onUnmount()
   }
 }

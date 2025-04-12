@@ -1,23 +1,25 @@
 import { modes } from '@mixxx-launch/common/modifier'
 import { ControlMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
-import { LaunchpadDevice, parseRGBColor, RGBColor } from '../device'
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeSamplerControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
 import { SamplerControlDef } from '@mixxx-launch/mixxx/src/Control'
 import { Theme } from '../App'
 import { MidiMessage } from '@mixxx-launch/common/midi'
+import { RGBColor } from '@mixxx-launch/common/color'
+import { Color, LaunchDevice } from '@mixxx-launch/launch-common'
+import { parseRGBColor } from '@mixxx-launch/mixxx'
 
 export type Type = {
   type: 'samplerPad'
   bindings: {
-    button: ButtonBindingTemplate<Type>
+    button: PadBindingTemplate<Type>
     playing: ControlBindingTemplate<Type>
     loaded: ControlBindingTemplate<Type>
     colorChanged: ControlBindingTemplate<Type>
@@ -35,21 +37,21 @@ export type Type = {
 }
 
 export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, theme }) => {
-  const onStateChanged = (state: Type['state'], device: LaunchpadDevice, bindings: Control<Type>['bindings']) => {
+  const onStateChanged = (state: Type['state'], device: LaunchDevice, bindings: Control<Type>['bindings']) => {
     const color = state.color == null ? theme.fallbackTrackColor : state.color
     if (!state.loaded) {
       device.clearColor(bindings.button.control)
     } else if (!state.playing) {
-      if (device.supportsRGBColors) {
-        device.sendRGBColor(bindings.button.control, color.map((x) => ~~(x / 4)) as RGBColor)
+      if (bindings.button.supportsRGBColors) {
+        bindings.button.sendRGBColor(color.map((x) => ~~(x / 4)) as RGBColor)
       } else {
-        device.sendColor(bindings.button.control, device.colors.lo_red)
+        bindings.button.sendColor(Color.RedLow)
       }
     } else {
-      if (device.supportsRGBColors) {
-        device.sendRGBColor(bindings.button.control, color)
+      if (bindings.button.supportsRGBColors) {
+        bindings.button.sendRGBColor(color)
       } else {
-        device.sendColor(bindings.button.control, device.colors.hi_red)
+        bindings.button.sendColor(Color.RedHi)
       }
     }
   }
@@ -61,7 +63,7 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
     },
     bindings: {
       button: {
-        type: midi(gridPosition),
+        type: cellPad(gridPosition),
         listeners: {
           midi:
             ({ context: { modifier }, state }: Control<Type>) =>

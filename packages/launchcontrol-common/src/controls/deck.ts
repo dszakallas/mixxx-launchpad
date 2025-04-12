@@ -3,6 +3,7 @@ import { absoluteNonLin } from '@mixxx-launch/common'
 import { ControlMessage, getValue, root, setValue } from '@mixxx-launch/mixxx/src/Control'
 import { Control, ControlBindingTemplate, MidiBindingTemplate, control, midi, MakeControlTemplate } from '../Control'
 import { channelColorPalette } from '../util'
+import { Color } from '@mixxx-launch/launch-common'
 
 const eq3Channel = ['low', 'mid', 'hi']
 
@@ -43,11 +44,7 @@ export const makeEq3: MakeControlTemplate<Eq3Type> = ({ template, column, deck }
         update:
           ({ context: { device }, bindings }: Control<Eq3Type>) =>
           ({ value }: ControlMessage) => {
-            device.sendColor(
-              template,
-              bindings[`knob.${v}`].led,
-              device.colors[channelColorPalette[deck % 4][value ? 1 : 0]],
-            )
+            device.sendColor(template, bindings[`knob.${v}`].led, channelColorPalette[deck % 4][value ? 1 : 0])
           },
       },
     }
@@ -104,7 +101,7 @@ export const makeEq3Kill: MakeControlTemplate<Eq3KillType> = ({ template, row, c
         update:
           ({ context: { device }, bindings }: Control<Eq3KillType>) =>
           ({ value }: ControlMessage) => {
-            device.sendColor(template, bindings[`pad.${v}`].led, value ? device.colors.hi_red : device.colors.black)
+            device.sendColor(template, bindings[`pad.${v}`].led, value ? Color.RedHi : Color.Black)
           },
       },
     }

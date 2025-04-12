@@ -1,30 +1,37 @@
 import { modes } from '@mixxx-launch/common/modifier'
 import { ChannelControlDef, getValue, setValue } from '@mixxx-launch/mixxx'
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeDeckControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
 import { retainAttackMode } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
+import { posMod } from '@mixxx-launch/common'
 
 export type Type = {
   type: 'slip'
   bindings: {
     control: ControlBindingTemplate<Type>
-    button: ButtonBindingTemplate<Type>
+    button: PadBindingTemplate<Type>
   }
-  state: { mode: boolean }
+  state: { mode: number }
   params: {
     deck: ChannelControlDef
     gridPosition: [number, number]
   }
 }
 
+const colors = [
+  { off: Color.RedLow, on: Color.RedHi },
+  { off: Color.OrangeLow, on: Color.OrangeHi },
+]
+
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
-  const onMidi = ({ bindings, state, context: { modifier, device } }: Control<Type>) =>
+  const onMidi = ({ bindings, state, context: { modifier } }: Control<Type>) =>
     retainAttackMode(modifier, (mode, { value }) => {
       modes(
         mode,
@@ -39,9 +46,8 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         },
         () => {
           if (value) {
-            state.mode = !state.mode
-            const color = state.mode ? 'orange' : 'red'
-            device.sendColor(bindings.button.control, device.colors[`lo_${color}`])
+            state.mode = posMod(state.mode + 1, colors.length)
+            bindings.button.sendColor(colors[state.mode].on)
           }
         },
       )
@@ -52,32 +58,30 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         type: control(deck.slip_enabled),
         listeners: {
           update:
-            ({ bindings, state, context: { device } }: Control<Type>) =>
+            ({ bindings, state }: Control<Type>) =>
             ({ value }) => {
-              const color = state.mode ? 'orange' : 'red'
               if (value) {
-                device.sendColor(bindings.button.control, device.colors[`hi_${color}`])
+                bindings.button.sendColor(colors[state.mode].on)
               } else {
-                device.sendColor(bindings.button.control, device.colors[`lo_${color}`])
+                bindings.button.sendColor(colors[state.mode].off)
               }
             },
         },
       },
       button: {
-        type: midi(gridPosition),
+        type: cellPad(gridPosition),
         listeners: {
           midi: onMidi,
           mount:
-            ({ bindings, state, context: { device } }: Control<Type>) =>
+            ({ bindings, state }: Control<Type>) =>
             () => {
-              const color = state.mode ? 'orange' : 'red'
-              device.sendColor(bindings.button.control, device.colors[`lo_${color}`])
+              bindings.button.sendColor(colors[state.mode].off)
             },
         },
       },
     },
     state: {
-      mode: true,
+      mode: 1,
     },
   }
 }

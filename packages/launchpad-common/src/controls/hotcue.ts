@@ -1,18 +1,18 @@
 import { modes } from '@mixxx-launch/common/modifier'
 import { range } from '@mixxx-launch/common'
-import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
+import { ChannelControlDef, ControlMessage, parseRGBColor } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
 import { MidiMessage } from '@mixxx-launch/common/midi'
-import { parseRGBColor } from '../device'
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeDeckControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
 import { Theme } from '../App'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'hotcue'
@@ -25,7 +25,7 @@ export type Type = {
     start?: number
   }
   bindings: {
-    [k: `midi.${string}`]: ButtonBindingTemplate<Type>
+    [k: `midi.${string}`]: PadBindingTemplate<Type>
     [k: `cue.${string}`]: ControlBindingTemplate<Type>
     [k: `color.${string}`]: ControlBindingTemplate<Type>
   }
@@ -54,26 +54,26 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0, gridPositi
     }
   const onHotcueColorChanged =
     (i: number) =>
-    ({ context: { device }, bindings }: Control<Type>) =>
+    ({ bindings }: Control<Type>) =>
     ({ value }: ControlMessage) => {
       const color = parseRGBColor(value)
-      if (device.supportsRGBColors) {
-        device.sendRGBColor(bindings[`midi.${i}`].control, color == null ? theme.fallbackHotcueColor : color)
+      if (bindings[`midi.${i}`].supportsRGBColors) {
+        bindings[`midi.${i}`].sendRGBColor(color == null ? theme.fallbackHotcueColor : color)
       }
     }
   const onHotcueEnabled =
     (i: number) =>
-    ({ context: { device }, bindings }: Control<Type>) =>
+    ({ bindings }: Control<Type>) =>
     ({ value }: ControlMessage) => {
       if (value) {
-        if (device.supportsRGBColors) {
+        if (bindings[`midi.${i}`].supportsRGBColors) {
           const color = parseRGBColor(getValue(deck.hotcues[1 + i + start].color))
-          device.sendRGBColor(bindings[`midi.${i}`].control, color == null ? theme.fallbackHotcueColor : color)
+          bindings[`midi.${i}`].sendRGBColor(color == null ? theme.fallbackHotcueColor : color)
         } else {
-          device.sendColor(bindings[`midi.${i}`].control, device.colors.lo_yellow)
+          bindings[`midi.${i}`].sendColor(Color.YellowLow)
         }
       } else {
-        device.clearColor(bindings[`midi.${i}`].control)
+        bindings[`midi.${i}`].clearColor()
       }
     }
   const bindings: Type['bindings'] = {}
@@ -81,7 +81,7 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0, gridPositi
     const dx = i % rows
     const dy = ~~(i / rows)
     bindings[`midi.${i}`] = {
-      type: midi([gridPosition[0] + dx, gridPosition[1] + dy]),
+      type: cellPad([gridPosition[0] + dx, gridPosition[1] + dy]),
       listeners: {
         midi: onHotcueMidi(i),
       },

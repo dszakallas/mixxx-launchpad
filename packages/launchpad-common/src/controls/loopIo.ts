@@ -1,6 +1,6 @@
 import type { ChannelControlDef } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
-import { ButtonBindingTemplate, MakeDeckControlTemplate, Control, midi } from '../Control'
+import { PadBindingTemplate, MakeDeckControlTemplate, Control, cellPad } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
 import { MidiMessage } from '@mixxx-launch/common/midi'
@@ -8,8 +8,8 @@ import { MidiMessage } from '@mixxx-launch/common/midi'
 export type Type = {
   type: 'loopIo'
   bindings: {
-    in: ButtonBindingTemplate<Type>
-    out: ButtonBindingTemplate<Type>
+    in: PadBindingTemplate<Type>
+    out: PadBindingTemplate<Type>
   }
   params: {
     deck: ChannelControlDef
@@ -47,13 +47,13 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   return {
     bindings: {
       in: {
-        type: midi(gridPosition),
+        type: cellPad(gridPosition),
         listeners: {
           midi: onMidi('in'),
         },
       },
       out: {
-        type: midi([gridPosition[0] + 1, gridPosition[1]]),
+        type: cellPad([gridPosition[0] + 1, gridPosition[1]]),
         listeners: {
           midi: onMidi('out'),
         },

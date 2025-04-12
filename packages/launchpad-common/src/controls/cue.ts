@@ -3,19 +3,20 @@ import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeDeckControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
 import { retainAttackMode } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'cue'
   bindings: {
-    cue: ButtonBindingTemplate<Type>
+    cue: PadBindingTemplate<Type>
     cueIndicator: ControlBindingTemplate<Type>
   }
   params: {
@@ -27,7 +28,7 @@ export type Type = {
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
   bindings: {
     cue: {
-      type: midi(gridPosition),
+      type: cellPad(gridPosition),
       listeners: {
         midi: ({ context: { modifier } }: Control<Type>) =>
           retainAttackMode(modifier, (mode, { value }) => {
@@ -45,17 +46,12 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.cue_indicator),
       listeners: {
         update:
-          ({
-            bindings: {
-              cue: { control },
-            },
-            context: { device },
-          }: Control<Type>) =>
+          ({ bindings: { cue } }: Control<Type>) =>
           ({ value }: ControlMessage) => {
             if (value) {
-              device.sendColor(control, device.colors.hi_red)
+              cue.sendColor(Color.RedHi)
             } else if (!value) {
-              device.clearColor(control)
+              cue.clearColor()
             }
           },
       },

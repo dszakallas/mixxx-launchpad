@@ -1,15 +1,16 @@
 import { ChannelControlDef, ControlMessage } from '@mixxx-launch/mixxx'
 import { getValue, setValue } from '@mixxx-launch/mixxx'
 import {
-  ButtonBindingTemplate,
+  PadBindingTemplate,
   ControlBindingTemplate,
   MakeDeckControlTemplate,
   Control,
-  midi,
+  cellPad,
   control,
 } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'quantize'
@@ -19,7 +20,7 @@ export type Type = {
   }
   bindings: {
     quantize: ControlBindingTemplate<Type>
-    button: ButtonBindingTemplate<Type>
+    button: PadBindingTemplate<Type>
   }
 }
 
@@ -29,15 +30,13 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.quantize),
       listeners: {
         update:
-          ({ bindings, context: { device } }: Control<Type>) =>
+          ({ bindings }: Control<Type>) =>
           ({ value }: ControlMessage) =>
-            value
-              ? device.sendColor(bindings.button.control, device.colors.hi_orange)
-              : device.clearColor(bindings.button.control),
+            value ? bindings.button.sendColor(Color.OrangeHi) : bindings.button.clearColor(),
       },
     },
     button: {
-      type: midi(gridPosition),
+      type: cellPad(gridPosition),
       listeners: {
         midi: ({ bindings, context: { modifier } }: Control<Type>) =>
           onAttack(() =>

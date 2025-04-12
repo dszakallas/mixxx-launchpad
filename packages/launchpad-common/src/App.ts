@@ -3,12 +3,14 @@ import ModifierSidebar from './ModifierSidebar'
 
 import { MidiMessage, retainAttackMode } from '@mixxx-launch/common/midi'
 import { Container } from '@mixxx-launch/common/component'
-import { LaunchpadDevice, MidiComponent, RGBColor } from './device'
 import { Action } from '@mixxx-launch/mixxx/src/util'
 import { ControlContext } from './Control'
 import PlaylistSidebar from './PlaylistSidebar'
 import { posMod } from '@mixxx-launch/common'
 import { Preset, PresetConf, makePresetTemplate, PresetState } from './Preset'
+import { RGBColor } from '@mixxx-launch/common/color'
+import { Pad, LaunchpadDevice } from './device'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type PresetSize = 'short' | 'tall' | 'grande'
 
@@ -78,7 +80,7 @@ const makePresetStateKey = (presetSize: PresetSize, index: number, channel: numb
 
 export default class App extends Container {
   conf: LayoutConf
-  bindings: [MidiComponent, Action<MidiMessage>][]
+  bindings: [Pad, Action<MidiMessage>][]
   modifier: ModifierSidebar
   presets: { [P in PresetSize]: readonly PresetConf[] }
   savedPresetStates: { [key: SavedPresetStateKey]: PresetState }
@@ -101,7 +103,7 @@ export default class App extends Container {
     this.device = device
 
     this.bindings = buttons.map((v, i) => {
-      const binding = new MidiComponent(this.device, this.device.controls[v])
+      const binding = new Pad(this.device, this.device.controls[v])
       return [binding, onMidi(this, i, this.modifier)]
     })
 
@@ -131,9 +133,9 @@ export default class App extends Container {
     diff[1].forEach((block) => {
       this.layout[block.channel] = block
       if (block.index) {
-        this.device.sendColor(this.bindings[block.channel][0].control, this.device.colors.hi_orange)
+        this.bindings[block.channel][0].sendColor(Color.OrangeHi)
       } else {
-        this.device.sendColor(this.bindings[block.channel][0].control, this.device.colors.hi_green)
+        this.bindings[block.channel][0].sendColor(Color.GreenHi)
       }
       const ctx: ControlContext = {
         modifier: this.modifier,
@@ -166,9 +168,9 @@ export default class App extends Container {
       } else {
         const block = layout[found]
         if (block.index) {
-          this.device.sendColor(this.bindings[ch][0].control, this.device.colors.hi_orange)
+          this.bindings[ch][0].sendColor(Color.OrangeHi)
         } else {
-          this.device.sendColor(this.bindings[ch][0].control, this.device.colors.hi_green)
+          this.bindings[ch][0].sendColor(Color.GreenHi)
         }
       }
       this.chord = []
@@ -184,14 +186,14 @@ export default class App extends Container {
       } else {
         const layout = this.layout[String(found)]
         if (layout.index) {
-          this.device.sendColor(this.bindings[rem][0].control, this.device.colors.hi_orange)
+          this.bindings[rem][0].sendColor(Color.OrangeHi)
         } else {
-          this.device.sendColor(this.bindings[rem][0].control, this.device.colors.hi_green)
+          this.bindings[rem][0].sendColor(Color.GreenHi)
         }
       }
     }
     this.chord.push(channel)
-    this.device.sendColor(this.bindings[channel][0].control, this.device.colors.hi_red)
+    this.bindings[channel][0].sendColor(Color.RedHi)
   }
 
   override onMount() {

@@ -3,6 +3,7 @@ import { Component } from '@mixxx-launch/common/component'
 import { MidiMessage } from '@mixxx-launch/common/midi'
 import { MakeComponent } from '../util'
 import { LaunchControlDevice, MidiComponent } from '../device'
+import { Color } from '@mixxx-launch/launch-common'
 
 export type PadSelectorPageConf = {
   type: 'padSelectorPage'
@@ -37,20 +38,12 @@ export default class PadSelectorPage extends Component {
 
     buttonComponents.forEach((btn, i) => {
       btn.addListener('mount', () => {
-        this._device.sendColor(
-          template,
-          btn.led,
-          i === this._selected ? this._device.colors.hi_yellow : this._device.colors.black,
-        )
+        this._device.sendColor(template, btn.led, i === this._selected ? Color.YellowHi : Color.Black)
       })
       btn.addListener('midi', ({ value }: MidiMessage) => {
         if (value && i !== this._selected) {
           buttonComponents.forEach((btn, j) => {
-            this._device.sendColor(
-              template,
-              btn.led,
-              j === i ? this._device.colors.hi_yellow : this._device.colors.black,
-            )
+            this._device.sendColor(template, btn.led, j === i ? Color.YellowHi : Color.Black)
           })
           this._pads[this._selected].value.unmount()
           this._selected = i

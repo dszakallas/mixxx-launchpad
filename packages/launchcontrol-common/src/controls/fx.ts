@@ -3,6 +3,7 @@ import { MidiMessage } from '@mixxx-launch/common/midi'
 import { ControlMessage, createEffectUnitChannelDef, getValue, root, setValue } from '@mixxx-launch/mixxx/src/Control'
 import { Control, ControlBindingTemplate, MidiBindingTemplate, control, midi, MakeControlTemplate } from '../Control'
 import { channelColorPalette } from '../util'
+import { Color } from '@mixxx-launch/launch-common'
 
 const fxRack = root.effectRacks[0]
 const qfxRack = root.quickEffectRacks[0]
@@ -47,7 +48,7 @@ export const makeFxEnabler: MakeControlTemplate<FxEnablerType> = ({ template, ro
         update:
           ({ context: { device }, bindings }: Control<FxEnablerType>) =>
           ({ value }: ControlMessage) => {
-            device.sendColor(template, bindings[`pad.${i}`].led, value ? device.colors.hi_green : device.colors.black)
+            device.sendColor(template, bindings[`pad.${i}`].led, value ? Color.GreenHi : Color.Black)
           },
       },
     }
@@ -93,7 +94,7 @@ export const makeFxSelector: MakeControlTemplate<FxSelectorType> = ({ template, 
         update:
           ({ context: { device }, bindings }: Control<FxSelectorType>) =>
           ({ value }: ControlMessage) => {
-            device.sendColor(template, bindings[`pad.${i}`].led, value ? device.colors.hi_yellow : device.colors.black)
+            device.sendColor(template, bindings[`pad.${i}`].led, value ? Color.YellowHi : Color.Black)
           },
       },
     }
@@ -139,7 +140,7 @@ export const makeFxMeta3: MakeControlTemplate<FxMeta3Type> = ({ template, column
             device.sendColor(
               template,
               bindings[`knob.${i}`].led,
-              value ? device.colors[channelColorPalette[unit % 4][0]] : device.colors.black,
+              value ? channelColorPalette[unit % 4][0] : Color.Black,
             )
           },
       },
@@ -180,11 +181,7 @@ export const makeFxSuper: MakeControlTemplate<FxSuperType> = ({ template, column
         update:
           ({ context: { device }, bindings }: Control<FxSuperType>) =>
           ({ value }: ControlMessage) => {
-            device.sendColor(
-              template,
-              bindings.knob.led,
-              value ? device.colors[channelColorPalette[unit % 4][0]] : device.colors.black,
-            )
+            device.sendColor(template, bindings.knob.led, value ? channelColorPalette[unit % 4][0] : Color.Black)
           },
       },
     },
@@ -256,7 +253,7 @@ export const makeQuickFxSuper: MakeControlTemplate<QuickFxSuperType> = ({ templa
         update:
           ({ context: { device }, bindings }: Control<QuickFxSuperType>) =>
           ({ value }: ControlMessage) => {
-            device.sendColor(template, bindings.knob.led, device.colors[channelColorPalette[unit % 4][value ? 1 : 0]])
+            device.sendColor(template, bindings.knob.led, channelColorPalette[unit % 4][value ? 1 : 0])
           },
       },
     },
