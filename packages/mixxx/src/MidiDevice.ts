@@ -1,5 +1,3 @@
-import { midi } from './api'
-
 import { hexFormat } from '@mixxx-launch/common'
 import { Component } from '@mixxx-launch/common/component'
 import { MidiControlDef, MidiMessage } from '@mixxx-launch/common/midi'

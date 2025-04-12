@@ -3,7 +3,7 @@ import { Action } from './util'
 import { Component } from '@mixxx-launch/common/component'
 import { lazy, lazyArray } from '@mixxx-launch/common/lazy'
 
-import { ScriptConnection, engine } from './api'
+import { ScriptConnection } from './api'
 import { array, map, range } from '@mixxx-launch/common'
 
 export type ControlDef = {
