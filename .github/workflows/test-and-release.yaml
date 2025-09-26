@@ -42,7 +42,7 @@ jobs:
       - name: Install devenv.sh
         run: nix profile install nixpkgs#devenv
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: mixxx-launchpad-${{ github.sha }}-${{ github.run_id }}
           path: dist
