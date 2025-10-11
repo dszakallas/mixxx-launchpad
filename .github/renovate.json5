@@ -11,5 +11,11 @@
       automergeType: 'branch',
       matchUpdateTypes: ['minor', 'patch'],
     },
+    // ignore local workspace packages
+    {
+      description: 'Ignore local workspace packages from @mixxx-launch organization',
+      matchPackagePatterns: ['^@mixxx-launch/'],
+      enabled: false,
+    },
   ],
 }
