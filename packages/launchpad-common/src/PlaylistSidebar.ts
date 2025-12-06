@@ -4,7 +4,7 @@ import type { MidiMessage } from '@mixxx-launch/common/midi'
 import type { ControlDef } from '@mixxx-launch/mixxx'
 import { LaunchpadDevice, Pad } from './device'
 import { ControlComponent, ControlMessage, getValue, masterControlDef } from '@mixxx-launch/mixxx/src/Control'
-import { Color } from '@mixxx-launch/launch-common'
+import type { ColorPalette } from '@mixxx-launch/common'
 
 const longInterval = 240
 const mediumInterval = 120
@@ -58,7 +58,7 @@ const autoscrolled = (binding: Component) => {
 }
 
 export default class PlaylistSidebar extends Container {
-  constructor(device: LaunchpadDevice) {
+  constructor(device: LaunchpadDevice, colorPalette: ColorPalette) {
     const pads = [
       new Pad(device, device.controls.vol),
       new Pad(device, device.controls.pan),
@@ -75,20 +75,20 @@ export default class PlaylistSidebar extends Container {
     }
 
     const onMidi =
-      (control: ControlDef, color: Color = Color.YellowHi) =>
+      (control: ControlDef, pad: Pad, valence: number = 2) =>
       (message: MidiMessage) => {
         if (message.value) {
           setValue(control, 1)
-          device.sendColor(message.control, Color.RedHi)
+          pad.sendPaletteColor(colorPalette.getColor(0, 1))
         } else {
-          device.sendColor(message.control, color)
+          pad.sendPaletteColor(colorPalette.getColor(valence, 1))
         }
       }
 
     const onMount =
-      (color: Color = Color.YellowHi) =>
+      (valence: number = 2) =>
       (button: Pad) => {
-        button.sendColor(color)
+        button.sendPaletteColor(colorPalette.getColor(valence, 1))
       }
 
     const onUnmount = (button: Pad) => {
@@ -104,34 +104,34 @@ export default class PlaylistSidebar extends Container {
     const toggleLibraryControl = controls[0]
 
     prevPlaylist.on('scroll', onScroll(playListControlDef.SelectPrevPlaylist))
-    prevPlaylist.on('midi', onMidi(playListControlDef.SelectPrevPlaylist))
+    prevPlaylist.on('midi', onMidi(playListControlDef.SelectPrevPlaylist, pads[0]))
     prevPlaylist.on('mount', onMount())
     prevPlaylist.on('unmount', onUnmount)
 
     nextPlaylist.on('scroll', onScroll(playListControlDef.SelectNextPlaylist))
-    nextPlaylist.on('midi', onMidi(playListControlDef.SelectNextPlaylist))
+    nextPlaylist.on('midi', onMidi(playListControlDef.SelectNextPlaylist, pads[1]))
     nextPlaylist.on('mount', onMount())
     nextPlaylist.on('unmount', onUnmount)
 
     prevTrack.on('scroll', onScroll(playListControlDef.SelectPrevTrack))
-    prevTrack.on('midi', onMidi(playListControlDef.SelectPrevTrack))
+    prevTrack.on('midi', onMidi(playListControlDef.SelectPrevTrack, pads[3]))
     prevTrack.on('mount', onMount())
     prevTrack.on('unmount', onUnmount)
 
     nextTrack.on('scroll', onScroll(playListControlDef.SelectNextTrack))
-    nextTrack.on('midi', onMidi(playListControlDef.SelectNextTrack))
+    nextTrack.on('midi', onMidi(playListControlDef.SelectNextTrack, pads[4]))
     nextTrack.on('mount', onMount())
     nextTrack.on('unmount', onUnmount)
 
-    toggleItem.on('midi', onMidi(playListControlDef.ToggleSelectedSidebarItem, Color.GreenHi))
-    toggleItem.on('mount', onMount(Color.GreenHi))
+    toggleItem.on('midi', onMidi(playListControlDef.ToggleSelectedSidebarItem, pads[2], 3))
+    toggleItem.on('mount', onMount(3))
     toggleItem.on('unmount', onUnmount)
 
     toggleLibraryControl.on('update', (m: ControlMessage) => {
       if (m.value) {
-        toggleLibrary.sendColor(Color.RedHi)
+        toggleLibrary.sendPaletteColor(colorPalette.getColor(0, 1))
       } else {
-        toggleLibrary.sendColor(Color.GreenHi)
+        toggleLibrary.sendPaletteColor(colorPalette.getColor(3, 1))
       }
     })
 

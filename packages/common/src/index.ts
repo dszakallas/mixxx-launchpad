@@ -38,3 +38,4 @@ export const map = function* <T, U>(f: (x: T) => U, n: Generator<T>): Generator<
 }
 
 export * from './Bpm'
+export * from './ColorPalette'

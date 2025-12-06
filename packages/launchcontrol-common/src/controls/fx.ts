@@ -3,7 +3,7 @@ import { MidiMessage } from '@mixxx-launch/common/midi'
 import { ControlMessage, createEffectUnitChannelDef, getValue, root, setValue } from '@mixxx-launch/mixxx/src/Control'
 import { Control, ControlBindingTemplate, MidiBindingTemplate, control, midi, MakeControlTemplate } from '../Control'
 import { channelColorPalette } from '../util'
-import { Color } from '@mixxx-launch/launch-common'
+import { Color } from '../device'
 
 const fxRack = root.effectRacks[0]
 const qfxRack = root.quickEffectRacks[0]

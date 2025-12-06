@@ -11,7 +11,6 @@ import {
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
 import { MidiMessage } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'pfl'
@@ -31,9 +30,9 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.pfl),
       listeners: {
         update:
-          ({ bindings }: Control<Type>) =>
+          ({ bindings, context: { colorPalette } }: Control<Type>) =>
           ({ value }: ControlMessage) =>
-            value ? bindings.button.sendColor(Color.GreenHi) : bindings.button.clearColor(),
+            value ? bindings.button.sendPaletteColor(colorPalette.getColor(3, 1)) : bindings.button.clearColor(),
       },
     },
     button: {

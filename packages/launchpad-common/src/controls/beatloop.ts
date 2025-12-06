@@ -10,7 +10,6 @@ import {
 } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'beatloop'
@@ -38,10 +37,10 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, loops, rows }
 
   const onUpdate =
     (i: number) =>
-    ({ bindings }: Control<Type>) =>
+    ({ bindings, context: { colorPalette } }: Control<Type>) =>
     ({ value }: ControlMessage) => {
-      const color = value ? Color.RedHi : Color.RedLow
-      bindings[`b.${i}`].sendColor(color)
+      const brightness = value ? 1 : 0
+      bindings[`b.${i}`].sendPaletteColor(colorPalette.getColor(0, brightness))
     }
 
   loops.forEach((loop, i) => {
