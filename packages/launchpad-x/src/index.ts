@@ -54,8 +54,16 @@ class LaunchpadXDevice extends LaunchpadDevice {
     super.onMount()
   }
 
+  sendColor(control: MidiControlDef, color: Color) {
+    sendSysexMsg([240, 0, 32, 41, 2, 12, 3, LightingType.Static, control.midino, this.colors[color], 247])
+  }
+
+  clearColor(control: MidiControlDef) {
+    sendSysexMsg([240, 0, 32, 41, 2, 12, 3, LightingType.Static, control.midino, this.colors[Color.Black], 247])
+  }
+
   sendRGBColor(control: MidiControlDef, color: RGBColor) {
-    sendSysexMsg([240, 0, 32, 41, 2, 13, 3, LightingType.RGB, control.midino, ...color.map((x) => ~~(x / 2)), 247])
+    sendSysexMsg([240, 0, 32, 41, 2, 12, 3, LightingType.RGB, control.midino, ...color.map((x) => ~~(x / 2)), 247])
   }
 }
 
