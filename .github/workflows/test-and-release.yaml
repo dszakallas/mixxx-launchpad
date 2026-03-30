@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: cachix/install-nix-action@v31
-      - uses: cachix/cachix-action@v16
+      - uses: cachix/cachix-action@v17
         with:
           name: devenv
       - name: Install devenv.sh
@@ -24,7 +24,7 @@ jobs:
         shell: devenv shell bash -- -e {0}
         run: make
       - name: Upload artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: mixxx-launchpad-${{ github.sha }}-${{ github.run_id }}
           path: dist
@@ -36,13 +36,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: cachix/install-nix-action@v31
-      - uses: cachix/cachix-action@v16
+      - uses: cachix/cachix-action@v17
         with:
           name: devenv
       - name: Install devenv.sh
         run: nix profile install nixpkgs#devenv
       - name: Download artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: mixxx-launchpad-${{ github.sha }}-${{ github.run_id }}
           path: dist
