@@ -1,6 +1,5 @@
 import { Component, Container } from '@mixxx-launch/common/component'
-import { LaunchControlDevice } from './device'
-import { Color } from '@mixxx-launch/launch-common'
+import { LaunchControlDevice, Color } from './device'
 
 export const channelColorPalette = [
   [Color.RedHi, Color.RedLow],

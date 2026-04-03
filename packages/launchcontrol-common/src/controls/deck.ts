@@ -3,7 +3,7 @@ import { absoluteNonLin } from '@mixxx-launch/common'
 import { ControlMessage, getValue, root, setValue } from '@mixxx-launch/mixxx/src/Control'
 import { Control, ControlBindingTemplate, MidiBindingTemplate, control, midi, MakeControlTemplate } from '../Control'
 import { channelColorPalette } from '../util'
-import { Color } from '@mixxx-launch/launch-common'
+import { Color } from '../device'
 
 const eq3Channel = ['low', 'mid', 'hi']
 

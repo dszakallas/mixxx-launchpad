@@ -3,7 +3,6 @@ import { ChannelControlDef, setValue } from '@mixxx-launch/mixxx'
 import { PadBindingTemplate, MakeDeckControlTemplate, Control, cellPad } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { retainAttackMode } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'loopjump'
@@ -26,16 +25,11 @@ export type Type = {
   }
 }
 
-const colors = [
-  { off: Color.GreenLow, on: Color.GreenHi },
-  { off: Color.RedLow, on: Color.RedHi },
-]
-
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertical = false, bounce = false }) => {
   const bindings: Type['bindings'] = {}
   const onMidi =
     (k: number, j: [number, number], d: number) =>
-    ({ context: { modifier }, bindings, state }: Control<Type>) =>
+    ({ context: { modifier, colorPalette }, bindings, state }: Control<Type>) =>
       retainAttackMode(modifier, (mode, { value }) => {
         modes(
           mode,
@@ -50,14 +44,14 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertic
 
                 setValue(deck.loop_move, currentJump)
                 if (state.pressing != null) {
-                  bindings[state.pressing].sendColor(colors[state.set].off)
+                  bindings[state.pressing].sendPaletteColor(colorPalette.getColor(state.set === 0 ? 3 : 0, 0)) // Green or Red dim
                 }
-                bindings[k].sendColor(colors[state.set].on)
+                bindings[k].sendPaletteColor(colorPalette.getColor(state.set === 0 ? 3 : 0, 1)) // Green or Red bright
                 state.pressing = k
                 state.diff = state.diff + currentJump
               } else {
                 if (state.pressing === k) {
-                  bindings[k].sendColor(colors[state.set].off)
+                  bindings[k].sendPaletteColor(colorPalette.getColor(state.set === 0 ? 3 : 0, 0)) // Green or Red dim
                   state.pressing = null
                   setValue(deck.loop_move, -state.diff)
                   state.diff = 0
@@ -68,18 +62,18 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertic
           () => {
             if (value) {
               state.set = posMod(state.set + 1, 2)
-              const prefix = state.bounce ? 'off' : 'on'
+              const brightness = state.bounce ? 0 : 1
               for (let b = 0; b < spec.length; ++b) {
-                bindings[b].sendColor(colors[state.set][prefix])
+                bindings[b].sendPaletteColor(colorPalette.getColor(state.set === 0 ? 3 : 0, brightness))
               }
             }
           },
           () => {
             if (value) {
               state.bounce = !state.bounce
-              const prefix = state.bounce ? 'off' : 'on'
+              const brightness = state.bounce ? 0 : 1
               for (let b = 0; b < spec.length; ++b) {
-                bindings[b].sendColor(colors[state.set][prefix])
+                bindings[b].sendPaletteColor(colorPalette.getColor(state.set === 0 ? 3 : 0, brightness))
               }
             }
           },
@@ -87,10 +81,10 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertic
       })
   const onMount =
     (k: number) =>
-    ({ bindings, state }: Control<Type>) =>
+    ({ bindings, state, context: { colorPalette } }: Control<Type>) =>
     () => {
-      const prefix = state.bounce ? 'off' : 'on'
-      bindings[k].sendColor(colors[state.set][prefix])
+      const brightness = state.bounce ? 0 : 1
+      bindings[k].sendPaletteColor(colorPalette.getColor(state.set === 0 ? 3 : 0, brightness))
     }
   const spec = jumps.flatMap((j) => [
     [j, 1],

@@ -2,8 +2,7 @@ import { lazy, Lazy } from '@mixxx-launch/common/lazy'
 import { Component } from '@mixxx-launch/common/component'
 import { MidiMessage } from '@mixxx-launch/common/midi'
 import { MakeComponent } from '../util'
-import { LaunchControlDevice, MidiComponent } from '../device'
-import { Color } from '@mixxx-launch/launch-common'
+import { LaunchControlDevice, MidiComponent, Color } from '../device'
 
 export type PadSelectorPageConf = {
   type: 'padSelectorPage'

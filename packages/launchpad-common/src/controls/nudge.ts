@@ -10,7 +10,6 @@ import {
   control,
 } from '../Control'
 import { retainAttackMode } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'nudge'
@@ -44,7 +43,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
 
   const onNudgeMidi =
     (dir: 'up' | 'down') =>
-    ({ bindings, state, context: { modifier } }: Control<Type>) =>
+    ({ bindings, state, context: { modifier, colorPalette } }: Control<Type>) =>
       retainAttackMode(modifier, (mode, { value }) => {
         if (value) {
           state[dir] = true
@@ -54,19 +53,19 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
             modes(
               mode,
               () => {
-                bindings[dir].sendColor(Color.YellowHi)
+                bindings[dir].sendPaletteColor(colorPalette.getColor(2, 1)) // Yellow bright (temp)
                 setValue(deck[`rate_temp_${dir}`], 1)
               },
               () => {
-                bindings[dir].sendColor(Color.RedHi)
+                bindings[dir].sendPaletteColor(colorPalette.getColor(0, 1)) // Red bright (perm)
                 setValue(deck[`rate_perm_${dir}`], 1)
               },
               () => {
-                bindings[dir].sendColor(Color.YellowLow)
+                bindings[dir].sendPaletteColor(colorPalette.getColor(2, 0)) // Yellow dim (temp small)
                 setValue(deck[`rate_temp_${dir}_small`], 1)
               },
               () => {
-                bindings[dir].sendColor(Color.RedLow)
+                bindings[dir].sendPaletteColor(colorPalette.getColor(0, 0)) // Red dim (perm small)
                 setValue(deck[`rate_perm_${dir}_small`], 1)
               },
             )
@@ -74,7 +73,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         } else {
           state[dir] = false
           if (getDirection(getValue(bindings.rate.control)) === dir) {
-            bindings[dir].sendColor(Color.OrangeLow)
+            bindings[dir].sendPaletteColor(colorPalette.getColor(1, 0)) // Orange dim (rate active)
           } else {
             bindings[dir].clearColor()
           }
@@ -88,23 +87,24 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
       })
 
   const onRate =
-    ({ bindings, state }: Control<Type>) =>
+    ({ bindings, state, context: { colorPalette } }: Control<Type>) =>
     ({ value }: ControlMessage) => {
-      let up = Color.Black
-      let down = Color.Black
       const rate = getDirection(value)
-      if (rate === 'down') {
-        down = Color.OrangeLow
-      } else if (rate === 'up') {
-        up = Color.OrangeLow
-      }
 
       if (!state.down) {
-        bindings.down.sendColor(down)
+        if (rate === 'down') {
+          bindings.down.sendPaletteColor(colorPalette.getColor(1, 0)) // Orange dim
+        } else {
+          bindings.down.clearColor()
+        }
       }
 
       if (!state.up) {
-        bindings.up.sendColor(up)
+        if (rate === 'up') {
+          bindings.up.sendPaletteColor(colorPalette.getColor(1, 0)) // Orange dim
+        } else {
+          bindings.up.clearColor()
+        }
       }
     }
 

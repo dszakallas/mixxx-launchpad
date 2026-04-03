@@ -2,7 +2,7 @@ import type { MidiMessage } from '@mixxx-launch/common/midi'
 import { Component } from '@mixxx-launch/common/component'
 import { LaunchpadDevice, Pad } from './device'
 import { ModifierState, Modifier } from '@mixxx-launch/common/modifier'
-import { Color } from '@mixxx-launch/launch-common'
+import type { ColorPalette } from '@mixxx-launch/common'
 
 export default class ModifierSidebar extends Component implements Modifier {
   shift: Pad
@@ -10,18 +10,20 @@ export default class ModifierSidebar extends Component implements Modifier {
   state: ModifierState
   shiftListener: (_: MidiMessage) => void
   ctrlListener: (_: MidiMessage) => void
+  colorPalette: ColorPalette
 
-  constructor(device: LaunchpadDevice) {
+  constructor(device: LaunchpadDevice, colorPalette: ColorPalette) {
     super()
     this.shift = new Pad(device, device.controls.solo)
     this.ctrl = new Pad(device, device.controls.arm)
+    this.colorPalette = colorPalette
 
     this.state = ModifierState.None
 
     const makeListener = (button: Pad) => (message: MidiMessage) => {
       const { value } = message
       if (value) {
-        button.sendColor(Color.RedHi)
+        button.sendPaletteColor(this.colorPalette.getColor(0, 1))
       } else {
         button.clearColor()
       }

@@ -4,7 +4,6 @@ import { ChannelControlDef, setValue } from '@mixxx-launch/mixxx'
 import { PadBindingTemplate, MakeDeckControlTemplate, Control, cellPad } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { retainAttackMode } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'beatjump'
@@ -24,11 +23,6 @@ export type Type = {
   bindings: { [k: number]: PadBindingTemplate<Type> }
 }
 
-const colors = [
-  { off: Color.GreenLow, on: Color.GreenHi },
-  { off: Color.RedLow, on: Color.RedHi },
-]
-
 const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertical = false, bounce = false }) => {
   const bindings: Type['bindings'] = {}
   const spec = jumps.flatMap((j) => [
@@ -38,7 +32,7 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
 
   const onMidi =
     (k: number, j: [number, number], d: number) =>
-    ({ bindings, state, context: { modifier } }: Control<Type>) =>
+    ({ bindings, state, context: { modifier, colorPalette } }: Control<Type>) =>
       retainAttackMode(modifier, (mode, { value }) => {
         modes(
           mode,
@@ -52,14 +46,17 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
                 const currentJump = j[state.set] * d
                 setValue(deck.beatjump, currentJump)
                 if (state.pressing != null) {
-                  bindings[state.pressing].sendColor(colors[state.set].off)
+                  // Use palette: valence = state.set, brightness = 0 (dim/off)
+                  bindings[state.pressing].sendPaletteColor(colorPalette.getColor(state.set, 0))
                 }
-                bindings[k].sendColor(colors[state.set].on)
+                // Use palette: valence = state.set, brightness = 1 (bright/on)
+                bindings[k].sendPaletteColor(colorPalette.getColor(state.set, 1))
                 state.pressing = k
                 state.diff = state.diff + currentJump
               } else {
                 if (state.pressing === k) {
-                  bindings[k].sendColor(colors[state.set].off)
+                  // Use palette: valence = state.set, brightness = 0 (dim/off)
+                  bindings[k].sendPaletteColor(colorPalette.getColor(state.set, 0))
                   state.pressing = null
                   setValue(deck.beatjump, -state.diff)
                   state.diff = 0
@@ -70,18 +67,18 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
           () => {
             if (value) {
               state.set = posMod(state.set + 1, 2)
-              const prefix = state.bounce ? 'off' : 'on'
+              const brightness = state.bounce ? 0 : 1 // dim when bounce mode, bright when normal
               for (let b = 0; b < spec.length; ++b) {
-                bindings[b].sendColor(colors[state.set][prefix])
+                bindings[b].sendPaletteColor(colorPalette.getColor(state.set, brightness))
               }
             }
           },
           () => {
             if (value) {
               state.bounce = !state.bounce
-              const prefix = state.bounce ? 'off' : 'on'
+              const brightness = state.bounce ? 0 : 1 // dim when bounce mode, bright when normal
               for (let b = 0; b < spec.length; ++b) {
-                bindings[b].sendColor(colors[state.set][prefix])
+                bindings[b].sendPaletteColor(colorPalette.getColor(state.set, brightness))
               }
             }
           },
@@ -89,11 +86,10 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
       })
   const onMount =
     (k: number) =>
-    ({ bindings, state }: Control<Type>) =>
+    ({ bindings, state, context: { colorPalette } }: Control<Type>) =>
     () => {
-      const prefix = state.bounce ? 'off' : 'on'
-
-      bindings[k].sendColor(colors[state.set][prefix])
+      const brightness = state.bounce ? 0 : 1 // dim when bounce mode, bright when normal
+      bindings[k].sendPaletteColor(colorPalette.getColor(state.set, brightness))
     }
 
   spec.forEach(([jump, dir], i) => {

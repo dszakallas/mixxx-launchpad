@@ -10,7 +10,6 @@ import {
 } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'load'
@@ -26,13 +25,18 @@ export type Type = {
 }
 
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
-  const onStateChanged = (loaded: number, playing: number, bindings: Control<Type>['bindings']) => {
+  const onStateChanged = (
+    loaded: number,
+    playing: number,
+    bindings: Control<Type>['bindings'],
+    colorPalette: Control<Type>['context']['colorPalette'],
+  ) => {
     if (loaded && playing) {
-      bindings.button.sendColor(Color.RedLow)
+      bindings.button.sendPaletteColor(colorPalette.getColor(0, 0)) // Red dim (loaded + playing)
     } else if (loaded) {
-      bindings.button.sendColor(Color.YellowLow)
+      bindings.button.sendPaletteColor(colorPalette.getColor(2, 0)) // Yellow dim (loaded)
     } else {
-      bindings.button.sendColor(Color.GreenLow)
+      bindings.button.sendPaletteColor(colorPalette.getColor(3, 0)) // Green dim (empty)
     }
   }
   return {
@@ -41,18 +45,18 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         type: control(deck.track_samples),
         listeners: {
           update:
-            ({ bindings }: Control<Type>) =>
+            ({ bindings, context: { colorPalette } }: Control<Type>) =>
             ({ value }: ControlMessage) =>
-              onStateChanged(value, getValue(bindings.play.control), bindings),
+              onStateChanged(value, getValue(bindings.play.control), bindings, colorPalette),
         },
       },
       play: {
         type: control(deck.play),
         listeners: {
           update:
-            ({ bindings }: Control<Type>) =>
+            ({ bindings, context: { colorPalette } }: Control<Type>) =>
             ({ value }: ControlMessage) =>
-              onStateChanged(getValue(bindings.samples.control), value, bindings),
+              onStateChanged(getValue(bindings.samples.control), value, bindings, colorPalette),
         },
       },
       button: {

@@ -2,7 +2,6 @@ import type { ChannelControlDef } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { PadBindingTemplate, MakeDeckControlTemplate, Control, cellPad } from '../Control'
 import { MidiMessage, onAttack } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'loopMultiply'
@@ -19,9 +18,9 @@ export type Type = {
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   const onMount =
     (k: 'halve' | 'double') =>
-    ({ bindings }: Control<Type>) =>
+    ({ bindings, context: { colorPalette } }: Control<Type>) =>
     () => {
-      bindings[k].sendColor(Color.YellowLow)
+      bindings[k].sendPaletteColor(colorPalette.getColor(2, 0))
     }
   const onMidi = (k: 'double' | 'halve') => (_: Control<Type>) =>
     onAttack((_: MidiMessage) => setValue(deck[`loop_${k}`], 1))

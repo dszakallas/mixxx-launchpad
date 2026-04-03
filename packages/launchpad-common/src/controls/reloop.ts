@@ -10,7 +10,6 @@ import {
 } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'reloop'
@@ -43,13 +42,10 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.loop_enabled),
       listeners: {
         update:
-          ({ bindings }: Control<Type>) =>
+          ({ bindings, context: { colorPalette } }: Control<Type>) =>
           ({ value }: ControlMessage) => {
-            if (value) {
-              bindings.button.sendColor(Color.GreenHi)
-            } else {
-              bindings.button.sendColor(Color.GreenLow)
-            }
+            const brightness = value ? 1 : 0
+            bindings.button.sendPaletteColor(colorPalette.getColor(3, brightness))
           },
       },
     },
