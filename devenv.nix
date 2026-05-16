@@ -7,6 +7,10 @@
 }:
 
 {
+  imports = [
+    inputs.dotfiles-common.devenvModules.recommended
+  ];
+
   packages = with pkgs; [
     fswatch
     jq
