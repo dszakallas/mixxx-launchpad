@@ -13,8 +13,9 @@ import { SamplerControlDef } from '@mixxx-launch/mixxx/src/Control'
 import { Theme } from '../App'
 import { MidiMessage } from '@mixxx-launch/common/midi'
 import { RGBColor } from '@mixxx-launch/common/color'
-import { Color, LaunchDevice } from '@mixxx-launch/launch-common'
+import { LaunchDevice } from '@mixxx-launch/launch-common'
 import { parseRGBColor } from '@mixxx-launch/mixxx'
+import type { ColorPalette } from '@mixxx-launch/common'
 
 export type Type = {
   type: 'samplerPad'
@@ -37,7 +38,12 @@ export type Type = {
 }
 
 export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, theme }) => {
-  const onStateChanged = (state: Type['state'], device: LaunchDevice, bindings: Control<Type>['bindings']) => {
+  const onStateChanged = (
+    state: Type['state'],
+    device: LaunchDevice,
+    bindings: Control<Type>['bindings'],
+    colorPalette: ColorPalette,
+  ) => {
     const color = state.color == null ? theme.fallbackTrackColor : state.color
     if (!state.loaded) {
       device.clearColor(bindings.button.control)
@@ -45,13 +51,13 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
       if (bindings.button.supportsRGBColors) {
         bindings.button.sendRGBColor(color.map((x) => ~~(x / 4)) as RGBColor)
       } else {
-        bindings.button.sendColor(Color.RedLow)
+        bindings.button.sendPaletteColor(colorPalette.getColor(0, 0))
       }
     } else {
       if (bindings.button.supportsRGBColors) {
         bindings.button.sendRGBColor(color)
       } else {
-        bindings.button.sendColor(Color.RedHi)
+        bindings.button.sendPaletteColor(colorPalette.getColor(0, 1))
       }
     }
   }
@@ -95,10 +101,10 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
         type: control(sampler.play_latched),
         listeners: {
           update:
-            ({ context: { device }, bindings, state }: Control<Type>) =>
+            ({ context: { device, colorPalette }, bindings, state }: Control<Type>) =>
             ({ value }: ControlMessage) => {
               state.playing = !!value
-              onStateChanged(state, device, bindings)
+              onStateChanged(state, device, bindings, colorPalette)
             },
         },
       },
@@ -107,10 +113,10 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
         type: control(sampler.track_loaded),
         listeners: {
           update:
-            ({ context: { device }, bindings, state }: Control<Type>) =>
+            ({ context: { device, colorPalette }, bindings, state }: Control<Type>) =>
             ({ value }: ControlMessage) => {
               state.loaded = !!value
-              onStateChanged(state, device, bindings)
+              onStateChanged(state, device, bindings, colorPalette)
             },
         },
       },
@@ -119,10 +125,10 @@ export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, 
         type: control(sampler.track_color),
         listeners: {
           update:
-            ({ context: { device }, bindings, state }: Control<Type>) =>
+            ({ context: { device, colorPalette }, bindings, state }: Control<Type>) =>
             ({ value }: ControlMessage) => {
               state.color = parseRGBColor(value)
-              onStateChanged(state, device, bindings)
+              onStateChanged(state, device, bindings, colorPalette)
             },
         },
       },

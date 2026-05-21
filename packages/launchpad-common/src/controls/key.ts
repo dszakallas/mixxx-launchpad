@@ -10,7 +10,6 @@ import {
 } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'key'
@@ -55,10 +54,10 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.keylock),
       listeners: {
         update:
-          ({ bindings }: Control<Type>) =>
+          ({ bindings, context: { colorPalette } }: Control<Type>) =>
           ({ value }: ControlMessage) => {
             if (value) {
-              bindings.button.sendColor(Color.RedHi)
+              bindings.button.sendPaletteColor(colorPalette.getColor(0, 1))
             } else {
               bindings.button.clearColor()
             }

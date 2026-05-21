@@ -12,7 +12,6 @@ import {
   control,
 } from '../Control'
 import { Theme } from '../App'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'hotcue'
@@ -63,14 +62,14 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0, gridPositi
     }
   const onHotcueEnabled =
     (i: number) =>
-    ({ bindings }: Control<Type>) =>
+    ({ bindings, context: { colorPalette } }: Control<Type>) =>
     ({ value }: ControlMessage) => {
       if (value) {
         if (bindings[`midi.${i}`].supportsRGBColors) {
           const color = parseRGBColor(getValue(deck.hotcues[1 + i + start].color))
           bindings[`midi.${i}`].sendRGBColor(color == null ? theme.fallbackHotcueColor : color)
         } else {
-          bindings[`midi.${i}`].sendColor(Color.YellowLow)
+          bindings[`midi.${i}`].sendPaletteColor(colorPalette.getColor(2, 0))
         }
       } else {
         bindings[`midi.${i}`].clearColor()

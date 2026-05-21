@@ -9,10 +9,12 @@ import {
 
 import { ControlComponent, ControlDef } from '@mixxx-launch/mixxx'
 import { Pad, LaunchpadDevice } from './device'
+import { ColorPalette } from '@mixxx-launch/common'
 // constraint types with Launchpad specific Context
 export type ControlContext = {
   modifier: Modifier
   device: LaunchpadDevice
+  colorPalette: ColorPalette
 }
 
 export type ControlType = BaseControlType<ControlContext>

@@ -4,8 +4,7 @@ import { Component, Container } from '@mixxx-launch/common/component'
 import { sendShortMsg } from '@mixxx-launch/mixxx'
 
 import { ControlComponent, EffectDef, getValue, root, setParameter } from '@mixxx-launch/mixxx/src/Control'
-import { LaunchControlDevice, MidiComponent } from '../device'
-import { Color } from '@mixxx-launch/launch-common'
+import { LaunchControlDevice, MidiComponent, Color } from '../device'
 
 export const makeFxParamPage = (_conf: FxParamPageConf, template: number, device: LaunchControlDevice) =>
   new FxParamPage(device, template)
