@@ -22,6 +22,7 @@ Flexible and customizable [Mixxx](https://mixxx.org) controller mappings for the
 
 - Launchpad Mini Mk3
 - Launchpad X
+- Launchpad Pro Mk3
 - Launchpad Mk2
 - Launchpad Mk1
 - LaunchControl XL MK2 (experimental)

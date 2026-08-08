@@ -19,6 +19,11 @@
     "manufacturer": "Novation",
     "global": "NLX"
   },
+  "launchpad-pro-mk3": {
+    "device": "Launchpad Pro MK3",
+    "manufacturer": "Novation",
+    "global": "NLP3"
+  },
   "launchcontrol-xl-mk2": {
     "device": "LaunchControl XL MK2",
     "manufacturer": "Novation",
