@@ -8,7 +8,7 @@
 
 {
   imports = [
-    inputs.dotfiles-common.devenvModules.recommended
+    inputs.bikeshed.devenvModules.recommended
   ];
 
   packages = with pkgs; [

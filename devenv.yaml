@@ -1,6 +1,6 @@
 inputs:
-  dotfiles-common:
-    url: github:dszakallas/dotfiles-common
+  bikeshed:
+    url: github:dszakallas/bikeshed
   git-hooks:
     url: github:cachix/git-hooks.nix
     inputs:

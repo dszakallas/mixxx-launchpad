@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "bikeshed": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "home-manager": "home-manager",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1785958042,
+        "narHash": "sha256-AwI4qmxCSKPJxv5+fb88SBTjRod4pBqNgzNW19K8p3w=",
+        "owner": "dszakallas",
+        "repo": "bikeshed",
+        "rev": "30d449426bd0254332bca23921d0a77de62564e5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dszakallas",
+        "repo": "bikeshed",
+        "type": "github"
+      }
+    },
     "devenv": {
       "locked": {
         "dir": "src/modules",
@@ -14,26 +34,6 @@
         "dir": "src/modules",
         "owner": "cachix",
         "repo": "devenv",
-        "type": "github"
-      }
-    },
-    "dotfiles-common": {
-      "inputs": {
-        "flake-utils": "flake-utils",
-        "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs"
-      },
-      "locked": {
-        "lastModified": 1785958042,
-        "narHash": "sha256-AwI4qmxCSKPJxv5+fb88SBTjRod4pBqNgzNW19K8p3w=",
-        "owner": "dszakallas",
-        "repo": "dotfiles-common",
-        "rev": "30d449426bd0254332bca23921d0a77de62564e5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "dszakallas",
-        "repo": "dotfiles-common",
         "type": "github"
       }
     },
@@ -95,7 +95,7 @@
     "home-manager": {
       "inputs": {
         "nixpkgs": [
-          "dotfiles-common",
+          "bikeshed",
           "nixpkgs"
         ]
       },
@@ -167,8 +167,8 @@
     },
     "root": {
       "inputs": {
+        "bikeshed": "bikeshed",
         "devenv": "devenv",
-        "dotfiles-common": "dotfiles-common",
         "git-hooks": "git-hooks",
         "nixpkgs": "nixpkgs_2"
       }
