@@ -36,6 +36,12 @@
       "path": "./packages/launchpad-mini-mk3"
     },
     {
+      "path": "./packages/launchpad-x"
+    },
+    {
+      "path": "./packages/launchpad-pro-mk3"
+    },
+    {
       "path": "./packages/mixxx"
     }
   ]
