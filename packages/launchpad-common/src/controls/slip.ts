@@ -9,7 +9,6 @@ import {
   control,
 } from '../Control'
 import { retainAttackMode } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 import { posMod } from '@mixxx-launch/common'
 
 export type Type = {
@@ -25,13 +24,9 @@ export type Type = {
   }
 }
 
-const colors = [
-  { off: Color.RedLow, on: Color.RedHi },
-  { off: Color.OrangeLow, on: Color.OrangeHi },
-]
-
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
-  const onMidi = ({ bindings, state, context: { modifier } }: Control<Type>) =>
+  const numModes = 2 // Red and Orange modes
+  const onMidi = ({ bindings, state, context: { modifier, colorPalette } }: Control<Type>) =>
     retainAttackMode(modifier, (mode, { value }) => {
       modes(
         mode,
@@ -46,8 +41,8 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         },
         () => {
           if (value) {
-            state.mode = posMod(state.mode + 1, colors.length)
-            bindings.button.sendColor(colors[state.mode].on)
+            state.mode = posMod(state.mode + 1, numModes)
+            bindings.button.sendPaletteColor(colorPalette.getColor(state.mode, 1))
           }
         },
       )
@@ -58,13 +53,10 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         type: control(deck.slip_enabled),
         listeners: {
           update:
-            ({ bindings, state }: Control<Type>) =>
+            ({ bindings, state, context: { colorPalette } }: Control<Type>) =>
             ({ value }) => {
-              if (value) {
-                bindings.button.sendColor(colors[state.mode].on)
-              } else {
-                bindings.button.sendColor(colors[state.mode].off)
-              }
+              const brightness = value ? 1 : 0
+              bindings.button.sendPaletteColor(colorPalette.getColor(state.mode, brightness))
             },
         },
       },
@@ -73,9 +65,9 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         listeners: {
           midi: onMidi,
           mount:
-            ({ bindings, state }: Control<Type>) =>
+            ({ bindings, state, context: { colorPalette } }: Control<Type>) =>
             () => {
-              bindings.button.sendColor(colors[state.mode].off)
+              bindings.button.sendPaletteColor(colorPalette.getColor(state.mode, 0))
             },
         },
       },

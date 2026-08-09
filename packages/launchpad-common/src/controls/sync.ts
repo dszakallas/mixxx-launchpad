@@ -10,7 +10,6 @@ import {
   cellPad,
   control,
 } from '../Control'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'sync'
@@ -55,14 +54,14 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.sync_mode),
       listeners: {
         update:
-          ({ bindings }: Control<Type>) =>
+          ({ bindings, context: { colorPalette } }: Control<Type>) =>
           ({ value }: ControlMessage) => {
             if (value === 0) {
               bindings.sync.clearColor()
             } else if (value === 1) {
-              bindings.sync.sendColor(Color.OrangeHi)
+              bindings.sync.sendPaletteColor(colorPalette.getColor(1, 1)) // Orange bright (follower)
             } else if (value === 2) {
-              bindings.sync.sendColor(Color.RedHi)
+              bindings.sync.sendPaletteColor(colorPalette.getColor(0, 1)) // Red bright (master)
             }
           },
       },

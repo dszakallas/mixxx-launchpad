@@ -3,7 +3,6 @@ import { MidiMessage, onAttack } from '@mixxx-launch/common/midi'
 import type { ChannelControlDef } from '@mixxx-launch/mixxx'
 import { setValue } from '@mixxx-launch/mixxx'
 import { PadBindingTemplate, MakeDeckControlTemplate, Control, cellPad } from '../Control'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'loopjumpSmall'
@@ -30,9 +29,9 @@ const make: MakeDeckControlTemplate<Type> = ({ amount, gridPosition, deck }) => 
         listeners: {
           midi: onMidi(-1),
           mount:
-            ({ bindings }: Control<Type>) =>
+            ({ bindings, context: { colorPalette } }: Control<Type>) =>
             () => {
-              bindings.back.sendColor(Color.YellowHi)
+              bindings.back.sendPaletteColor(colorPalette.getColor(2, 1))
             },
         },
       },
@@ -41,9 +40,9 @@ const make: MakeDeckControlTemplate<Type> = ({ amount, gridPosition, deck }) => 
         listeners: {
           midi: onMidi(1),
           mount:
-            ({ bindings }: Control<Type>) =>
+            ({ bindings, context: { colorPalette } }: Control<Type>) =>
             () => {
-              bindings.forth.sendColor(Color.YellowHi)
+              bindings.forth.sendPaletteColor(colorPalette.getColor(2, 1))
             },
         },
       },

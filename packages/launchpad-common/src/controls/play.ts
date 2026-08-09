@@ -10,7 +10,6 @@ import {
   cellPad,
   control,
 } from '../Control'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'play'
@@ -30,10 +29,10 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.play_indicator),
       listeners: {
         update:
-          ({ bindings }: Control<Type>) =>
+          ({ bindings, context: { colorPalette } }: Control<Type>) =>
           ({ value }: ControlMessage) => {
             if (value) {
-              bindings.play.sendColor(Color.RedHi)
+              bindings.play.sendPaletteColor(colorPalette.getColor(0, 1))
             } else if (!value) {
               bindings.play.clearColor()
             }

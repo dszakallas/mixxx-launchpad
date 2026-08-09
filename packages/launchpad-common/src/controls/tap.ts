@@ -11,7 +11,6 @@ import {
   cellPad,
   control,
 } from '../Control'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'tap'
@@ -51,10 +50,10 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         type: control(deck.beat_active),
         listeners: {
           update:
-            ({ bindings }: Control<Type>) =>
+            ({ bindings, context: { colorPalette } }: Control<Type>) =>
             ({ value }: ControlMessage) => {
               if (value) {
-                bindings.tap.sendColor(Color.RedHi)
+                bindings.tap.sendPaletteColor(colorPalette.getColor(0, 1))
               } else {
                 bindings.tap.clearColor()
               }
