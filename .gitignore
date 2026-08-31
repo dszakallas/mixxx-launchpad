@@ -94,6 +94,17 @@ jspm_packages
 .vscode
 *.iml
 .idea
+
+# Agents
+/.agents
+/.claude
+/.codex
+/.copilot
+/.gemini
+/.opencode
+/opencode.json
+/.mcp.json
+
 # Devenv
 .devenv*
 devenv.local.nix

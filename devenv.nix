@@ -1,15 +1,21 @@
 {
-  pkgs,
-  lib,
+  self,
   config,
   inputs,
+  lib,
+  pkgs,
+  bikeshed,
   ...
-}:
-
+}@args:
+let
+  lib' = bikeshed.lib;
+in
 {
   imports = [
-    inputs.bikeshed.devenvModules.recommended
+    bikeshed.devenvModules.recommended
   ];
+
+  profiles = lib'.importRec1 ./devenv args;
 
   packages = with pkgs; [
     fswatch
