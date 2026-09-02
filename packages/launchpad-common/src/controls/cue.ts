@@ -11,7 +11,6 @@ import {
   control,
 } from '../Control'
 import { retainAttackMode } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'cue'
@@ -46,10 +45,10 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.cue_indicator),
       listeners: {
         update:
-          ({ bindings: { cue } }: Control<Type>) =>
+          ({ bindings: { cue }, context: { colorPalette } }: Control<Type>) =>
           ({ value }: ControlMessage) => {
             if (value) {
-              cue.sendColor(Color.RedHi)
+              cue.sendPaletteColor(colorPalette.getColor(0, 1))
             } else if (!value) {
               cue.clearColor()
             }

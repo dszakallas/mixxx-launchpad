@@ -3,7 +3,6 @@ import { setValue } from '@mixxx-launch/mixxx'
 import { PadBindingTemplate, MakeDeckControlTemplate, Control, cellPad } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { MidiMessage } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'grid'
@@ -31,7 +30,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   }
   const onGrid =
     (dir: 'back' | 'forth') =>
-    ({ bindings, context: { modifier } }: Control<Type>) =>
+    ({ bindings, context: { modifier, colorPalette } }: Control<Type>) =>
     ({ value }: MidiMessage) => {
       if (!value) {
         bindings[dir].clearColor()
@@ -39,11 +38,11 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         modes(
           modifier.getState(),
           () => {
-            bindings[dir].sendColor(Color.YellowHi)
+            bindings[dir].sendPaletteColor(colorPalette.getColor(2, 1)) // Yellow bright
             setValue(steps[dir].normal, 1)
           },
           () => {
-            bindings[dir].sendColor(Color.AmberHi)
+            bindings[dir].sendPaletteColor(colorPalette.getColor(1, 1)) // Amber/Orange bright
             setValue(steps[dir].ctrl, 1)
           },
         )

@@ -6,11 +6,10 @@ import { Container } from '@mixxx-launch/common/component'
 import { Action } from '@mixxx-launch/mixxx/src/util'
 import { ControlContext } from './Control'
 import PlaylistSidebar from './PlaylistSidebar'
-import { posMod } from '@mixxx-launch/common'
+import { posMod, ColorPalette, IndexedColorPalette, RGBColorPalette } from '@mixxx-launch/common'
 import { Preset, PresetConf, makePresetTemplate, PresetState } from './Preset'
 import { RGBColor } from '@mixxx-launch/common/color'
 import { Pad, LaunchpadDevice } from './device'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type PresetSize = 'short' | 'tall' | 'grande'
 
@@ -85,6 +84,7 @@ export default class App extends Container {
   presets: { [P in PresetSize]: readonly PresetConf[] }
   savedPresetStates: { [key: SavedPresetStateKey]: PresetState }
   playlistSidebar: PlaylistSidebar
+  colorPalette: ColorPalette
 
   // state variables
   chord: number[]
@@ -93,14 +93,30 @@ export default class App extends Container {
   device: LaunchpadDevice
 
   constructor(device: LaunchpadDevice, conf: LayoutConf) {
-    const modifier = new ModifierSidebar(device)
-    const playlistSidebar = new PlaylistSidebar(device)
+    // Create appropriate color palette based on device capabilities
+    let colorPalette: ColorPalette
+    if (device.supportsRGBColors) {
+      colorPalette = RGBColorPalette.createRGBPalette()
+    } else {
+      const colorPairs: number[][] = []
+      for (let i = 1; i < device.colors.length; i += 2) {
+        if (i + 1 < device.colors.length) {
+          colorPairs.push([i, i + 1])
+        }
+      }
+
+      colorPalette = new IndexedColorPalette(colorPairs)
+    }
+
+    const modifier = new ModifierSidebar(device, colorPalette)
+    const playlistSidebar = new PlaylistSidebar(device, colorPalette)
     super([modifier, playlistSidebar])
     this.modifier = modifier
     this.playlistSidebar = playlistSidebar
 
     this.conf = conf
     this.device = device
+    this.colorPalette = colorPalette
 
     this.bindings = buttons.map((v, i) => {
       const binding = new Pad(this.device, this.device.controls[v])
@@ -133,13 +149,14 @@ export default class App extends Container {
     diff[1].forEach((block) => {
       this.layout[block.channel] = block
       if (block.index) {
-        this.bindings[block.channel][0].sendColor(Color.OrangeHi)
+        this.bindings[block.channel][0].sendPaletteColor(this.colorPalette.getColor(1, 1))
       } else {
-        this.bindings[block.channel][0].sendColor(Color.GreenHi)
+        this.bindings[block.channel][0].sendPaletteColor(this.colorPalette.getColor(3, 1))
       }
       const ctx: ControlContext = {
         modifier: this.modifier,
         device: this.device,
+        colorPalette: this.colorPalette,
       }
 
       const presetTemplate = makePresetTemplate(
@@ -168,9 +185,9 @@ export default class App extends Container {
       } else {
         const block = layout[found]
         if (block.index) {
-          this.bindings[ch][0].sendColor(Color.OrangeHi)
+          this.bindings[ch][0].sendPaletteColor(this.colorPalette.getColor(1, 1))
         } else {
-          this.bindings[ch][0].sendColor(Color.GreenHi)
+          this.bindings[ch][0].sendPaletteColor(this.colorPalette.getColor(3, 1))
         }
       }
       this.chord = []
@@ -186,14 +203,14 @@ export default class App extends Container {
       } else {
         const layout = this.layout[String(found)]
         if (layout.index) {
-          this.bindings[rem][0].sendColor(Color.OrangeHi)
+          this.bindings[rem][0].sendPaletteColor(this.colorPalette.getColor(1, 1))
         } else {
-          this.bindings[rem][0].sendColor(Color.GreenHi)
+          this.bindings[rem][0].sendPaletteColor(this.colorPalette.getColor(3, 1))
         }
       }
     }
     this.chord.push(channel)
-    this.bindings[channel][0].sendColor(Color.RedHi)
+    this.bindings[channel][0].sendPaletteColor(this.colorPalette.getColor(0, 1))
   }
 
   override onMount() {

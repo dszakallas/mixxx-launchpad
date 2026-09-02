@@ -10,7 +10,6 @@ import {
 } from '../Control'
 import { modes } from '@mixxx-launch/common/modifier'
 import { onAttack } from '@mixxx-launch/common/midi'
-import { Color } from '@mixxx-launch/launch-common'
 
 export type Type = {
   type: 'quantize'
@@ -30,9 +29,9 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       type: control(deck.quantize),
       listeners: {
         update:
-          ({ bindings }: Control<Type>) =>
+          ({ bindings, context: { colorPalette } }: Control<Type>) =>
           ({ value }: ControlMessage) =>
-            value ? bindings.button.sendColor(Color.OrangeHi) : bindings.button.clearColor(),
+            value ? bindings.button.sendPaletteColor(colorPalette.getColor(1, 1)) : bindings.button.clearColor(),
       },
     },
     button: {
