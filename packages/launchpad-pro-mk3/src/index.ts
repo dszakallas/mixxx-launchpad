@@ -36,18 +36,11 @@ const selectMode = (mode: DeviceMode) => {
 }
 
 class LaunchpadProMK3Device extends LaunchpadDevice {
-  supportsRGBColors: boolean
-  controls: { [key: string]: MidiControlDef }
-  colors: { [key in Color]: number }
-
-  constructor() {
-    super()
-    this.controls = Object.fromEntries(
-      Object.entries(def().controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
-    )
-    this.colors = colors
-    this.supportsRGBColors = true
-  }
+  supportsRGBColors = true
+  controls: { [key: string]: MidiControlDef } = Object.fromEntries(
+    Object.entries(def().controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
+  )
+  colors: { [key in Color]: number } = colors
 
   override onMount() {
     selectMode(DeviceMode.Programmer)
@@ -55,7 +48,19 @@ class LaunchpadProMK3Device extends LaunchpadDevice {
   }
 
   sendRGBColor(control: MidiControlDef, color: RGBColor) {
-    sendSysexMsg([240, 0, 32, 41, 2, 14, 3, LightingType.RGB, control.midino, ...color.map((x) => ~~(x / 2)), 247])
+    sendSysexMsg([
+      240,
+      0,
+      32,
+      41,
+      2,
+      14,
+      3,
+      LightingType.RGB,
+      control.midino,
+      ...color.map((x) => Math.floor(x / 2)),
+      247,
+    ])
   }
 }
 
