@@ -26,13 +26,8 @@ export default class ModifierSidebar extends Component implements Modifier {
         button.clearColor()
       }
 
-      if (button.control.name === device.controls.solo.name) {
-        this.state ^= ModifierState.Shift
-        this.emit('update', this.state)
-      } else {
-        this.state ^= ModifierState.Ctrl
-        this.emit('update', this.state)
-      }
+      this.state ^= button.control.name === device.controls.solo.name ? ModifierState.Shift : ModifierState.Ctrl
+      this.emit('update', this.state)
     }
     this.shiftListener = makeListener(this.shift)
     this.ctrlListener = makeListener(this.ctrl)

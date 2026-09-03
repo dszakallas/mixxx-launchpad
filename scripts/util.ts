@@ -29,7 +29,12 @@ export const getControls = async (tgt: string) => {
   throw Error(`Missing control definitions for ${tgt} (no such file: ${deviceTs})`)
 }
 
-export const getPackage = (tgt: string) =>
-  readFile(resolve('packages', tgt, 'package.json')).then((f) => JSON.parse(f.toString()))
+export const getPackage = async (tgt: string) => {
+  const f = await readFile(resolve('packages', tgt, 'package.json'))
+  return JSON.parse(f.toString())
+}
 
-export const getDevice = (tgt: string) => readFile('devices.json').then((f) => JSON.parse(f.toString())[tgt])
+export const getDevice = async (tgt: string) => {
+  const f = await readFile('devices.json')
+  return JSON.parse(f.toString())[tgt]
+}

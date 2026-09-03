@@ -8,12 +8,11 @@ type TimerState = {
 
 export class Timer extends Component {
   task: Action<void>
-  private _state: TimerState | null
+  private _state: TimerState | null = null
 
   constructor(task: Action<void>) {
     super()
     this.task = task
-    this._state = null
   }
 
   start(interval: number): number {
@@ -40,9 +39,7 @@ export class Timer extends Component {
   }
 
   restart(interval: number): number {
-    if (this._state != null) {
-      this.end()
-    }
+    this.end()
     return this.start(interval)
   }
 }

@@ -20,7 +20,7 @@ export const onAttack =
 export const retainAttackMode = (modifier: Modifier, cb: (ms: ModifierState, mm: MidiMessage) => void) => {
   let state = ModifierState.None
 
-  return function (data: MidiMessage) {
+  return (data: MidiMessage) => {
     if (data.value) {
       state = modifier.getState()
     }
