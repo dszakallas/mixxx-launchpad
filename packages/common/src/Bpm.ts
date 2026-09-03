@@ -5,11 +5,8 @@ export class Bpm extends EventEmitter {
   taps: number[]
   max: number
 
-  constructor(max?: number) {
+  constructor(max: number = 8) {
     super()
-    if (max == null) {
-      max = 8
-    }
     this.tapTime = 0
     this.taps = []
     this.max = max
@@ -29,10 +26,7 @@ export class Bpm extends EventEmitter {
     } else {
       this.taps.push(60000 / tapDelta)
       if (this.taps.length > this.max) this.taps.shift() // Keep the last n samples for averaging
-      let sum = 0
-      this.taps.forEach((v) => {
-        sum += v
-      })
+      const sum = this.taps.reduce((acc, v) => acc + v, 0)
       const avg = sum / this.taps.length
       this.emit('tap', avg)
     }

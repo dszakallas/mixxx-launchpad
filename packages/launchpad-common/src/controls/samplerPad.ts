@@ -38,7 +38,7 @@ export type Type = {
 
 export const make: MakeSamplerControlTemplate<Type> = ({ gridPosition, sampler, theme }) => {
   const onStateChanged = (state: Type['state'], device: LaunchDevice, bindings: Control<Type>['bindings']) => {
-    const color = state.color == null ? theme.fallbackTrackColor : state.color
+    const color = state.color ?? theme.fallbackTrackColor
     if (!state.loaded) {
       device.clearColor(bindings.button.control)
     } else if (!state.playing) {
