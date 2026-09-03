@@ -40,8 +40,8 @@ const make: MakeDeckControlTemplate<Type> = ({ shifts, rows, gridPosition, deck 
       state.on = i
       state.base = base
     } else {
+      bindings[i].sendColor(colors[state.set].off)
       if (state.on === i) {
-        bindings[i].sendColor(colors[state.set].off)
         setValue(deck.key, state.base)
         state.on = -1
       }
@@ -58,8 +58,8 @@ const make: MakeDeckControlTemplate<Type> = ({ shifts, rows, gridPosition, deck 
           () => {
             if (value) {
               state.set = posMod(state.set + 1, 2)
-              for (let i = 0; i < shifts.length; ++i) {
-                bindings[i].sendColor(Color.YellowLow)
+              for (const binding of Object.values(bindings)) {
+                binding.sendColor(colors[state.set].off)
               }
             }
           },
