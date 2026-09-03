@@ -50,6 +50,12 @@ export type SamplerControlDef = {
   [_ in SamplerControlKey]: ControlDef
 }
 
+export const numDecks = 4 as const
+export const numSamplers = 64 as const
+
+const getChannelNameForOrdinal = (i: number): [string, number] =>
+  i < numDecks ? ['Channel', i + 1] : ['Sampler', i - 4 + 1]
+
 const createSamplerControlDef = (i: number): SamplerControlDef => {
   const [type, number] = getChannelNameForOrdinal(i)
   return {
@@ -63,12 +69,6 @@ const createSamplerControlDef = (i: number): SamplerControlDef => {
     track_loaded: { group: `[${type}${number}]`, name: 'track_loaded', type: 'binary' },
   }
 }
-
-export const numDecks = 4 as const
-export const numSamplers = 64 as const
-
-const getChannelNameForOrdinal = (i: number): [string, number] =>
-  i < numDecks ? ['Channel', i + 1] : ['Sampler', i - 4 + 1]
 
 export const samplerControlDefs: SamplerControlDef[] = [...map(createSamplerControlDef, range(numDecks + numSamplers))]
 
@@ -505,24 +505,22 @@ export const root: RootControlDef = {
   equalizerRacks: [...map((i) => createEffectRackDef(`EqualizerRack${i + 1}`), range(numEqualizerRacks))],
 }
 
-export const getValue = (control: ControlDef): number => {
-  return engine.getValue(control.group, control.name)
-}
+export const getValue = (control: ControlDef): number => engine.getValue(control.group, control.name)
 
 export const setValue = (control: ControlDef, value: number): void => {
-  return engine.setValue(control.group, control.name, value)
+  engine.setValue(control.group, control.name, value)
 }
 
 export const setParameter = (control: ControlDef, value: number): void => {
-  return engine.setParameter(control.group, control.name, value)
+  engine.setParameter(control.group, control.name, value)
 }
 
 export const softTakeover = (control: ControlDef, enable: boolean): void => {
-  return engine.softTakeover(control.group, control.name, enable)
+  engine.softTakeover(control.group, control.name, enable)
 }
 
 export const softTakeOverIgnoreNextValue = (control: ControlDef): void => {
-  return engine.softTakeoverIgnoreNextValue(control.group, control.name)
+  engine.softTakeoverIgnoreNextValue(control.group, control.name)
 }
 
 export type ControlHandle = ScriptConnection
@@ -534,7 +532,7 @@ export type ControlMessage = {
 
 const connect = (control: ControlDef, cb: Action<ControlMessage>): ControlHandle => {
   const { group, name } = control
-  return engine.makeConnection(group, name, function (value: number) {
+  return engine.makeConnection(group, name, (value: number) => {
     cb({ value, control })
   }) as ScriptConnection // Not much we can do if it returns undefined.
 }
@@ -546,16 +544,14 @@ const disconnect = (handle: ControlHandle): void => {
 }
 
 export class ControlComponent extends Component {
-  control: ControlDef
   private _handle?: ControlHandle
-  private _softTakeover?: boolean
-  private _passive?: boolean
-  constructor(control: ControlDef, softTakeover?: boolean, passive?: boolean) {
+
+  constructor(
+    public control: ControlDef,
+    private _softTakeover?: boolean,
+    private _passive?: boolean,
+  ) {
     super()
-    this.control = control
-    this._handle = undefined
-    this._softTakeover = softTakeover
-    this._passive = passive
   }
 
   override onMount() {
