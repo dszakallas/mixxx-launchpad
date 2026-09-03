@@ -35,22 +35,19 @@ export type Bindings<Ctx, C extends ControlType<Ctx>> = {
 }
 
 export class Control<Ctx, C extends ControlType<Ctx>> extends Component {
-  templates: C['bindings']
   bindings: Bindings<Ctx, C>
-  state: C['state']
-  context: Ctx
 
-  constructor(templates: C['bindings'], state: C['state'], context: Ctx) {
+  constructor(
+    public templates: C['bindings'],
+    public state: C['state'],
+    public context: Ctx,
+  ) {
     super()
     const bindings: { [_: string]: unknown } = {}
-    for (const k in templates) {
-      bindings[k] = templates[k].type(context)
+    for (const [k, template] of Object.entries(templates)) {
+      bindings[k] = template.type(context)
     }
     this.bindings = bindings as Bindings<Ctx, C>
-    this.templates = templates
-    this.state = state
-
-    this.context = context
   }
 
   override onMount() {

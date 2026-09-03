@@ -54,7 +54,7 @@ const makeSamplerPalettePresetTemplate = (
   controls: [
     ...map(
       (i) => {
-        const dy = 7 - ~~(i / rows)
+        const dy = 7 - Math.floor(i / rows)
         const dx = i % rows
         return makeSamplerPad({ theme, gridPosition: tr(gridPosition, [dx, dy]), sampler: root.samplers[i + offset] })
       },
@@ -68,13 +68,10 @@ export const makePresetTemplate = (
   gridPosition: [number, number],
   channel: number,
   theme: Theme,
-): PresetTemplate => {
-  if (isDeckPresetConf(conf)) {
-    return makeDeckPresetTemplate(conf, gridPosition, root.channels[channel], theme)
-  } else {
-    return makeSamplerPalettePresetTemplate(conf, gridPosition, channel, theme)
-  }
-}
+): PresetTemplate =>
+  isDeckPresetConf(conf)
+    ? makeDeckPresetTemplate(conf, gridPosition, root.channels[channel], theme)
+    : makeSamplerPalettePresetTemplate(conf, gridPosition, channel, theme)
 
 export type PresetTemplate = {
   controls: ControlTemplate<ControlContext, ControlType>[]
@@ -89,9 +86,7 @@ export class Preset extends Component {
 
   constructor(ctx: ControlContext, presetTemplate: PresetTemplate) {
     super()
-    this.controls = presetTemplate.controls.map((c) => {
-      return new BaseControl(c.bindings, c.state, ctx)
-    })
+    this.controls = presetTemplate.controls.map((c) => new BaseControl(c.bindings, c.state, ctx))
   }
 
   override onMount() {
