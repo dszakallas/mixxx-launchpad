@@ -43,8 +43,9 @@ const [device, tgtPkg, cache] = await Promise.all([
   mkdirp(dirname(resolve(outFile))),
 ])
 
-const input = resolve('packages', tgt, tgtPkg.main)
-const global = device.global
+const { main } = tgtPkg
+const { global } = device
+const input = resolve('packages', tgt, main)
 
 const bundle = await rollup({
   cache,

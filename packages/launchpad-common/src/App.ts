@@ -83,13 +83,13 @@ export default class App extends Container {
   bindings: [Pad, Action<MidiMessage>][]
   modifier: ModifierSidebar
   presets: { [P in PresetSize]: readonly PresetConf[] }
-  savedPresetStates: { [key: SavedPresetStateKey]: PresetState }
+  savedPresetStates: { [key: SavedPresetStateKey]: PresetState } = {}
   playlistSidebar: PlaylistSidebar
 
   // state variables
-  chord: number[]
-  layout: { [key: string]: Block }
-  mountedPresets: { [key: number]: Preset }
+  chord: number[] = []
+  layout: { [key: string]: Block } = {}
+  mountedPresets: { [key: number]: Preset } = {}
   device: LaunchpadDevice
 
   constructor(device: LaunchpadDevice, conf: LayoutConf) {
@@ -108,35 +108,24 @@ export default class App extends Container {
     })
 
     this.presets = cycled(conf.presets)
-    this.chord = []
-    this.layout = {}
-    this.mountedPresets = {}
-    this.savedPresetStates = {}
   }
 
-  getLayout() {
-    const res = []
-    for (const k in this.layout) {
-      res.push(this.layout[k])
-    }
-    return res
+  getLayout(): Block[] {
+    return Object.values(this.layout)
   }
 
   updateLayout(diff: Diff) {
-    diff[0].forEach((block) => {
+    const [toRemove, toAdd] = diff
+    for (const block of toRemove) {
       const ch = block.channel
       delete this.layout[ch]
       this.device.clearColor(this.bindings[ch][0].control)
       this.mountedPresets[ch].unmount()
       this.savedPresetStates[makePresetStateKey(block.size, block.index, ch)] = this.mountedPresets[ch].state
-    })
-    diff[1].forEach((block) => {
+    }
+    for (const block of toAdd) {
       this.layout[block.channel] = block
-      if (block.index) {
-        this.bindings[block.channel][0].sendColor(Color.OrangeHi)
-      } else {
-        this.bindings[block.channel][0].sendColor(Color.GreenHi)
-      }
+      this.bindings[block.channel][0].sendColor(block.index ? Color.OrangeHi : Color.GreenHi)
       const ctx: ControlContext = {
         modifier: this.modifier,
         device: this.device,
@@ -156,25 +145,20 @@ export default class App extends Container {
       }
       this.mountedPresets[block.channel] = preset
       this.mountedPresets[block.channel].mount()
-    })
+    }
   }
 
   removeChord() {
     const layout = this.getLayout()
-    this.chord.forEach((ch) => {
-      const found = layout.findIndex((b) => b.channel === ch)
-      if (found === -1) {
+    for (const ch of this.chord) {
+      const block = layout.find((b) => b.channel === ch)
+      if (!block) {
         this.device.clearColor(this.bindings[ch][0].control)
       } else {
-        const block = layout[found]
-        if (block.index) {
-          this.bindings[ch][0].sendColor(Color.OrangeHi)
-        } else {
-          this.bindings[ch][0].sendColor(Color.GreenHi)
-        }
+        this.bindings[ch][0].sendColor(block.index ? Color.OrangeHi : Color.GreenHi)
       }
-      this.chord = []
-    })
+    }
+    this.chord = []
   }
 
   addToChord(channel: number) {
@@ -185,11 +169,7 @@ export default class App extends Container {
         this.device.clearColor(this.bindings[rem][0].control)
       } else {
         const layout = this.layout[String(found)]
-        if (layout.index) {
-          this.bindings[rem][0].sendColor(Color.OrangeHi)
-        } else {
-          this.bindings[rem][0].sendColor(Color.GreenHi)
-        }
+        this.bindings[rem][0].sendColor(layout.index ? Color.OrangeHi : Color.GreenHi)
       }
     }
     this.chord.push(channel)
@@ -198,10 +178,10 @@ export default class App extends Container {
 
   override onMount() {
     super.onMount()
-    this.bindings.forEach(([binding, midi]) => {
+    for (const [binding, midi] of this.bindings) {
       binding.mount()
       binding.on('midi', midi)
-    })
+    }
 
     const diff = reorganize([], this.conf.initialSelection)
     this.updateLayout(diff)
@@ -210,10 +190,10 @@ export default class App extends Container {
   override onUnmount() {
     const diff = reorganize(this.getLayout(), [])
     this.updateLayout(diff)
-    this.bindings.forEach(([binding, midi]) => {
+    for (const [binding, midi] of this.bindings) {
       binding.removeListener('midi', midi)
       binding.unmount()
-    })
+    }
     super.onUnmount()
   }
 }
@@ -266,9 +246,7 @@ const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
     (diff, block) => {
       const [neg, pos] = diff
       const matched = pos.findIndex((b) => blockEquals(block, b))
-      return matched === -1
-        ? [neg.concat([block]), pos]
-        : [neg, pos.slice(0, matched).concat(pos.slice(matched + 1, pos.length))]
+      return matched === -1 ? [[...neg, block], pos] : [neg, [...pos.slice(0, matched), ...pos.slice(matched + 1)]]
     },
     [[], next] as Diff,
   )

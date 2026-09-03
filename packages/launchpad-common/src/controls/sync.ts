@@ -34,18 +34,10 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
             modes(
               modifier.getState(),
               () => {
-                if (getValue(bindings.syncMode.control)) {
-                  setValue(deck.sync_enabled, 0)
-                } else {
-                  setValue(deck.sync_enabled, 1)
-                }
+                setValue(deck.sync_enabled, getValue(bindings.syncMode.control) ? 0 : 1)
               },
               () => {
-                if (getValue(bindings.syncMode.control) === 2) {
-                  setValue(deck.sync_master, 0)
-                } else {
-                  setValue(deck.sync_master, 1)
-                }
+                setValue(deck.sync_master, getValue(bindings.syncMode.control) === 2 ? 0 : 1)
               },
             )
           }),

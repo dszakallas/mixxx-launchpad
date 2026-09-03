@@ -35,11 +35,11 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   const getDirection = (rate: number) => {
     if (rate < -rateEpsilon) {
       return 'up'
-    } else if (rate > rateEpsilon) {
-      return 'down'
-    } else {
-      return ''
     }
+    if (rate > rateEpsilon) {
+      return 'down'
+    }
+    return ''
   }
 
   const onNudgeMidi =
@@ -90,14 +90,9 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   const onRate =
     ({ bindings, state }: Control<Type>) =>
     ({ value }: ControlMessage) => {
-      let up = Color.Black
-      let down = Color.Black
       const rate = getDirection(value)
-      if (rate === 'down') {
-        down = Color.OrangeLow
-      } else if (rate === 'up') {
-        up = Color.OrangeLow
-      }
+      const down = rate === 'down' ? Color.OrangeLow : Color.Black
+      const up = rate === 'up' ? Color.OrangeLow : Color.Black
 
       if (!state.down) {
         bindings.down.sendColor(down)

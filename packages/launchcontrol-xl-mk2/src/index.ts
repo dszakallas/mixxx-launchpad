@@ -55,19 +55,12 @@ const templateChangeSysexPreamble = [240, 0, 32, 41, 2, 17, 119] as const
 const colorChangeSysexPreamble = [240, 0, 32, 41, 2, 17, 120] as const
 
 class LaunchControlXLMK2Device extends LaunchControlDevice {
-  controls: { [key: string]: MidiControlDef }
-  colors: { [key in Color]: number }
-  leds: { [key: string]: number }
+  controls: { [key: string]: MidiControlDef } = Object.fromEntries(
+    Object.entries(def().controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
+  )
+  colors = colors
+  leds = leds
   numTemplates = 16
-
-  constructor() {
-    super()
-    this.controls = Object.fromEntries(
-      Object.entries(def().controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
-    )
-    this.leds = leds
-    this.colors = colors
-  }
 
   sendColor(template: number, ledIndex: number, color: Color): void {
     sendSysexMsg([...colorChangeSysexPreamble, template, ledIndex, this.colors[color], 247])

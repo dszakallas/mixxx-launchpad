@@ -70,9 +70,7 @@ export default class PlaylistSidebar extends Container {
 
     const controls = [new ControlComponent(masterControlDef.maximize_library)]
 
-    const onScroll = (control: ControlDef) => () => {
-      setValue(control, 1)
-    }
+    const onScroll = (control: ControlDef) => () => setValue(control, 1)
 
     const onMidi =
       (control: ControlDef, color: Color = Color.YellowHi) =>
@@ -91,54 +89,38 @@ export default class PlaylistSidebar extends Container {
         button.sendColor(color)
       }
 
-    const onUnmount = (button: Pad) => {
-      button.clearColor()
+    const onUnmount = (button: Pad) => button.clearColor()
+
+    const scrollConfigs: [Pad, ControlDef][] = [
+      [pads[0], playListControlDef.SelectPrevPlaylist],
+      [pads[1], playListControlDef.SelectNextPlaylist],
+      [pads[3], playListControlDef.SelectPrevTrack],
+      [pads[4], playListControlDef.SelectNextTrack],
+    ]
+
+    for (const [pad, ctrl] of scrollConfigs) {
+      const scrolled = autoscrolled(pad)
+      scrolled.on('scroll', onScroll(ctrl))
+      scrolled.on('midi', onMidi(ctrl))
+      scrolled.on('mount', onMount())
+      scrolled.on('unmount', onUnmount)
     }
 
-    const prevPlaylist = autoscrolled(pads[0])
-    const nextPlaylist = autoscrolled(pads[1])
     const toggleItem = pads[2]
-    const prevTrack = autoscrolled(pads[3])
-    const nextTrack = autoscrolled(pads[4])
-    const toggleLibrary = pads[5]
-    const toggleLibraryControl = controls[0]
-
-    prevPlaylist.on('scroll', onScroll(playListControlDef.SelectPrevPlaylist))
-    prevPlaylist.on('midi', onMidi(playListControlDef.SelectPrevPlaylist))
-    prevPlaylist.on('mount', onMount())
-    prevPlaylist.on('unmount', onUnmount)
-
-    nextPlaylist.on('scroll', onScroll(playListControlDef.SelectNextPlaylist))
-    nextPlaylist.on('midi', onMidi(playListControlDef.SelectNextPlaylist))
-    nextPlaylist.on('mount', onMount())
-    nextPlaylist.on('unmount', onUnmount)
-
-    prevTrack.on('scroll', onScroll(playListControlDef.SelectPrevTrack))
-    prevTrack.on('midi', onMidi(playListControlDef.SelectPrevTrack))
-    prevTrack.on('mount', onMount())
-    prevTrack.on('unmount', onUnmount)
-
-    nextTrack.on('scroll', onScroll(playListControlDef.SelectNextTrack))
-    nextTrack.on('midi', onMidi(playListControlDef.SelectNextTrack))
-    nextTrack.on('mount', onMount())
-    nextTrack.on('unmount', onUnmount)
-
     toggleItem.on('midi', onMidi(playListControlDef.ToggleSelectedSidebarItem, Color.GreenHi))
     toggleItem.on('mount', onMount(Color.GreenHi))
     toggleItem.on('unmount', onUnmount)
 
+    const toggleLibrary = pads[5]
+    const toggleLibraryControl = controls[0]
+
     toggleLibraryControl.on('update', (m: ControlMessage) => {
-      if (m.value) {
-        toggleLibrary.sendColor(Color.RedHi)
-      } else {
-        toggleLibrary.sendColor(Color.GreenHi)
-      }
+      toggleLibrary.sendColor(m.value ? Color.RedHi : Color.GreenHi)
     })
 
     toggleLibrary.on('midi', (m: MidiMessage) => {
       if (m.value) {
-        const t = getValue(masterControlDef.maximize_library)
-        setValue(masterControlDef.maximize_library, 1 - t)
+        setValue(masterControlDef.maximize_library, 1 - getValue(masterControlDef.maximize_library))
       }
     })
 

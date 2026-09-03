@@ -36,18 +36,11 @@ const selectMode = (mode: DeviceMode) => {
 }
 
 class LaunchpadMiniMK3Device extends LaunchpadDevice {
-  supportsRGBColors: boolean
-  controls: { [key: string]: MidiControlDef }
-  colors: { [key in Color]: number }
-
-  constructor() {
-    super()
-    this.controls = Object.fromEntries(
-      Object.entries(def().controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
-    )
-    this.colors = colors
-    this.supportsRGBColors = true
-  }
+  supportsRGBColors = true
+  controls: { [key: string]: MidiControlDef } = Object.fromEntries(
+    Object.entries(def().controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
+  )
+  colors = colors
 
   override onMount() {
     selectMode(DeviceMode.Programmer)

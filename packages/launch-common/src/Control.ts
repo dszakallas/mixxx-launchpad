@@ -35,45 +35,43 @@ export type Bindings<Ctx, C extends ControlType<Ctx>> = {
 }
 
 export class Control<Ctx, C extends ControlType<Ctx>> extends Component {
-  templates: C['bindings']
   bindings: Bindings<Ctx, C>
-  state: C['state']
-  context: Ctx
 
-  constructor(templates: C['bindings'], state: C['state'], context: Ctx) {
+  constructor(
+    public templates: C['bindings'],
+    public state: C['state'],
+    public context: Ctx,
+  ) {
     super()
     const bindings: { [_: string]: unknown } = {}
-    for (const k in templates) {
-      bindings[k] = templates[k].type(context)
+    for (const [k, template] of Object.entries(templates)) {
+      bindings[k] = template.type(context)
     }
     this.bindings = bindings as Bindings<Ctx, C>
-    this.templates = templates
-    this.state = state
-
-    this.context = context
   }
 
   override onMount() {
     super.onMount()
 
-    Object.keys(this.bindings).forEach((k) => {
-      const b = this.bindings[k]
+    for (const [k, b] of Object.entries(this.bindings)) {
       const listeners = this.templates[k].listeners ?? {}
-      Object.keys(listeners).forEach((event) => {
-        const listener = listeners[event]
+      for (const [event, listener] of Object.entries(listeners)) {
         if (listener != null) {
           b.addListener(event, listener(this))
         }
-      })
-    })
+      }
+    }
 
-    Object.values(this.bindings).forEach((b) => b.mount())
+    for (const b of Object.values(this.bindings)) {
+      b.mount()
+    }
   }
 
   override onUnmount() {
-    const bs = Object.values(this.bindings)
-    bs.forEach((b) => b.unmount())
-    bs.forEach((b) => b.removeAllListeners())
+    for (const b of Object.values(this.bindings)) {
+      b.unmount()
+      b.removeAllListeners()
+    }
     super.onUnmount()
   }
 }

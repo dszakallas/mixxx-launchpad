@@ -66,7 +66,7 @@ const make: MakeDeckControlTemplate<Type> = ({ shifts, rows, gridPosition, deck 
         )
       })
 
-  shifts.forEach((_, i) => {
+  for (const [i] of shifts.entries()) {
     const dx = i % rows
     const dy = ~~(i / rows)
     bindings[i] = {
@@ -80,7 +80,7 @@ const make: MakeDeckControlTemplate<Type> = ({ shifts, rows, gridPosition, deck 
           },
       },
     }
-  })
+  }
   return {
     bindings,
     state: {

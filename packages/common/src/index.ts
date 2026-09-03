@@ -29,8 +29,6 @@ export const range = function* (n: number): Generator<number> {
   }
 }
 
-export const array = <T>(n: Generator<T>): T[] => [...n]
-
 export const map = function* <T, U>(f: (x: T) => U, n: Generator<T>): Generator<U> {
   for (const x of n) {
     yield f(x)

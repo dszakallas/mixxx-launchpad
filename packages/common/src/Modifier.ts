@@ -12,15 +12,15 @@ export interface Modifier {
 export const modes = (ctx: ModifierState, n?: () => void, c?: () => void, s?: () => void, cs?: () => void) => {
   switch (ctx) {
     case ModifierState.ShiftCtrl:
-      cs && cs() // eslint-disable-line
+      cs?.()
       break
     case ModifierState.Shift:
-      s && s() // eslint-disable-line
+      s?.()
       break
     case ModifierState.Ctrl:
-      c && c() // eslint-disable-line
+      c?.()
       break
     default:
-      n && n() // eslint-disable-line
+      n?.()
   }
 }

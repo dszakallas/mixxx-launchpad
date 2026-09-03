@@ -34,7 +34,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
           ({ value }: ControlMessage) => {
             if (value) {
               bindings.play.sendColor(Color.RedHi)
-            } else if (!value) {
+            } else {
               bindings.play.clearColor()
             }
           },
@@ -47,7 +47,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
           onAttack(() => {
             modes(
               modifier.getState(),
-              () => setValue(deck.play, Number(!getValue(deck.play))),
+              () => setValue(deck.play, 1 - getValue(deck.play)),
               () => setValue(deck.start_play, 1),
               () => setValue(deck.start_stop, 1),
             )

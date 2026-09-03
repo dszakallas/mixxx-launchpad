@@ -37,10 +37,10 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
         mode,
         () => {
           if (value) {
-            setValue(bindings.control.control, Number(!getValue(bindings.control.control)))
+            setValue(bindings.control.control, 1 - getValue(bindings.control.control))
           } else {
             if (state.mode) {
-              setValue(bindings.control.control, Number(!getValue(bindings.control.control)))
+              setValue(bindings.control.control, 1 - getValue(bindings.control.control))
             }
           }
         },
@@ -60,11 +60,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
           update:
             ({ bindings, state }: Control<Type>) =>
             ({ value }) => {
-              if (value) {
-                bindings.button.sendColor(colors[state.mode].on)
-              } else {
-                bindings.button.sendColor(colors[state.mode].off)
-              }
+              bindings.button.sendColor(value ? colors[state.mode].on : colors[state.mode].off)
             },
         },
       },

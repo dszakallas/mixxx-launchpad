@@ -26,7 +26,7 @@ export type Eq3Type = {
 export const makeEq3: MakeControlTemplate<Eq3Type> = ({ template, column, deck }) => {
   const bindings: Eq3Type['bindings'] = {}
   const fxParams = root.equalizerRacks[0].effect_units[deck].effects[0].parameters
-  eq3Channel.forEach((v, i) => {
+  for (const [i, v] of eq3Channel.entries()) {
     bindings[`knob.${v}`] = {
       type: midi(template, `knob.${2 - i}.${column}`),
       listeners: {
@@ -52,7 +52,7 @@ export const makeEq3: MakeControlTemplate<Eq3Type> = ({ template, column, deck }
     bindings[`val.${v}`] = {
       type: control(fxParams[i].value, true),
     }
-  })
+  }
 
   return { bindings }
 }
@@ -81,7 +81,7 @@ export const makeEq3Kill: MakeControlTemplate<Eq3KillType> = ({ template, row, c
     ['qfx', root.quickEffectRacks[0].effect_units[deck].enabled] as const,
   ]
 
-  eq3KillChannel.forEach(([v, c], i) => {
+  for (const [i, [v, c]] of eq3KillChannel.entries()) {
     bindings[`pad.${v}`] = {
       type: midi(template, `pad.${row}.${column + i}`, 'on'),
       listeners: {
@@ -105,7 +105,7 @@ export const makeEq3Kill: MakeControlTemplate<Eq3KillType> = ({ template, row, c
           },
       },
     }
-  })
+  }
 
   return { bindings }
 }

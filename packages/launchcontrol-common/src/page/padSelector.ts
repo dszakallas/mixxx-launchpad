@@ -36,15 +36,15 @@ export default class PadSelectorPage extends Component {
     const btns = ['mute', 'solo', 'arm']
     const buttonComponents = btns.map((btn) => new MidiComponent(this._device, template, btn, 'on'))
 
-    buttonComponents.forEach((btn, i) => {
+    for (const [i, btn] of buttonComponents.entries()) {
       btn.addListener('mount', () => {
         this._device.sendColor(template, btn.led, i === this._selected ? Color.YellowHi : Color.Black)
       })
       btn.addListener('midi', ({ value }: MidiMessage) => {
         if (value && i !== this._selected) {
-          buttonComponents.forEach((btn, j) => {
-            this._device.sendColor(template, btn.led, j === i ? Color.YellowHi : Color.Black)
-          })
+          for (const [j, otherBtn] of buttonComponents.entries()) {
+            this._device.sendColor(template, otherBtn.led, j === i ? Color.YellowHi : Color.Black)
+          }
           this._pads[this._selected].value.unmount()
           this._selected = i
           this._pads[this._selected].value.mount()
@@ -53,11 +53,11 @@ export default class PadSelectorPage extends Component {
       // btn.addListener('unmount', () => {
       //   this._device.sendColor(template, btn.led, this._device.colors.black)
       // })
-    })
+    }
     this._selectors = buttonComponents
   }
 
-  onTemplate(template: number) {
+  onTemplate = (template: number) => {
     if (this.mounted) {
       for (const buttonComponent of this._selectors) {
         buttonComponent.unmount()
@@ -78,11 +78,11 @@ export default class PadSelectorPage extends Component {
     for (const buttonComponent of this._selectors) {
       buttonComponent.mount()
     }
-    this._device.addListener('template', this.onTemplate.bind(this))
+    this._device.addListener('template', this.onTemplate)
   }
 
   override onUnmount() {
-    this._device.removeListener('template', this.onTemplate.bind(this))
+    this._device.removeListener('template', this.onTemplate)
     for (const buttonComponent of this._selectors) {
       buttonComponent.unmount()
     }

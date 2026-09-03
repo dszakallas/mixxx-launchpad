@@ -71,8 +71,8 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
             if (value) {
               state.set = posMod(state.set + 1, 2)
               const prefix = state.bounce ? 'off' : 'on'
-              for (let b = 0; b < spec.length; ++b) {
-                bindings[b].sendColor(colors[state.set][prefix])
+              for (const binding of Object.values(bindings)) {
+                binding.sendColor(colors[state.set][prefix])
               }
             }
           },
@@ -80,8 +80,8 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
             if (value) {
               state.bounce = !state.bounce
               const prefix = state.bounce ? 'off' : 'on'
-              for (let b = 0; b < spec.length; ++b) {
-                bindings[b].sendColor(colors[state.set][prefix])
+              for (const binding of Object.values(bindings)) {
+                binding.sendColor(colors[state.set][prefix])
               }
             }
           },
@@ -96,7 +96,7 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
       bindings[k].sendColor(colors[state.set][prefix])
     }
 
-  spec.forEach(([jump, dir], i) => {
+  for (const [i, [jump, dir]] of spec.entries()) {
     bindings[i] = {
       type: cellPad(
         vertical
@@ -108,11 +108,11 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
         mount: onMount(i),
       },
     }
-  })
+  }
   return {
     bindings,
     state: {
-      bounce: bounce,
+      bounce,
       pressing: null,
       diff: 0,
       set: 0,

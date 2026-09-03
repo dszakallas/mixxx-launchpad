@@ -43,11 +43,12 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0, gridPositi
         },
         () => {
           if (value) {
-            if (getValue(bindings[`cue.${i}`].control)) {
-              setValue(deck.hotcues[1 + i + start].clear, 1)
-            } else {
-              setValue(deck.hotcues[1 + i + start].set, 1)
-            }
+            setValue(
+              getValue(bindings[`cue.${i}`].control)
+                ? deck.hotcues[1 + i + start].clear
+                : deck.hotcues[1 + i + start].set,
+              1,
+            )
           }
         },
       )
@@ -58,7 +59,7 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0, gridPositi
     ({ value }: ControlMessage) => {
       const color = parseRGBColor(value)
       if (bindings[`midi.${i}`].supportsRGBColors) {
-        bindings[`midi.${i}`].sendRGBColor(color == null ? theme.fallbackHotcueColor : color)
+        bindings[`midi.${i}`].sendRGBColor(color ?? theme.fallbackHotcueColor)
       }
     }
   const onHotcueEnabled =
@@ -68,7 +69,7 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0, gridPositi
       if (value) {
         if (bindings[`midi.${i}`].supportsRGBColors) {
           const color = parseRGBColor(getValue(deck.hotcues[1 + i + start].color))
-          bindings[`midi.${i}`].sendRGBColor(color == null ? theme.fallbackHotcueColor : color)
+          bindings[`midi.${i}`].sendRGBColor(color ?? theme.fallbackHotcueColor)
         } else {
           bindings[`midi.${i}`].sendColor(Color.YellowLow)
         }

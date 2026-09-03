@@ -1,13 +1,8 @@
 export class Lazy<T> {
-  private _fn: () => T
-  private _cached: boolean
-  private _value: T | undefined
+  private _cached = false
+  private _value: T | undefined = undefined
 
-  constructor(fn: () => T) {
-    this._fn = fn
-    this._cached = false
-    this._value = undefined
-  }
+  constructor(private _fn: () => T) {}
 
   get value(): T {
     if (!this._cached) {
@@ -28,7 +23,7 @@ export type LazyObject<T extends { [k: string]: unknown }> = {
 
 export const lazyArray = <T>(lazies: (Lazy<T> | T)[]): T[] =>
   new Proxy(lazies, {
-    get: function (target: (Lazy<T> | T)[], prop: PropertyKey): unknown {
+    get(target: (Lazy<T> | T)[], prop: PropertyKey): unknown {
       if (typeof prop === 'string' && Number.isInteger(Number(prop)) && isLazy(target[+prop])) {
         return (target[+prop] as Lazy<unknown>).value
       } else if (typeof prop === 'string' || typeof prop === 'symbol') {

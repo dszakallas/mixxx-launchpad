@@ -19,18 +19,11 @@ const colors = {
 }
 
 class LaunchpadMK1Device extends LaunchpadDevice {
-  supportsRGBColors: boolean
-  controls: { [key: string]: MidiControlDef }
-  colors: { [key in Color]: number }
-
-  constructor() {
-    super()
-    this.controls = Object.fromEntries(
-      Object.entries(def().controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
-    )
-    this.colors = colors
-    this.supportsRGBColors = false
-  }
+  supportsRGBColors = false
+  controls: { [key: string]: MidiControlDef } = Object.fromEntries(
+    Object.entries(def().controls).map(([k, v]) => [k, convertControlDef(k, v as [number, number])]),
+  )
+  colors = colors
 
   sendRGBColor(_control: MidiControlDef, _value: RGBColor): void {
     throw new Error('Device does not support RGB Colors.')

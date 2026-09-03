@@ -50,7 +50,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
           ({ value }: ControlMessage) => {
             if (value) {
               cue.sendColor(Color.RedHi)
-            } else if (!value) {
+            } else {
               cue.clearColor()
             }
           },

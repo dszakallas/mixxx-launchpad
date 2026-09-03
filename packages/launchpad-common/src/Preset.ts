@@ -2,7 +2,7 @@ import { Component } from '@mixxx-launch/common/component'
 import { ChannelControlDef, getValue } from '@mixxx-launch/mixxx'
 import { ControlTypeIndex } from './controls'
 import { Theme } from './App'
-import { array, map, range } from '@mixxx-launch/common'
+import { map, range } from '@mixxx-launch/common'
 import { default as makeSamplerPad } from './controls/samplerPad'
 import { root } from '@mixxx-launch/mixxx/src/Control'
 import { ControlTemplate } from '@mixxx-launch/launch-common/src/Control'
@@ -51,16 +51,16 @@ const makeSamplerPalettePresetTemplate = (
   _startingChannel: number,
   theme: Theme,
 ) => ({
-  controls: array(
-    map(
+  controls: [
+    ...map(
       (i) => {
-        const dy = 7 - ~~(i / rows)
+        const dy = 7 - Math.floor(i / rows)
         const dx = i % rows
         return makeSamplerPad({ theme, gridPosition: tr(gridPosition, [dx, dy]), sampler: root.samplers[i + offset] })
       },
       range(Math.min(n, getValue(root.master.num_samplers))),
     ),
-  ),
+  ],
 })
 
 export const makePresetTemplate = (
@@ -68,13 +68,10 @@ export const makePresetTemplate = (
   gridPosition: [number, number],
   channel: number,
   theme: Theme,
-): PresetTemplate => {
-  if (isDeckPresetConf(conf)) {
-    return makeDeckPresetTemplate(conf, gridPosition, root.channels[channel], theme)
-  } else {
-    return makeSamplerPalettePresetTemplate(conf, gridPosition, channel, theme)
-  }
-}
+): PresetTemplate =>
+  isDeckPresetConf(conf)
+    ? makeDeckPresetTemplate(conf, gridPosition, root.channels[channel], theme)
+    : makeSamplerPalettePresetTemplate(conf, gridPosition, channel, theme)
 
 export type PresetTemplate = {
   controls: ControlTemplate<ControlContext, ControlType>[]
@@ -89,9 +86,7 @@ export class Preset extends Component {
 
   constructor(ctx: ControlContext, presetTemplate: PresetTemplate) {
     super()
-    this.controls = presetTemplate.controls.map((c) => {
-      return new BaseControl(c.bindings, c.state, ctx)
-    })
+    this.controls = presetTemplate.controls.map((c) => new BaseControl(c.bindings, c.state, ctx))
   }
 
   override onMount() {
