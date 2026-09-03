@@ -96,6 +96,14 @@
         "@mixxx-launch/launchpad-common": "1.0.0",
       },
     },
+    "packages/launchpad-pro-mk3": {
+      "name": "@mixxx-launch/launchpad-pro-mk3",
+      "version": "1.0.0",
+      "dependencies": {
+        "@babel/runtime-corejs3": "^7.27.0",
+        "@mixxx-launch/launchpad-common": "1.0.0",
+      },
+    },
     "packages/launchpad-x": {
       "name": "@mixxx-launch/launchpad-x",
       "version": "1.0.0",
@@ -383,6 +391,8 @@
     "@mixxx-launch/launchpad-mk1": ["@mixxx-launch/launchpad-mk1@workspace:packages/launchpad-mk1"],
 
     "@mixxx-launch/launchpad-mk2": ["@mixxx-launch/launchpad-mk2@workspace:packages/launchpad-mk2"],
+
+    "@mixxx-launch/launchpad-pro-mk3": ["@mixxx-launch/launchpad-pro-mk3@workspace:packages/launchpad-pro-mk3"],
 
     "@mixxx-launch/launchpad-x": ["@mixxx-launch/launchpad-x@workspace:packages/launchpad-x"],
 
