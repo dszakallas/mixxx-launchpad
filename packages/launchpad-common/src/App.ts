@@ -83,13 +83,13 @@ export default class App extends Container {
   bindings: [Pad, Action<MidiMessage>][]
   modifier: ModifierSidebar
   presets: { [P in PresetSize]: readonly PresetConf[] }
-  savedPresetStates: { [key: SavedPresetStateKey]: PresetState }
+  savedPresetStates: { [key: SavedPresetStateKey]: PresetState } = {}
   playlistSidebar: PlaylistSidebar
 
   // state variables
-  chord: number[]
-  layout: { [key: string]: Block }
-  mountedPresets: { [key: number]: Preset }
+  chord: number[] = []
+  layout: { [key: string]: Block } = {}
+  mountedPresets: { [key: number]: Preset } = {}
   device: LaunchpadDevice
 
   constructor(device: LaunchpadDevice, conf: LayoutConf) {
@@ -108,10 +108,6 @@ export default class App extends Container {
     })
 
     this.presets = cycled(conf.presets)
-    this.chord = []
-    this.layout = {}
-    this.mountedPresets = {}
-    this.savedPresetStates = {}
   }
 
   getLayout(): Block[] {
@@ -129,11 +125,7 @@ export default class App extends Container {
     }
     for (const block of toAdd) {
       this.layout[block.channel] = block
-      if (block.index) {
-        this.bindings[block.channel][0].sendColor(Color.OrangeHi)
-      } else {
-        this.bindings[block.channel][0].sendColor(Color.GreenHi)
-      }
+      this.bindings[block.channel][0].sendColor(block.index ? Color.OrangeHi : Color.GreenHi)
       const ctx: ControlContext = {
         modifier: this.modifier,
         device: this.device,
@@ -177,11 +169,7 @@ export default class App extends Container {
         this.device.clearColor(this.bindings[rem][0].control)
       } else {
         const layout = this.layout[String(found)]
-        if (layout.index) {
-          this.bindings[rem][0].sendColor(Color.OrangeHi)
-        } else {
-          this.bindings[rem][0].sendColor(Color.GreenHi)
-        }
+        this.bindings[rem][0].sendColor(layout.index ? Color.OrangeHi : Color.GreenHi)
       }
     }
     this.chord.push(channel)
@@ -258,9 +246,7 @@ const reorganize = (current: Block[], selectedChannels: number[]): Diff => {
     (diff, block) => {
       const [neg, pos] = diff
       const matched = pos.findIndex((b) => blockEquals(block, b))
-      return matched === -1
-        ? [neg.concat([block]), pos]
-        : [neg, pos.slice(0, matched).concat(pos.slice(matched + 1, pos.length))]
+      return matched === -1 ? [[...neg, block], pos] : [neg, [...pos.slice(0, matched), ...pos.slice(matched + 1)]]
     },
     [[], next] as Diff,
   )
