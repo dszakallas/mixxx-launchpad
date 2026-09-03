@@ -43,11 +43,12 @@ const make: MakeDeckControlTemplate<Type> = ({ cues, rows, start = 0, gridPositi
         },
         () => {
           if (value) {
-            if (getValue(bindings[`cue.${i}`].control)) {
-              setValue(deck.hotcues[1 + i + start].clear, 1)
-            } else {
-              setValue(deck.hotcues[1 + i + start].set, 1)
-            }
+            setValue(
+              getValue(bindings[`cue.${i}`].control)
+                ? deck.hotcues[1 + i + start].clear
+                : deck.hotcues[1 + i + start].set,
+              1,
+            )
           }
         },
       )
