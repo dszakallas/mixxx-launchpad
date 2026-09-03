@@ -27,9 +27,7 @@ export type Type = {
 
 const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => {
   const tempoBpm = new Bpm()
-  tempoBpm.on('tap', (avg: number) => {
-    setValue(deck.bpm, avg)
-  })
+  tempoBpm.on('tap', (avg: number) => setValue(deck.bpm, avg))
   return {
     bindings: {
       tap: {

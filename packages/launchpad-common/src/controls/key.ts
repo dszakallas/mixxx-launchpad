@@ -36,7 +36,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
             modes(
               modifier.getState(),
               () => {
-                setValue(bindings.keylock.control, Number(!getValue(bindings.keylock.control)))
+                setValue(bindings.keylock.control, 1 - getValue(bindings.keylock.control))
               },
               () => {
                 setValue(deck.key, getValue(deck.key) - 1)

@@ -41,7 +41,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck }) => ({
       listeners: {
         midi: ({ context: { modifier }, bindings }: Control<Type>) =>
           onAttack((_: MidiMessage) =>
-            modes(modifier.getState(), () => setValue(bindings.pfl.control, Number(!getValue(bindings.pfl.control)))),
+            modes(modifier.getState(), () => setValue(bindings.pfl.control, 1 - getValue(bindings.pfl.control))),
           ),
       },
     },
