@@ -48,10 +48,6 @@ export abstract class MidiDevice extends Component {
       }
     }
   }
-
-  override onUnmount() {
-    super.onUnmount()
-  }
 }
 
 export class MidiComponent<D extends MidiDevice> extends Component {

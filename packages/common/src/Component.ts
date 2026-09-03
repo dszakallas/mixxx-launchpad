@@ -1,11 +1,7 @@
 import EventEmitter from 'eventemitter3'
 
 export class Component extends EventEmitter {
-  private _mounted: boolean = false
-
-  constructor() {
-    super()
-  }
+  private _mounted = false
 
   /**
    * Whether the component is mounted.
@@ -49,11 +45,8 @@ export class Component extends EventEmitter {
 }
 
 export class Container extends Component {
-  private children: Component[]
-
-  constructor(children: Component[]) {
+  constructor(private children: Component[]) {
     super()
-    this.children = children
   }
 
   override onMount() {
