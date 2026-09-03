@@ -24,7 +24,7 @@ const statelessFreePage =
         this._inner = null
       }
 
-      onTemplate(template: number) {
+      onTemplate = (template: number) => {
         if (this._inner) {
           this._inner.unmount()
           this._inner = makePage(template)(this._device)
@@ -35,11 +35,11 @@ const statelessFreePage =
         super.onMount()
         this._inner = makePage(this._device.template)(this._device)
         this._inner.mount()
-        this._device.addListener('template', this.onTemplate.bind(this))
+        this._device.addListener('template', this.onTemplate)
       }
 
       onUnmount() {
-        this._device.removeListener('template', this.onTemplate.bind(this))
+        this._device.removeListener('template', this.onTemplate)
         if (this._inner) {
           this._inner.unmount()
           this._inner = null

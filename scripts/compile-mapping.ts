@@ -19,16 +19,20 @@ const templateFile = join('scripts', 'template.xml.ejs')
 const hexFormat = (n: number, d: number) => n.toString(16).toUpperCase().padStart(d, '0')
 
 const template = await readFile(templateFile)
+const { author, description, homepage } = pkg
+const { device: deviceName, manufacturer, global } = device
+const { controls: controlDefs, sysex } = controls
+
 const rendered = ejs.render(template.toString(), {
-  author: pkg.author,
-  description: pkg.description,
-  homepage: pkg.homepage,
-  device: device.device,
-  manufacturer: device.manufacturer,
-  global: device.global,
-  buttons: Object.values(controls.controls),
-  hexFormat: hexFormat,
-  sysex: controls.sysex,
+  author,
+  description,
+  homepage,
+  device: deviceName,
+  manufacturer,
+  global,
+  buttons: Object.values(controlDefs),
+  hexFormat,
+  sysex,
   gitTag: await gitTagAlwaysDirty(),
   gitHash: await gitSHA(),
 })

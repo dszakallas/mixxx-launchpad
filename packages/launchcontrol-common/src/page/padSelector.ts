@@ -57,7 +57,7 @@ export default class PadSelectorPage extends Component {
     this._selectors = buttonComponents
   }
 
-  onTemplate(template: number) {
+  onTemplate = (template: number) => {
     if (this.mounted) {
       for (const buttonComponent of this._selectors) {
         buttonComponent.unmount()
@@ -78,11 +78,11 @@ export default class PadSelectorPage extends Component {
     for (const buttonComponent of this._selectors) {
       buttonComponent.mount()
     }
-    this._device.addListener('template', this.onTemplate.bind(this))
+    this._device.addListener('template', this.onTemplate)
   }
 
   override onUnmount() {
-    this._device.removeListener('template', this.onTemplate.bind(this))
+    this._device.removeListener('template', this.onTemplate)
     for (const buttonComponent of this._selectors) {
       buttonComponent.unmount()
     }

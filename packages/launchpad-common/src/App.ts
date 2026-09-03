@@ -114,23 +114,20 @@ export default class App extends Container {
     this.savedPresetStates = {}
   }
 
-  getLayout() {
-    const res = []
-    for (const k in this.layout) {
-      res.push(this.layout[k])
-    }
-    return res
+  getLayout(): Block[] {
+    return Object.values(this.layout)
   }
 
   updateLayout(diff: Diff) {
-    diff[0].forEach((block) => {
+    const [toRemove, toAdd] = diff
+    for (const block of toRemove) {
       const ch = block.channel
       delete this.layout[ch]
       this.device.clearColor(this.bindings[ch][0].control)
       this.mountedPresets[ch].unmount()
       this.savedPresetStates[makePresetStateKey(block.size, block.index, ch)] = this.mountedPresets[ch].state
-    })
-    diff[1].forEach((block) => {
+    }
+    for (const block of toAdd) {
       this.layout[block.channel] = block
       if (block.index) {
         this.bindings[block.channel][0].sendColor(Color.OrangeHi)
@@ -156,25 +153,20 @@ export default class App extends Container {
       }
       this.mountedPresets[block.channel] = preset
       this.mountedPresets[block.channel].mount()
-    })
+    }
   }
 
   removeChord() {
     const layout = this.getLayout()
-    this.chord.forEach((ch) => {
-      const found = layout.findIndex((b) => b.channel === ch)
-      if (found === -1) {
+    for (const ch of this.chord) {
+      const block = layout.find((b) => b.channel === ch)
+      if (!block) {
         this.device.clearColor(this.bindings[ch][0].control)
       } else {
-        const block = layout[found]
-        if (block.index) {
-          this.bindings[ch][0].sendColor(Color.OrangeHi)
-        } else {
-          this.bindings[ch][0].sendColor(Color.GreenHi)
-        }
+        this.bindings[ch][0].sendColor(block.index ? Color.OrangeHi : Color.GreenHi)
       }
-      this.chord = []
-    })
+    }
+    this.chord = []
   }
 
   addToChord(channel: number) {

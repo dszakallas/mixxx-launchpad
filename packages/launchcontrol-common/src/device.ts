@@ -35,7 +35,7 @@ export abstract class LaunchControlDevice extends MidiDevice {
   // Try to parse a SysEx message and return the template number if it was a template change message
   abstract handleTemplateChangeSysex(data: number[]): number | undefined
 
-  handleSysex(data: number[]) {
+  handleSysex = (data: number[]) => {
     const template = this.handleTemplateChangeSysex(data)
     if (template != null) {
       this.template = template
@@ -48,12 +48,12 @@ export abstract class LaunchControlDevice extends MidiDevice {
     for (const i of range(this.numTemplates)) {
       this.resetTemplate(i)
     }
-    this.addListener('sysex', this.handleSysex.bind(this))
+    this.addListener('sysex', this.handleSysex)
     this.changeTemplate(0)
   }
 
   override onUnmount() {
-    this.removeListener('sysex', this.handleSysex.bind(this))
+    this.removeListener('sysex', this.handleSysex)
     for (const i of range(this.numTemplates)) {
       this.resetTemplate(i)
     }

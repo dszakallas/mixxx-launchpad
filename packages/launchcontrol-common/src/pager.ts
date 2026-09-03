@@ -19,12 +19,12 @@ export class Pager extends Component {
     super()
     this._device = device
     this._selected = 0
-    this.repeat = repeat || pages.length
+    this.repeat = repeat ?? pages.length
     // eslint-disable-next-line
     this.pages = pages.map((page, i) => lazy(() => makePageIndex[page.type](page as unknown as any, i, this._device)))
   }
 
-  onTemplate(template: number) {
+  onTemplate = (template: number) => {
     const newSelected = template % this.repeat < this.pages.length ? template % this.repeat : null
     if (newSelected !== this._selected) {
       if (this.mounted && this._selected != null) {
@@ -43,11 +43,11 @@ export class Pager extends Component {
     if (this._selected != null) {
       this.pages[this._selected].value.mount()
     }
-    this._device.addListener('template', this.onTemplate.bind(this))
+    this._device.addListener('template', this.onTemplate)
   }
 
   override onUnmount() {
-    this._device.removeListener('template', this.onTemplate.bind(this))
+    this._device.removeListener('template', this.onTemplate)
     if (this._selected != null) {
       this.pages[this._selected].value.unmount()
     }

@@ -69,8 +69,8 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertic
             if (value) {
               state.set = posMod(state.set + 1, 2)
               const prefix = state.bounce ? 'off' : 'on'
-              for (let b = 0; b < spec.length; ++b) {
-                bindings[b].sendColor(colors[state.set][prefix])
+              for (const binding of Object.values(bindings)) {
+                binding.sendColor(colors[state.set][prefix])
               }
             }
           },
@@ -78,8 +78,8 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertic
             if (value) {
               state.bounce = !state.bounce
               const prefix = state.bounce ? 'off' : 'on'
-              for (let b = 0; b < spec.length; ++b) {
-                bindings[b].sendColor(colors[state.set][prefix])
+              for (const binding of Object.values(bindings)) {
+                binding.sendColor(colors[state.set][prefix])
               }
             }
           },

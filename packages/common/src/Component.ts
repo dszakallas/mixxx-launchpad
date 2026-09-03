@@ -64,8 +64,8 @@ export class Container extends Component {
   }
 
   override onUnmount() {
-    for (let i = this.children.length - 1; i >= 0; i--) {
-      this.children[i].unmount()
+    for (const child of [...this.children].reverse()) {
+      child.unmount()
     }
     super.onUnmount()
   }
