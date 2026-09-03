@@ -12,13 +12,14 @@ export class Pager extends Component {
   pages: Lazy<Component>[]
   repeat: number
 
-  private _selected: number | null
-  private _device: LaunchControlDevice
+  private _selected: number | null = 0
 
-  constructor(device: LaunchControlDevice, pages: readonly PageConf[], repeat: number | null = null) {
+  constructor(
+    private _device: LaunchControlDevice,
+    pages: readonly PageConf[],
+    repeat: number | null = null,
+  ) {
     super()
-    this._device = device
-    this._selected = 0
     this.repeat = repeat ?? pages.length
     // eslint-disable-next-line
     this.pages = pages.map((page, i) => lazy(() => makePageIndex[page.type](page as unknown as any, i, this._device)))

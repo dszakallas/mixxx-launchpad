@@ -15,10 +15,6 @@ export abstract class LaunchControlDevice extends MidiDevice {
 
   template = 0
 
-  constructor() {
-    super()
-  }
-
   // Reset the template to the default state, i.e turn off all LEDs.
   abstract resetTemplate(template: number): void
 
@@ -70,16 +66,19 @@ export type OnOff = 'on' | 'off' | undefined
 // Lighting LEDs with SysEx messages avoids the problem of the LaunchControl ignoring
 // MIDI messages that don't match the current template.
 export class MidiComponent extends BaseMidiComponent<LaunchControlDevice> {
-  template: number
   led: number
 
   // Use the note parameter to listen to note on/off events instead of control change events. This is required for
   // certain controls like the mute/solo/arm buttons or channel controls. For reference, see the LaunchControl
   // programmer manual or controller.json.
-  constructor(device: LaunchControlDevice, template: number, controlKey: string, note?: OnOff) {
+  constructor(
+    device: LaunchControlDevice,
+    public template: number,
+    controlKey: string,
+    note?: OnOff,
+  ) {
     const controlName = note ? `${template}.${controlKey}.${note}` : `${template}.${controlKey}`
     super(device, device.controls[controlName])
-    this.template = template
     this.led = device.leds[controlKey]
   }
 
