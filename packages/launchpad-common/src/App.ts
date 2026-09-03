@@ -190,10 +190,10 @@ export default class App extends Container {
 
   override onMount() {
     super.onMount()
-    this.bindings.forEach(([binding, midi]) => {
+    for (const [binding, midi] of this.bindings) {
       binding.mount()
       binding.on('midi', midi)
-    })
+    }
 
     const diff = reorganize([], this.conf.initialSelection)
     this.updateLayout(diff)
@@ -202,10 +202,10 @@ export default class App extends Container {
   override onUnmount() {
     const diff = reorganize(this.getLayout(), [])
     this.updateLayout(diff)
-    this.bindings.forEach(([binding, midi]) => {
+    for (const [binding, midi] of this.bindings) {
       binding.removeListener('midi', midi)
       binding.unmount()
-    })
+    }
     super.onUnmount()
   }
 }

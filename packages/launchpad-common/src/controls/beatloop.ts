@@ -44,7 +44,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, loops, rows }
       bindings[`b.${i}`].sendColor(color)
     }
 
-  loops.forEach((loop, i) => {
+  for (const [i, loop] of loops.entries()) {
     const dx = i % rows
     const dy = ~~(i / rows)
     bindings[`b.${i}`] = {
@@ -59,7 +59,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, loops, rows }
         update: onUpdate(i),
       },
     }
-  })
+  }
 
   return { bindings }
 }

@@ -4,7 +4,7 @@ import { Component } from '@mixxx-launch/common/component'
 import { lazy, lazyArray } from '@mixxx-launch/common/lazy'
 
 import { ScriptConnection } from './api'
-import { array, map, range } from '@mixxx-launch/common'
+import { map, range } from '@mixxx-launch/common'
 
 export type ControlDef = {
   group: string
@@ -70,9 +70,7 @@ export const numSamplers = 64 as const
 const getChannelNameForOrdinal = (i: number): [string, number] =>
   i < numDecks ? ['Channel', i + 1] : ['Sampler', i - 4 + 1]
 
-export const samplerControlDefs: SamplerControlDef[] = array(
-  map(createSamplerControlDef, range(numDecks + numSamplers)),
-)
+export const samplerControlDefs: SamplerControlDef[] = [...map(createSamplerControlDef, range(numDecks + numSamplers))]
 
 // the full control palette for decks, minus repeated controls (e.g hotcues)
 export type SimpleChannelControlKey =
@@ -361,13 +359,13 @@ export const createChannelControlDef = (i: number): ChannelControlDef => {
     beatjumps: createArrayChannelControlDef(beatjumps, arrayChannelControlDefCreators.beatjumps),
     beatloops: createArrayChannelControlDef(beatloops, arrayChannelControlDefCreators.beatloops),
     hotcues: createArrayChannelControlDef(
-      array(map((x: number) => x + 1, range(16))),
+      [...map((x: number) => x + 1, range(16))],
       arrayChannelControlDefCreators.hotcues,
     ),
   })
 }
 
-export const channelControlDefs: ChannelControlDef[] = array(map((i: number) => createChannelControlDef(i), range(8)))
+export const channelControlDefs: ChannelControlDef[] = [...map((i: number) => createChannelControlDef(i), range(8))]
 
 // effect parameters
 export const numEffectParameters = 8 as const
@@ -429,11 +427,9 @@ export const createEffectDef = (rack: RackName, unit: EffectUnitName, effect: st
   },
   meta: { group: `[${rack}_${unit}_${effect}]`, name: `meta`, type: 'number' },
   prev_effect: { group: `[${rack}_${unit}_${effect}]`, name: `prev_effect`, type: 'binary' },
-  parameters: lazyArray(
-    array(
-      map((i: number) => lazy(() => createEffectParameterDef(rack, unit, effect, i + 1)), range(numEffectParameters)),
-    ),
-  ),
+  parameters: lazyArray([
+    ...map((i: number) => lazy(() => createEffectParameterDef(rack, unit, effect, i + 1)), range(numEffectParameters)),
+  ]),
 })
 
 // effect units
@@ -458,9 +454,9 @@ export const createEffectUnitDef = (rack: RackName, unit: EffectUnitName): Effec
   super1: { group: `[${rack}_${unit}]`, name: `super1`, type: 'number' },
   num_effects: { group: `[${rack}_${unit}]`, name: `num_effects`, type: 'number' },
   num_effectslots: { group: `[${rack}_${unit}]`, name: `num_effectslots`, type: 'number' },
-  effects: lazyArray(
-    array(map((i: number) => lazy(() => createEffectDef(rack, unit, `Effect${i + 1}`)), range(numEffects))),
-  ),
+  effects: lazyArray([
+    ...map((i: number) => lazy(() => createEffectDef(rack, unit, `Effect${i + 1}`)), range(numEffects)),
+  ]),
 })
 
 // effect racks
@@ -476,7 +472,7 @@ export const createEffectRackDef = (rack: RackName): EffectRackDef => {
   return {
     num_effectunits: { group: `[${rack}]`, name: `num_effectunits`, type: 'number' },
     clear: { group: `[${rack}]`, name: `clear`, type: 'binary' },
-    effect_units: lazyArray(array(map((unit: string) => lazy(() => createEffectUnitDef(rack, unit)), units))),
+    effect_units: lazyArray([...map((unit: string) => lazy(() => createEffectUnitDef(rack, unit)), units)]),
   }
 }
 
@@ -502,11 +498,11 @@ export type RootControlDef = {
 export const root: RootControlDef = {
   master: masterControlDef,
   playList: playListControlDef,
-  samplers: lazyArray(array(map((i) => lazy(() => createSamplerControlDef(i)), range(numDecks + numSamplers)))),
-  channels: lazyArray(array(map((i) => lazy(() => createChannelControlDef(i)), range(numDecks + numSamplers)))),
-  effectRacks: array(map((i) => createEffectRackDef(`EffectRack${i + 1}`), range(numEqualizerRacks))),
-  quickEffectRacks: array(map((i) => createEffectRackDef(`QuickEffectRack${i + 1}`), range(numEqualizerRacks))),
-  equalizerRacks: array(map((i) => createEffectRackDef(`EqualizerRack${i + 1}`), range(numEqualizerRacks))),
+  samplers: lazyArray([...map((i) => lazy(() => createSamplerControlDef(i)), range(numDecks + numSamplers))]),
+  channels: lazyArray([...map((i) => lazy(() => createChannelControlDef(i)), range(numDecks + numSamplers))]),
+  effectRacks: [...map((i) => createEffectRackDef(`EffectRack${i + 1}`), range(numEqualizerRacks))],
+  quickEffectRacks: [...map((i) => createEffectRackDef(`QuickEffectRack${i + 1}`), range(numEqualizerRacks))],
+  equalizerRacks: [...map((i) => createEffectRackDef(`EqualizerRack${i + 1}`), range(numEqualizerRacks))],
 }
 
 export const getValue = (control: ControlDef): number => {

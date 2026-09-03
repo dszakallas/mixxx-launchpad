@@ -97,7 +97,7 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertic
     [j, -1],
   ])
 
-  spec.forEach(([jump, dir], i) => {
+  for (const [i, [jump, dir]] of spec.entries()) {
     bindings[i] = {
       type: cellPad(
         vertical
@@ -109,11 +109,11 @@ const make: MakeDeckControlTemplate<Type> = ({ gridPosition, deck, jumps, vertic
         midi: onMidi(i, jump as [number, number], dir as number),
       },
     }
-  })
+  }
   return {
     bindings,
     state: {
-      bounce: bounce,
+      bounce,
       pressing: null,
       diff: 0,
       set: 0,

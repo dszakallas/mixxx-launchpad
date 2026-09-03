@@ -96,7 +96,7 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
       bindings[k].sendColor(colors[state.set][prefix])
     }
 
-  spec.forEach(([jump, dir], i) => {
+  for (const [i, [jump, dir]] of spec.entries()) {
     bindings[i] = {
       type: cellPad(
         vertical
@@ -108,11 +108,11 @@ const make: MakeDeckControlTemplate<Type> = ({ deck, gridPosition, jumps, vertic
         mount: onMount(i),
       },
     }
-  })
+  }
   return {
     bindings,
     state: {
-      bounce: bounce,
+      bounce,
       pressing: null,
       diff: 0,
       set: 0,

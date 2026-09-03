@@ -1,4 +1,4 @@
-import { array, map, range, absoluteLin } from '@mixxx-launch/common'
+import { map, range, absoluteLin } from '@mixxx-launch/common'
 import { MidiMessage } from '@mixxx-launch/common/midi'
 import { Component, Container } from '@mixxx-launch/common/component'
 import { sendShortMsg } from '@mixxx-launch/mixxx'
@@ -130,12 +130,12 @@ class FxComponent extends Container {
     const enabled = new ControlComponent(effectDef.enabled)
     const numParams = getValue(effectDef.num_parameters)
     const numButtonParams = getValue(effectDef.num_button_parameters)
-    const paramControls = array(
-      map((i) => new ControlComponent(effectDef.parameters[i].value, true, true), range(numParams)),
-    )
-    const buttonParamControls = array(
-      map((i) => new ControlComponent(effectDef.parameters[i].button_value, true, true), range(numButtonParams)),
-    )
+    const paramControls = [
+      ...map((i) => new ControlComponent(effectDef.parameters[i].value, true, true), range(numParams)),
+    ]
+    const buttonParamControls = [
+      ...map((i) => new ControlComponent(effectDef.parameters[i].button_value, true, true), range(numButtonParams)),
+    ]
     const midiComponents = []
     for (const i of range(8)) {
       const midiComponent = new MidiComponent(device, template, `knob.${row}.${7 - i}`)

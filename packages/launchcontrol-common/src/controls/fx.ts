@@ -1,4 +1,4 @@
-import { array, map, range } from '@mixxx-launch/common'
+import { map, range } from '@mixxx-launch/common'
 import { MidiMessage } from '@mixxx-launch/common/midi'
 import { ControlMessage, createEffectUnitChannelDef, getValue, root, setValue } from '@mixxx-launch/mixxx/src/Control'
 import { Control, ControlBindingTemplate, MidiBindingTemplate, control, midi, MakeControlTemplate } from '../Control'
@@ -73,7 +73,7 @@ export type FxSelectorType = {
 export const makeFxSelector: MakeControlTemplate<FxSelectorType> = ({ template, row, column, deck }) => {
   const bindings: FxSelectorType['bindings'] = {}
 
-  array(range(4)).forEach((i) => {
+  for (const i of range(4)) {
     const c = createEffectUnitChannelDef('EffectRack1', `EffectUnit${i + 1}`, `Channel${deck + 1}`).enable
 
     bindings[`pad.${i}`] = {
@@ -98,7 +98,7 @@ export const makeFxSelector: MakeControlTemplate<FxSelectorType> = ({ template, 
           },
       },
     }
-  })
+  }
 
   return { bindings }
 }
@@ -119,7 +119,7 @@ export type FxMeta3Type = {
 export const makeFxMeta3: MakeControlTemplate<FxMeta3Type> = ({ template, column, unit }) => {
   const bindings: FxMeta3Type['bindings'] = {}
 
-  array(range(3)).forEach((i) => {
+  for (const i of range(3)) {
     const c = fxRack.effect_units[unit].effects[i].meta
     bindings[`knob.${i}`] = {
       type: midi(template, `knob.${i}.${column}`),
@@ -145,7 +145,7 @@ export const makeFxMeta3: MakeControlTemplate<FxMeta3Type> = ({ template, column
           },
       },
     }
-  })
+  }
   return { bindings }
 }
 

@@ -2,7 +2,7 @@ import { Component } from '@mixxx-launch/common/component'
 import { ChannelControlDef, getValue } from '@mixxx-launch/mixxx'
 import { ControlTypeIndex } from './controls'
 import { Theme } from './App'
-import { array, map, range } from '@mixxx-launch/common'
+import { map, range } from '@mixxx-launch/common'
 import { default as makeSamplerPad } from './controls/samplerPad'
 import { root } from '@mixxx-launch/mixxx/src/Control'
 import { ControlTemplate } from '@mixxx-launch/launch-common/src/Control'
@@ -51,8 +51,8 @@ const makeSamplerPalettePresetTemplate = (
   _startingChannel: number,
   theme: Theme,
 ) => ({
-  controls: array(
-    map(
+  controls: [
+    ...map(
       (i) => {
         const dy = 7 - ~~(i / rows)
         const dx = i % rows
@@ -60,7 +60,7 @@ const makeSamplerPalettePresetTemplate = (
       },
       range(Math.min(n, getValue(root.master.num_samplers))),
     ),
-  ),
+  ],
 })
 
 export const makePresetTemplate = (

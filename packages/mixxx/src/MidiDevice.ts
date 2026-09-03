@@ -30,7 +30,7 @@ export abstract class MidiDevice extends Component {
   override onMount() {
     super.onMount()
     const _this = this as unknown as RawMidiMessageTaskRegistry
-    Object.values(this.controls).forEach((control) => {
+    for (const control of Object.values(this.controls)) {
       _this[`${midiCallbackPrefix}${hexFormat(control.status, 2)}${hexFormat(control.midino, 2)}`] = (
         _channel,
         _control,
@@ -40,7 +40,7 @@ export abstract class MidiDevice extends Component {
         const message: MidiMessage = { value, control }
         this.emit(control.name, message)
       }
-    })
+    }
 
     if (this.sysex) {
       _this[sysexCallbackPrefix] = (data: number[]) => {
